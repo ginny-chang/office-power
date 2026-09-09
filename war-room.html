@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#05070d" />
+<title>Office Power — 戰情室 Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#05070d;
+  --bg-2:#070b14;
+  --panel:rgba(13,19,31,.72);
+  --panel-solid:#0b111c;
+  --line:rgba(96,146,224,.13);
+  --line-str:rgba(96,146,224,.26);
+  --blue:#3f8cff;
+  --cyan:#5fe6ff;
+  --txt:#e9efff;
+  --dim:#7e91b3;
+  --dim-2:#54637d;
+  --ok:#3ddc97;
+  --warn:#ffb648;
+  --bad:#ff6b81;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font-family:Archivo,'Noto Sans TC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:13px;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(900px 600px at 62% 46%, rgba(35,90,190,.16), transparent 62%),
+    radial-gradient(700px 500px at 12% 8%, rgba(28,64,140,.12), transparent 60%);
+}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(96,146,224,.2);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:rgba(96,146,224,.42)}
+
+/* ---------- shell ---------- */
+.app{
+  position:relative;z-index:1;height:100vh;
+  display:grid;
+  grid-template-columns:214px minmax(0,1fr) 322px;
+  grid-template-rows:56px minmax(0,1fr);
+}
+.topbar{
+  grid-column:1/-1;display:flex;align-items:center;gap:14px;
+  padding:0 18px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(10,15,25,.9),rgba(6,9,16,.55));
+  backdrop-filter:blur(14px);
+}
+.brand{display:flex;align-items:center;gap:10px;width:196px;flex:none}
+.brand .mark{
+  width:28px;height:28px;border-radius:9px;flex:none;
+  background:linear-gradient(150deg,#5fe6ff,#3f8cff 55%,#2a4fd0);
+  display:grid;place-items:center;font-size:11px;font-weight:700;color:#03060d;
+  box-shadow:0 0 0 1px rgba(120,180,255,.28),0 6px 22px rgba(63,140,255,.35);
+}
+.brand b{font-size:13.5px;letter-spacing:.2px}
+.brand span{display:block;font-size:10px;color:var(--dim-2);letter-spacing:.16em;text-transform:uppercase}
+.search{
+  flex:1;max-width:420px;height:32px;display:flex;align-items:center;gap:8px;
+  padding:0 12px;border-radius:9px;border:1px solid var(--line);
+  background:rgba(255,255,255,.022);color:var(--dim);transition:.25s;
+}
+.search:focus-within{border-color:rgba(63,140,255,.45);box-shadow:0 0 0 3px rgba(63,140,255,.09),0 0 26px rgba(63,140,255,.14)}
+.search input{flex:1;background:none;border:0;outline:0;color:var(--txt);font:inherit;font-size:12.5px}
+.search input::placeholder{color:var(--dim-2)}
+.kbd{font-size:10px;color:var(--dim-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.live{
+  display:flex;align-items:center;gap:7px;font-size:11px;color:var(--dim);
+  border:1px solid var(--line);border-radius:99px;padding:5px 11px;background:rgba(255,255,255,.02);
+}
+.pulse{width:6px;height:6px;border-radius:99px;background:var(--ok);box-shadow:0 0 10px var(--ok);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.72)}}
+.avatar{
+  width:29px;height:29px;border-radius:99px;display:grid;place-items:center;font-weight:600;font-size:11.5px;
+  background:linear-gradient(140deg,#3f8cff,#2a3f8f);color:#eaf2ff;
+  border:1px solid rgba(120,180,255,.3);cursor:pointer;transition:.25s;
+}
+.avatar:hover{box-shadow:0 0 22px rgba(63,140,255,.5)}
+
+/* ---------- nav ---------- */
+.nav{
+  border-right:1px solid var(--line);padding:14px 10px;overflow-y:auto;
+  background:linear-gradient(180deg,rgba(9,13,22,.6),rgba(5,8,14,.2));
+}
+.nav-label{font-size:9.5px;letter-spacing:.18em;color:var(--dim-2);text-transform:uppercase;padding:12px 10px 7px}
+.nav a{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;
+  color:var(--dim);text-decoration:none;font-size:12.5px;position:relative;transition:.22s;
+}
+.nav a i{width:15px;height:15px;flex:none;opacity:.62;display:block}
+.nav a em{font-style:normal;font-size:9.5px;color:var(--dim-2);margin-left:auto;letter-spacing:.05em}
+.nav a:hover{color:var(--txt);background:rgba(63,140,255,.07)}
+.nav a:hover i{opacity:1}
+.nav a.on{
+  color:#fff;background:linear-gradient(90deg,rgba(63,140,255,.2),rgba(63,140,255,.03));
+  box-shadow:inset 0 0 0 1px rgba(96,160,255,.22),0 0 26px rgba(63,140,255,.12);
+}
+.nav a.on i{opacity:1}
+.nav a.on::before{content:'';position:absolute;left:0;top:20%;height:60%;width:2px;border-radius:9px;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+
+/* ---------- center ---------- */
+.center{display:flex;flex-direction:column;min-width:0;padding:14px 14px 14px 12px;gap:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:none}
+.stat{
+  border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;
+  background:var(--panel);backdrop-filter:blur(10px);transition:.3s;position:relative;overflow:hidden;
+}
+.stat::after{
+  content:'';position:absolute;inset:-40% -60% auto auto;width:150px;height:150px;border-radius:99px;
+  background:radial-gradient(circle,rgba(63,140,255,.2),transparent 65%);opacity:0;transition:.4s;
+}
+.stat:hover{border-color:rgba(96,160,255,.32);transform:translateY(-2px);box-shadow:0 12px 40px rgba(6,20,50,.6)}
+.stat:hover::after{opacity:1}
+.stat .k{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--dim)}
+.stat .v{font-size:24px;font-weight:600;letter-spacing:-.4px;margin-top:5px;font-variant-numeric:tabular-nums}
+.stat .s{font-size:10.5px;color:var(--dim-2);margin-top:3px}
+.stat .v small{font-size:12px;color:var(--dim);font-weight:400;margin-left:5px}
+.dotc{width:7px;height:7px;border-radius:99px;background:var(--blue);box-shadow:0 0 9px var(--blue)}
+
+/* ---------- war room ---------- */
+.war{
+  position:relative;flex:1;min-height:0;border-radius:18px;overflow:hidden;
+  border:1px solid var(--line);
+  background:radial-gradient(120% 120% at 50% 42%,rgba(16,29,58,.55),rgba(5,8,14,.9) 70%);
+}
+.war canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.war-head{
+  position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;
+  padding:13px 15px;z-index:3;pointer-events:none;
+}
+.war-title{font-size:12.5px;font-weight:600;letter-spacing:.02em}
+.war-title span{display:block;font-size:9.5px;letter-spacing:.2em;color:var(--dim-2);text-transform:uppercase;font-weight:400;margin-top:2px}
+.tools{margin-left:auto;display:flex;gap:6px;pointer-events:auto}
+.tool{
+  border:1px solid var(--line);background:rgba(9,14,24,.6);backdrop-filter:blur(8px);
+  color:var(--dim);border-radius:8px;padding:5px 10px;font:inherit;font-size:11px;cursor:pointer;transition:.24s;
+}
+.tool:hover{color:#fff;border-color:rgba(96,160,255,.4);box-shadow:0 0 20px rgba(63,140,255,.22)}
+.tool.on{color:var(--cyan);border-color:rgba(95,230,255,.35);box-shadow:0 0 20px rgba(95,230,255,.18)}
+
+/* bot panel (scrollable) */
+.botpanel{
+  position:absolute;left:14px;top:58px;bottom:14px;width:236px;z-index:3;
+  display:flex;flex-direction:column;border-radius:14px;overflow:hidden;
+  border:1px solid var(--line);background:rgba(8,12,21,.72);backdrop-filter:blur(16px);
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+.bp-head{padding:11px 12px 9px;border-bottom:1px solid var(--line);flex:none}
+.bp-head .t{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600}
+.bp-head .t em{font-style:normal;margin-left:auto;font-size:10px;color:var(--dim-2)}
+.bp-filter{display:flex;gap:5px;margin-top:9px}
+.chip{
+  border:1px solid var(--line);background:transparent;color:var(--dim-2);border-radius:99px;
+  padding:3px 9px;font:inherit;font-size:10px;cursor:pointer;transition:.22s;
+}
+.chip:hover{color:var(--txt);border-color:var(--line-str)}
+.chip.on{color:#041022;background:linear-gradient(120deg,#5fe6ff,#3f8cff);border-color:transparent;font-weight:600}
+.bp-list{flex:1;overflow-y:auto;padding:7px}
+.bot-row{
+  display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:10px;cursor:pointer;
+  border:1px solid transparent;transition:.2s;position:relative;
+}
+.bot-row:hover{background:rgba(63,140,255,.09);border-color:rgba(96,160,255,.2);box-shadow:0 0 24px rgba(63,140,255,.13)}
+.bot-row.on{background:linear-gradient(90deg,rgba(63,140,255,.22),rgba(63,140,255,.04));border-color:rgba(96,160,255,.36);box-shadow:0 0 30px rgba(63,140,255,.2)}
+.bot-row .av{
+  width:24px;height:24px;border-radius:8px;flex:none;display:grid;place-items:center;
+  background:rgba(255,255,255,.04);border:1px solid var(--line);position:relative;
+}
+.bot-row .av svg{width:13px;height:13px}
+.bot-row .nm{min-width:0;flex:1}
+.bot-row .nm b{display:block;font-size:11.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bot-row .nm i{font-style:normal;font-size:9.5px;color:var(--dim-2)}
+.bot-row .st{width:6px;height:6px;border-radius:99px;flex:none}
+.st.pub{background:var(--ok);box-shadow:0 0 8px rgba(61,220,151,.8)}
+.st.draft{background:var(--dim-2)}
+
+/* orbit labels */
+.labels{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.lb{
+  position:absolute;top:0;left:0;white-space:nowrap;font-size:10.5px;letter-spacing:.01em;
+  color:rgba(210,226,255,.55);transform:translate(-50%,-50%);transition:color .25s,opacity .25s;
+  text-shadow:0 1px 10px rgba(0,0,0,.85);will-change:transform;
+}
+.lb.core{font-size:12px;font-weight:600;color:#fff;letter-spacing:.04em}
+.lb.hot{color:#fff}
+.lb.hot::after{
+  content:'';position:absolute;left:50%;top:50%;width:112%;height:190%;transform:translate(-50%,-50%);
+  border-radius:8px;background:radial-gradient(closest-side,rgba(63,140,255,.28),transparent);z-index:-1;
+}
+.lb u{display:block;text-decoration:none;font-size:9px;color:rgba(126,145,179,.75);letter-spacing:.14em;text-transform:uppercase}
+
+/* detail card */
+.detail{
+  position:absolute;right:14px;bottom:14px;width:250px;z-index:3;padding:13px;
+  border-radius:14px;border:1px solid var(--line-str);background:rgba(8,12,21,.82);
+  backdrop-filter:blur(16px);box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px rgba(63,140,255,.1);
+  opacity:0;transform:translateY(10px);pointer-events:none;transition:.32s cubic-bezier(.2,.8,.3,1);
+}
+.detail.show{opacity:1;transform:none;pointer-events:auto}
+.detail h4{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.detail .sub{font-size:9.5px;color:var(--dim-2);letter-spacing:.14em;text-transform:uppercase;margin-top:3px}
+.detail .kv{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);padding:6px 0;border-bottom:1px dashed rgba(96,146,224,.1)}
+.detail .kv b{color:var(--txt);font-weight:500;font-variant-numeric:tabular-nums}
+.detail .kv:last-of-type{border:0}
+.detail .act{
+  margin-top:10px;width:100%;border:0;border-radius:9px;padding:8px;cursor:pointer;font:inherit;font-size:11.5px;font-weight:600;
+  background:linear-gradient(120deg,#5fe6ff,#3f8cff);color:#04101f;transition:.25s;
+}
+.detail .act:hover{box-shadow:0 0 26px rgba(63,140,255,.55);transform:translateY(-1px)}
+.hint{
+  position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:2;pointer-events:none;
+  font-size:10.5px;color:var(--dim-2);letter-spacing:.05em;transition:opacity .4s;
+}
+
+/* ---------- right ---------- */
+.side{
+  border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;
+  background:linear-gradient(180deg,rgba(9,13,22,.55),rgba(5,8,14,.2));
+}
+.side-head{padding:14px 15px 0;flex:none}
+.side-head h3{font-size:12.5px;font-weight:600}
+.side-head h3 span{display:block;font-size:9.5px;letter-spacing:.2em;color:var(--dim-2);text-transform:uppercase;font-weight:400;margin-top:2px}
+.tabs{display:flex;gap:4px;margin-top:11px;padding:3px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.tabs button{
+  flex:1;border:0;background:none;color:var(--dim);font:inherit;font-size:11.5px;padding:6px;border-radius:8px;cursor:pointer;transition:.24s;
+}
+.tabs button:hover{color:var(--txt)}
+.tabs button.on{background:rgba(63,140,255,.16);color:#fff;box-shadow:0 0 20px rgba(63,140,255,.16),inset 0 0 0 1px rgba(96,160,255,.24)}
+.feed{flex:1;overflow-y:auto;padding:8px 10px 14px}
+.item{
+  display:flex;gap:10px;padding:10px 9px;border-radius:11px;border:1px solid transparent;transition:.22s;cursor:default;
+}
+.item:hover{background:rgba(63,140,255,.07);border-color:rgba(96,160,255,.18);box-shadow:0 0 26px rgba(63,140,255,.1)}
+.item .tm{font-size:10.5px;color:var(--dim-2);width:34px;flex:none;padding-top:2px;font-variant-numeric:tabular-nums}
+.item .ic{width:24px;height:24px;border-radius:8px;flex:none;display:grid;place-items:center;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.item .ic svg{width:13px;height:13px}
+.item .bd{min-width:0;flex:1}
+.item .bd b{display:block;font-size:11.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .bd .meta{font-size:10px;color:var(--dim-2);margin-top:3px;display:flex;align-items:center;gap:6px}
+.tag{font-size:9.5px;padding:1px 6px;border-radius:99px;border:1px solid}
+.tag.ok{color:var(--ok);border-color:rgba(61,220,151,.28);background:rgba(61,220,151,.08)}
+.tag.blk{color:var(--bad);border-color:rgba(255,107,129,.28);background:rgba(255,107,129,.08)}
+.tag.mod{color:var(--warn);border-color:rgba(255,182,72,.28);background:rgba(255,182,72,.08)}
+.side-foot{flex:none;border-top:1px solid var(--line);padding:11px 15px;display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--dim-2)}
+.spark{flex:1;height:22px;display:block}
+
+@media (max-width:1180px){
+  .app{grid-template-columns:64px minmax(0,1fr) 288px}
+  .nav a span,.nav-label,.nav a em{display:none}
+  .nav a{justify-content:center}
+  .brand{width:auto}.brand div{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark">OP</div>
+      <div><b>Office Power</b><span>AI Agent Platform</span></div>
+    </div>
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="14" height="14"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="globalSearch" placeholder="搜尋 Agent、排程、執行紀錄…" />
+      <span class="kbd">/</span>
+    </label>
+    <div class="top-right">
+      <div class="live"><span class="pulse"></span> 系統正常 · 15 Agents 在線</div>
+      <div class="avatar">G</div>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <a href="#"><i></i><span>對話</span></a>
+    <a href="#"><i></i><span>我的看板</span></a>
+    <a href="#"><i></i><span>Nova App</span></a>
+    <a href="#"><i></i><span>Agent 管理</span><em>15</em></a>
+    <a href="#"><i></i><span>排程</span></a>
+    <div class="nav-label">Admin</div>
+    <a href="#" class="on"><i></i><span>戰情室</span></a>
+    <a href="#"><i></i><span>App Packs</span></a>
+    <a href="#"><i></i><span>檔案與知識庫</span></a>
+    <a href="#"><i></i><span>員工名錄</span></a>
+    <a href="#"><i></i><span>組織架構</span></a>
+    <a href="#"><i></i><span>MCP 管理</span></a>
+    <a href="#"><i></i><span>資料集</span></a>
+    <a href="#"><i></i><span>技能管理</span></a>
+    <a href="#"><i></i><span>用量與費用</span></a>
+  </nav>
+
+  <main class="center">
+    <section class="stats">
+      <div class="stat">
+        <div class="k"><span class="dotc"></span> 總 Agents</div>
+        <div class="v">15</div>
+        <div class="s">4 條軌道 · 1 顆核心</div>
+      </div>
+      <div class="stat">
+        <div class="k"><span class="dotc" style="background:#3ddc97;box-shadow:0 0 9px #3ddc97"></span> 已發布</div>
+        <div class="v">14 <small>/ 15</small></div>
+        <div class="s">1 個草稿待發布</div>
+      </div>
+      <div class="stat">
+        <div class="k"><span class="dotc" style="background:#5fe6ff;box-shadow:0 0 9px #5fe6ff"></span> 本月總費用</div>
+        <div class="v">$13.74</div>
+        <div class="s">2026-09 · 較上月 −8.2%</div>
+      </div>
+      <div class="stat">
+        <div class="k"><span class="dotc" style="background:#ffb648;box-shadow:0 0 9px #ffb648"></span> 自動化動態</div>
+        <div class="v">0</div>
+        <div class="s">排程 0 個啟用 · 今日推送 0 則</div>
+      </div>
+    </section>
+
+    <section class="war" id="war">
+      <canvas id="scene"></canvas>
+      <div class="labels" id="labels"></div>
+
+      <div class="war-head">
+        <div class="war-title">戰情室<span>AI Agent Command Center</span></div>
+        <div class="tools">
+          <button class="tool on" id="btnLabels">標籤</button>
+          <button class="tool" id="btnOrbit">軌道</button>
+          <button class="tool" id="btnReset">重置視角</button>
+          <button class="tool" id="btnFull">全螢幕</button>
+        </div>
+      </div>
+
+      <aside class="botpanel">
+        <div class="bp-head">
+          <div class="t">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#5fe6ff" stroke-width="1.6" width="13" height="13"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 14h.01M15 14h.01"/></svg>
+            Agent 星系 <em id="bpCount">15</em>
+          </div>
+          <div class="bp-filter">
+            <button class="chip on" data-f="all">全部</button>
+            <button class="chip" data-f="published">已發布</button>
+            <button class="chip" data-f="draft">草稿</button>
+          </div>
+        </div>
+        <div class="bp-list" id="botList"></div>
+      </aside>
+
+      <div class="detail" id="detail">
+        <h4><span class="st pub" id="dStatus"></span><span id="dName">大腦總管 Nova</span></h4>
+        <div class="sub" id="dEn">CORE ORCHESTRATOR</div>
+        <div style="height:9px"></div>
+        <div class="kv"><span>狀態</span><b id="dState">已發布</b></div>
+        <div class="kv"><span>近 7 日執行</span><b id="dRuns">128</b></div>
+        <div class="kv"><span>平均耗時</span><b id="dTime">104.2 s</b></div>
+        <div class="kv"><span>本月費用</span><b id="dCost">$4.20</b></div>
+        <button class="act">開啟對話 →</button>
+      </div>
+
+      <div class="hint" id="hint">拖曳可旋轉星系 · 滾輪縮放 · 點選 Agent 查看詳情</div>
+    </section>
+  </main>
+
+  <aside class="side">
+    <div class="side-head">
+      <h3>即時活動<span>Live Activity</span></h3>
+      <div class="tabs">
+        <button class="on" data-tab="run">執行紀錄</button>
+        <button data-tab="chg">異動</button>
+      </div>
+    </div>
+    <div class="feed" id="feed"></div>
+    <div class="side-foot">
+      <span>24h 執行量</span>
+      <svg class="spark" viewBox="0 0 120 22" preserveAspectRatio="none">
+        <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f8cff" stop-opacity=".5"/><stop offset="1" stop-color="#3f8cff" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0 18 L10 15 L20 16 L30 10 L40 12 L50 6 L60 9 L70 4 L80 8 L90 5 L100 11 L110 7 L120 9 L120 22 L0 22 Z" fill="url(#sg)"/>
+        <path d="M0 18 L10 15 L20 16 L30 10 L40 12 L50 6 L60 9 L70 4 L80 8 L90 5 L100 11 L110 7 L120 9" fill="none" stroke="#5fe6ff" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>
+      <b style="color:var(--txt)">312</b>
+    </div>
+  </aside>
+</div>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js';
+
+/* ============ data ============ */
+const AGENTS = [
+  {id:'nova',  name:'大腦總管 Nova',        en:'Core Orchestrator',   status:'published', core:true,  ring:-1, ang:0,   color:0x9fd8ff, runs:412, time:'104.2 s', cost:'$4.20'},
+  {id:'cmd',   name:'Office Power 指令中心', en:'Command Hub',        status:'published', ring:0, ang:0.15,  color:0x5fe6ff, runs:186, time:'62.4 s',  cost:'$1.84'},
+  {id:'prod',  name:'Office Power 產品助理', en:'Product Assistant',  status:'published', ring:0, ang:2.3,   color:0x4d8dff, runs:154, time:'48.9 s',  cost:'$1.42'},
+  {id:'pm',    name:'PM 小幫手',            en:'Project Manager',     status:'published', ring:0, ang:4.4,   color:0x7b8cff, runs:97,  time:'55.1 s',  cost:'$0.96'},
+  {id:'html',  name:'HTML 結構分析專員',     en:'HTML Analyst',       status:'published', ring:1, ang:0.6,   color:0x38bdf8, runs:73,  time:'71.3 s',  cost:'$0.78'},
+  {id:'sales', name:'Sales 助理',           en:'Sales Assistant',     status:'published', ring:1, ang:2.0,   color:0x46d6c0, runs:206, time:'0 ms',    cost:'$1.12'},
+  {id:'card',  name:'Nova 名片辨識管家',     en:'Card Scanner',       status:'draft',     ring:1, ang:3.5,   color:0x8ea3c4, runs:12,  time:'86.4 s',  cost:'$0.08'},
+  {id:'hr',    name:'HR 小幫手',            en:'People Ops',          status:'published', ring:1, ang:5.1,   color:0xa78bfa, runs:88,  time:'44.7 s',  cost:'$0.71'},
+  {id:'clock', name:'出勤打卡小幫手',        en:'Attendance Bot',      status:'published', ring:2, ang:0.3,   color:0x5fe6ff, runs:311, time:'38.2 s',  cost:'$1.05'},
+  {id:'guest', name:'訪客通知助手',          en:'Visitor Notifier',    status:'published', ring:2, ang:1.5,   color:0x4d8dff, runs:142, time:'54.2 s',  cost:'$0.62'},
+  {id:'fix',   name:'總務報修管理 Agent',    en:'Facility Repair',     status:'published', ring:2, ang:2.9,   color:0x7b8cff, runs:64,  time:'67.8 s',  cost:'$0.55'},
+  {id:'club',  name:'社團課程管理 Agent',    en:'Club Courses',        status:'published', ring:2, ang:4.3,   color:0x46d6c0, runs:41,  time:'59.6 s',  cost:'$0.34'},
+  {id:'strch', name:'拉伸提醒助手',          en:'Stretch Reminder',    status:'published', ring:3, ang:0.9,   color:0xa78bfa, runs:180, time:'12.4 s',  cost:'$0.21'},
+  {id:'water', name:'澆水提醒小幫手',        en:'Plant Watering',      status:'published', ring:3, ang:2.6,   color:0x3ddc97, runs:120, time:'11.8 s',  cost:'$0.18'},
+  {id:'app',   name:'Nova App 產生修改小幫手',en:'App Builder',        status:'published', ring:3, ang:4.8,   color:0x38bdf8, runs:75,  time:'41.9 s',  cost:'$0.68'},
+];
+
+const FEED = {
+  run:[
+    {t:'10:20', n:'出勤打卡小幫手', s:'ok',  st:'成功', ch:'WEB',  d:'38.17 s'},
+    {t:'18:39', n:'訪客通知助手',   s:'ok',  st:'成功', ch:'WEB',  d:'54.24 s'},
+    {t:'18:35', n:'Sales 助理',     s:'blk', st:'已攔截', ch:'LINE', d:'0 ms'},
+    {t:'17:38', n:'Sales 助理',     s:'blk', st:'已攔截', ch:'LINE', d:'3 ms'},
+    {t:'16:13', n:'大腦總管 Nova',  s:'ok',  st:'成功', ch:'WEB',  d:'104.22 s'},
+    {t:'16:12', n:'Nova App 產生修改小幫手', s:'ok', st:'成功', ch:'WEB', d:'41.98 s'},
+    {t:'16:08', n:'大腦總管 Nova',  s:'ok',  st:'成功', ch:'WEB',  d:'107.78 s'},
+    {t:'16:08', n:'Nova 名片辨識管家', s:'ok', st:'成功', ch:'WEB', d:'86.35 s'},
+    {t:'16:05', n:'大腦總管 Nova',  s:'ok',  st:'成功', ch:'WEB',  d:'106.15 s'},
+    {t:'15:52', n:'拉伸提醒助手',    s:'ok',  st:'成功', ch:'PUSH', d:'12.41 s'},
+    {t:'15:30', n:'澆水提醒小幫手',  s:'ok',  st:'成功', ch:'PUSH', d:'11.80 s'},
+    {t:'14:58', n:'總務報修管理 Agent', s:'ok', st:'成功', ch:'WEB', d:'67.80 s'},
+  ],
+  chg:[
+    {t:'11:04', n:'Office Power 指令中心', s:'mod', st:'版本更新', ch:'v2.4', d:'Ginny'},
+    {t:'10:41', n:'Nova 名片辨識管家',     s:'mod', st:'草稿儲存', ch:'DRAFT', d:'Ginny'},
+    {t:'09:12', n:'HR 小幫手',            s:'ok',  st:'已發布',  ch:'v1.8', d:'Ginny'},
+    {t:'昨日',  n:'Sales 助理',           s:'blk', st:'權限調整', ch:'LINE', d:'System'},
+    {t:'昨日',  n:'社團課程管理 Agent',    s:'mod', st:'知識庫更新', ch:'KB', d:'Ginny'},
+    {t:'09/06', n:'出勤打卡小幫手',        s:'ok',  st:'排程建立', ch:'CRON', d:'Ginny'},
+  ]
+};
+
+const hex = n => '#' + n.toString(16).padStart(6,'0');
+
+/* ============ bot list panel ============ */
+const listEl = document.getElementById('botList');
+const rowMap = new Map();
+let filter = 'all', query = '';
+
+function botIcon(color){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.5">
+    <rect x="4.5" y="8.5" width="15" height="11" rx="3"/><path d="M12 4.2v4.3M8.8 14h.01M15.2 14h.01"/><circle cx="12" cy="3.4" r="1.2" fill="${color}" stroke="none"/></svg>`;
+}
+
+function renderList(){
+  listEl.innerHTML = '';
+  rowMap.clear();
+  let n = 0;
+  AGENTS.forEach(a=>{
+    if(filter !== 'all' && a.status !== filter) return;
+    if(query && !(a.name+a.en).toLowerCase().includes(query)) return;
+    n++;
+    const row = document.createElement('div');
+    row.className = 'bot-row';
+    row.innerHTML = `<div class="av">${botIcon(hex(a.color))}</div>
+      <div class="nm"><b>${a.name}</b><i>${a.en}</i></div>
+      <div class="st ${a.status === 'published' ? 'pub':'draft'}"></div>`;
+    row.addEventListener('mouseenter', ()=> setHover(a.id));
+    row.addEventListener('mouseleave', ()=> setHover(null));
+    row.addEventListener('click', ()=> select(a.id));
+    listEl.appendChild(row);
+    rowMap.set(a.id, row);
+  });
+  document.getElementById('bpCount').textContent = n;
+  syncRows();
+}
+
+document.querySelectorAll('.bp-filter .chip').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    document.querySelectorAll('.bp-filter .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on'); filter = c.dataset.f; renderList();
+  });
+});
+document.getElementById('globalSearch').addEventListener('input', e=>{
+  query = e.target.value.trim().toLowerCase(); renderList();
+});
+addEventListener('keydown', e=>{
+  if(e.key === '/' && document.activeElement.tagName !== 'INPUT'){ e.preventDefault(); document.getElementById('globalSearch').focus(); }
+  if(e.key === 'Escape') select(null);
+});
+
+/* ============ activity feed ============ */
+const feedEl = document.getElementById('feed');
+function renderFeed(tab){
+  feedEl.innerHTML = FEED[tab].map(i=>`
+    <div class="item">
+      <div class="tm">${i.t}</div>
+      <div class="ic">${botIcon('#7e91b3')}</div>
+      <div class="bd"><b>${i.n}</b>
+        <div class="meta"><span class="tag ${i.s}">${i.st}</span><span>${i.ch}</span><span>·</span><span>${i.d}</span></div>
+      </div>
+    </div>`).join('');
+}
+renderFeed('run');
+document.querySelectorAll('.tabs button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); renderFeed(b.dataset.tab);
+  });
+});
+
+/* ============ three.js scene ============ */
+const war = document.getElementById('war');
+const canvas = document.getElementById('scene');
+const labelLayer = document.getElementById('labels');
+
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x060a13, 0.026);
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 200);
+let camDist = 14.2;
+
+scene.add(new THREE.AmbientLight(0x3f5f92, 0.24));
+scene.add(new THREE.HemisphereLight(0x6f9fe0, 0x060a12, 0.26));
+const starLight = new THREE.PointLight(0x9ad0ff, 150, 70, 1.7);
+scene.add(starLight);
+const key = new THREE.DirectionalLight(0x8fb6ff, 0.62); key.position.set(4, 7, 6); scene.add(key);
+const rim = new THREE.DirectionalLight(0x2f6bd8, 0.75); rim.position.set(-6, -2, -5); scene.add(rim);
+
+const system = new THREE.Group();
+scene.add(system);
+
+/* soft radial sprite texture */
+function glowTexture(){
+  const c = document.createElement('canvas'); c.width = c.height = 128;
+  const g = c.getContext('2d').createRadialGradient(64,64,0,64,64,64);
+  g.addColorStop(0,'rgba(255,255,255,1)');
+  g.addColorStop(.28,'rgba(255,255,255,.5)');
+  g.addColorStop(1,'rgba(255,255,255,0)');
+  const ctx = c.getContext('2d'); ctx.fillStyle = g; ctx.fillRect(0,0,128,128);
+  return new THREE.CanvasTexture(c);
+}
+const GLOW = glowTexture();
+
+/* ---- starfield ---- */
+(function stars(){
+  const N = 900, pos = new Float32Array(N*3);
+  for(let i=0;i<N;i++){
+    const r = 26 + Math.random()*45, t = Math.random()*Math.PI*2, p = Math.acos(2*Math.random()-1);
+    pos[i*3]   = r*Math.sin(p)*Math.cos(t);
+    pos[i*3+1] = r*Math.cos(p)*0.5;
+    pos[i*3+2] = r*Math.sin(p)*Math.sin(t);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({
+    color:0x9dc4ff, size:.22, sizeAttenuation:true, transparent:true, opacity:.55,
+    map:GLOW, blending:THREE.AdditiveBlending, depthWrite:false
+  })));
+})();
+
+/* ---- the star (core) ---- */
+const core = new THREE.Group();
+system.add(core);
+core.add(new THREE.Mesh(
+  new THREE.SphereGeometry(0.72, 48, 32),
+  new THREE.MeshBasicMaterial({color:0xcfe7ff})
+));
+core.add(new THREE.Mesh(
+  new THREE.SphereGeometry(0.98, 40, 28),
+  new THREE.MeshBasicMaterial({color:0x5aa8ff, transparent:true, opacity:.20, blending:THREE.AdditiveBlending, depthWrite:false})
+));
+[ [3.8,.30], [7.2,.13] ].forEach(([s,o])=>{
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW, color:0x62a8ff, transparent:true, opacity:o, blending:THREE.AdditiveBlending, depthWrite:false}));
+  sp.scale.setScalar(s); core.add(sp);
+});
+const halo = new THREE.Mesh(
+  new THREE.TorusGeometry(1.42, 0.010, 8, 128),
+  new THREE.MeshBasicMaterial({color:0x8fd4ff, transparent:true, opacity:.55, blending:THREE.AdditiveBlending, depthWrite:false})
+);
+halo.rotation.x = Math.PI/2.1; core.add(halo);
+const halo2 = halo.clone(); halo2.scale.setScalar(1.34); halo2.rotation.set(Math.PI/2.6, .4, .3);
+halo2.material = halo.material.clone(); halo2.material.opacity = .28; core.add(halo2);
+
+
+/* ---- 積木機器人：沿用 RobotCanvas.jsx 的比例，改成深色科技藍塗裝 ---- */
+function buildBot(accent){
+  const g = new THREE.Group();
+  const shell = new THREE.MeshStandardMaterial({
+    color:0x16233a, roughness:.30, metalness:.72,
+    emissive:new THREE.Color(accent), emissiveIntensity:.05
+  });
+  const dark  = new THREE.MeshStandardMaterial({color:0x0d131f, roughness:.30, metalness:.78});
+  const lit   = new THREE.MeshBasicMaterial({color:accent});
+  const box = (w,h,d,x,y,z,m,rz)=>{
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), m);
+    mesh.position.set(x,y,z); if(rz) mesh.rotation.z = rz; g.add(mesh); return mesh;
+  };
+  box(1.45,1.05,1.10, 0,1.35,0, shell);
+  box(0.82,0.18,0.04, 0,1.35,0.57, dark);
+  box(0.24,0.06,0.03, 0,1.35,0.60, lit);
+  box(1.22,1.20,0.88, 0,0.45,0, shell);
+  box(0.12,0.06,0.03, 0,0.52,0.49, lit);
+  box(0.30,1.05,0.32,-0.90,0.45,0, dark,-0.14);
+  box(0.30,1.05,0.32, 0.90,0.45,0, dark, 0.14);
+  box(0.38,0.95,0.42,-0.42,-0.55,0, dark);
+  box(0.38,0.95,0.42, 0.42,-0.55,0, dark);
+  box(0.54,0.20,0.63,-0.42,-1.08,0.08, dark);
+  box(0.54,0.20,0.63, 0.42,-1.08,0.08, dark);
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.34,12), dark);
+  rod.position.y = 2.0; g.add(rod);
+  const tip = new THREE.Mesh(new THREE.SphereGeometry(.13,16,12), lit);
+  tip.position.y = 2.2; g.add(tip);
+  return {group:g, shell, lit};
+}
+
+/* ---- orbits ---- */
+const RINGS = [
+  {r:3.9, euler:new THREE.Euler(0.06, 0, 0.05)},
+  {r:5.5, euler:new THREE.Euler(-0.10, 0, 0.12)},
+  {r:7.2, euler:new THREE.Euler(0.14, 0, -0.08)},
+  {r:8.9, euler:new THREE.Euler(-0.07, 0, 0.17)},
+];
+const ringLines = [];
+RINGS.forEach(ring=>{
+  const pts = [];
+  for(let i=0;i<=180;i++){
+    const a = i/180*Math.PI*2;
+    pts.push(new THREE.Vector3(Math.cos(a)*ring.r, 0, Math.sin(a)*ring.r));
+  }
+  const line = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({color:0x4d8dff, transparent:true, opacity:.16, blending:THREE.AdditiveBlending, depthWrite:false})
+  );
+  line.setRotationFromEuler(ring.euler);
+  system.add(line); ringLines.push(line);
+});
+
+/* ---- place agents ---- */
+const bots = [];
+const hitList = [];
+AGENTS.forEach(a=>{
+  if(a.core){ bots.push({data:a, obj:core, isCore:true, hoverT:0}); return; }
+  const {group, shell, lit} = buildBot(a.color);
+  group.scale.setScalar(0.44);
+  const wrap = new THREE.Group();
+  wrap.add(group);
+  const aura = new THREE.Sprite(new THREE.SpriteMaterial({
+    map:GLOW, color:a.color, transparent:true, opacity:.16,
+    blending:THREE.AdditiveBlending, depthWrite:false
+  }));
+  aura.scale.setScalar(2.3); aura.position.y = .22; wrap.add(aura);
+  wrap.userData.botId = a.id;
+  system.add(wrap);
+
+  const ring = RINGS[a.ring];
+  bots.push({
+    data:a, obj:wrap, shell, lit, aura, hoverT:0,
+    r:ring.r, euler:ring.euler, ang:a.ang,
+    speed: 0.028 * Math.pow(RINGS[0].r / ring.r, 1.5) * (a.status === 'draft' ? .8 : 1),
+    bob: Math.random()*Math.PI*2,
+    dim: a.status === 'draft' ? .45 : 1,
+  });
+  if(a.status === 'draft'){ shell.opacity = .8; shell.transparent = true; aura.material.opacity = .07; }
+  hitList.push(wrap);
+});
+
+/* ---- link line: core → focused agent ---- */
+const linkGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+const link = new THREE.Line(linkGeo, new THREE.LineBasicMaterial({
+  color:0x7fc4ff, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false
+}));
+system.add(link);
+
+/* ---- html labels ---- */
+const labelEls = new Map();
+bots.forEach(b=>{
+  const el = document.createElement('div');
+  el.className = 'lb' + (b.isCore ? ' core' : '');
+  el.innerHTML = b.isCore ? `${b.data.name}<u>${b.data.en}</u>` : b.data.name;
+  labelLayer.appendChild(el);
+  labelEls.set(b.data.id, el);
+});
+
+/* ============ interaction ============ */
+let hoverId = null, selectId = null;
+let labelsOn = true, orbitOn = true;
+let yaw = 0.25, pitch = 0.40, tYaw = 0.25, tPitch = 0.40;
+let dragging = false, px = 0, py = 0, interacted = false;
+
+function setHover(id){
+  if(hoverId === id) return;
+  hoverId = id; syncRows();
+}
+function select(id){
+  selectId = (selectId === id) ? null : id;
+  syncRows();
+  const d = document.getElementById('detail');
+  const a = AGENTS.find(x=>x.id === selectId);
+  if(!a){ d.classList.remove('show'); return; }
+  document.getElementById('dName').textContent  = a.name;
+  document.getElementById('dEn').textContent    = a.en;
+  document.getElementById('dState').textContent = a.status === 'published' ? '已發布' : '草稿';
+  document.getElementById('dRuns').textContent  = a.runs;
+  document.getElementById('dTime').textContent  = a.time;
+  document.getElementById('dCost').textContent  = a.cost;
+  document.getElementById('dStatus').className  = 'st ' + (a.status === 'published' ? 'pub' : 'draft');
+  d.classList.add('show');
+  const row = rowMap.get(a.id);
+  if(row) row.scrollIntoView({block:'nearest', behavior:'smooth'});
+}
+function syncRows(){
+  rowMap.forEach((row,id)=> row.classList.toggle('on', id === selectId || id === hoverId));
+}
+
+const ray = new THREE.Raycaster();
+const ptr = new THREE.Vector2();
+
+canvas.addEventListener('pointermove', e=>{
+  const r = canvas.getBoundingClientRect();
+  ptr.x = ((e.clientX - r.left)/r.width)*2 - 1;
+  ptr.y = -((e.clientY - r.top)/r.height)*2 + 1;
+  if(dragging){
+    tYaw   -= (e.clientX - px)*0.005;
+    tPitch  = Math.max(-0.25, Math.min(1.15, tPitch + (e.clientY - py)*0.004));
+    px = e.clientX; py = e.clientY;
+    return;
+  }
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(hitList, true)[0];
+  let id = null, o = hit && hit.object;
+  while(o && !id){ if(o.userData.botId) id = o.userData.botId; o = o.parent; }
+  setHover(id);
+  canvas.style.cursor = id ? 'pointer' : (dragging ? 'grabbing' : 'grab');
+});
+canvas.addEventListener('pointerdown', e=>{
+  dragging = true; px = e.clientX; py = e.clientY;
+  canvas.setPointerCapture(e.pointerId);
+  interacted = true; document.getElementById('hint').style.opacity = 0;
+});
+canvas.addEventListener('pointerup', e=>{
+  dragging = false;
+  const moved = Math.abs(e.clientX - px) + Math.abs(e.clientY - py);
+  if(moved < 4) select(hoverId);
+  canvas.style.cursor = hoverId ? 'pointer' : 'grab';
+});
+canvas.addEventListener('pointerleave', ()=>{ dragging = false; setHover(null); });
+canvas.addEventListener('wheel', e=>{
+  e.preventDefault();
+  camDist = Math.max(9, Math.min(26, camDist + e.deltaY*0.012));
+}, {passive:false});
+
+document.getElementById('btnLabels').addEventListener('click', e=>{
+  labelsOn = !labelsOn; e.currentTarget.classList.toggle('on', labelsOn);
+});
+document.getElementById('btnOrbit').addEventListener('click', e=>{
+  orbitOn = !orbitOn;
+  e.currentTarget.classList.toggle('on', !orbitOn);
+  ringLines.forEach(l=> l.visible = orbitOn);
+});
+document.getElementById('btnReset').addEventListener('click', ()=>{
+  tYaw = 0.25; tPitch = 0.40; camDist = 14.2; select(null);
+});
+document.getElementById('btnFull').addEventListener('click', ()=>{
+  if(document.fullscreenElement) document.exitFullscreen();
+  else war.requestFullscreen && war.requestFullscreen();
+});
+
+/* ============ loop ============ */
+const v3 = new THREE.Vector3();
+const clock = new THREE.Clock();
+let W = 1, H = 1;
+
+function resize(){
+  const r = war.getBoundingClientRect();
+  W = Math.max(1, r.width); H = Math.max(1, r.height);
+  renderer.setSize(W, H, false);
+  camera.aspect = W / H;
+  // 把星系往右推，避開左側可捲動的 Bot Panel
+  camera.setViewOffset(W, H, -Math.min(130, W * 0.17), 0, W, H);
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(war);
+resize();
+
+function tick(){
+  const dt = Math.min(clock.getDelta(), .05);
+  const t = clock.elapsedTime;
+
+  yaw   += (tYaw - yaw) * Math.min(1, dt*4);
+  pitch += (tPitch - pitch) * Math.min(1, dt*4);
+  camera.position.set(
+    camDist * Math.cos(pitch) * Math.sin(yaw),
+    camDist * Math.sin(pitch),
+    camDist * Math.cos(pitch) * Math.cos(yaw)
+  );
+  camera.lookAt(0, 0, 0);
+
+  core.rotation.y += dt * 0.06;
+  halo.rotation.z += dt * 0.05;
+  halo2.rotation.z -= dt * 0.035;
+  const beat = 1 + Math.sin(t * 0.8) * 0.02;
+  core.scale.setScalar(beat);
+  starLight.intensity = 140 + Math.sin(t * 0.8) * 22;
+
+  const focus = hoverId || selectId;
+  let focusPos = null;
+
+  bots.forEach(b=>{
+    const hot = (b.data.id === focus) ? 1 : 0;
+    b.hoverT += (hot - b.hoverT) * Math.min(1, dt * 7);
+
+    if(!b.isCore){
+      b.ang += b.speed * dt;
+      v3.set(Math.cos(b.ang) * b.r, Math.sin(t * .35 + b.bob) * .16, Math.sin(b.ang) * b.r).applyEuler(b.euler);
+      b.obj.position.copy(v3);
+      b.obj.rotation.y = -b.ang + Math.PI * .5 + Math.sin(t * .25 + b.bob) * .25;
+      b.obj.scale.setScalar(1 + b.hoverT * 0.16);
+      b.shell.emissiveIntensity = 0.05 + b.hoverT * 0.5;
+      b.aura.material.opacity = (b.dim * .16) + b.hoverT * .5;
+      b.aura.scale.setScalar(2.3 + b.hoverT * 1.8);
+      if(b.data.id === focus) focusPos = b.obj.position.clone();
+    }
+
+    const el = labelEls.get(b.data.id);
+    b.obj.getWorldPosition(v3);
+    v3.y += b.isCore ? 1.9 : 0.95;
+    const depth = camera.position.distanceTo(v3);
+    v3.project(camera);
+    const visible = labelsOn && v3.z < 1;
+    const near = Math.max(.2, Math.min(1, 1 - (depth - 8) / 24));
+    const emph = b.isCore ? 1 : (0.5 + b.hoverT * 0.5) * (b.dim ?? 1);
+    el.style.opacity = visible ? (near * emph).toFixed(3) : '0';
+    el.style.transform = `translate(-50%,-50%) translate(${(v3.x*.5+.5)*W}px, ${(-v3.y*.5+.5)*H}px)`;
+    el.classList.toggle('hot', b.hoverT > .5);
+  });
+
+  const lp = linkGeo.attributes.position;
+  if(focusPos){
+    lp.setXYZ(0, 0, 0, 0);
+    lp.setXYZ(1, focusPos.x, focusPos.y, focusPos.z);
+    lp.needsUpdate = true;
+    link.material.opacity += (0.45 - link.material.opacity) * Math.min(1, dt*6);
+  }else{
+    link.material.opacity += (0 - link.material.opacity) * Math.min(1, dt*6);
+  }
+
+  if(!interacted && t > 1) tYaw += dt * 0.012;
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+
+renderList();
+tick();
+</script>
+</body>
+</html>
