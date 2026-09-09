@@ -1,3 +1,54 @@
+// 應用情境文案來源：https://officepower-website.pages.dev/ 的 06 USE CASES 區塊。
+// 網站更新後請手動同步這份資料；不做即時抓取。
+export const useCasePacks = [
+  {
+    id: 'hr',
+    label: 'HR 出勤 Pack',
+    team: '人資',
+    status: 'available',
+    statusLabel: 'AVAILABLE',
+    scenarios: [
+      {
+        title: '加班時數守門員',
+        visual: 'overtime',
+        cadence: '每週自動',
+        before: '月底手動比對加班，容易漏掉超標。',
+        after: '每週掃描加班時數，接近門檻就 LINE 通知本人與主管。',
+      },
+      {
+        title: '月底出勤異常派件',
+        visual: 'dispatch',
+        cadence: '每月自動',
+        before: '逐一追缺卡、催回覆，月結耗上好幾天。',
+        after: '異常自動派到員工 LINE，HR 只看誰還沒完成。',
+      },
+      {
+        title: '特休到期預警',
+        visual: 'leave',
+        cadence: '每日自動',
+        before: '年底才發現特休未休，折現成本措手不及。',
+        after: '到期前 90 天提醒剩餘天數與折現金額，提早安排。',
+      },
+      {
+        title: '試用期／合約到期提醒',
+        visual: 'contract',
+        cadence: '每日自動',
+        before: '試用期、合約到期，低頻卻容易漏。',
+        after: '到期前 30 天，自動提醒主管與 HR。',
+      },
+      {
+        title: '補卡一句話完成',
+        visual: 'punch',
+        cadence: '員工隨時',
+        before: '忘打卡，還要找表單、填資料、追主管。',
+        after: 'LINE 說一句，AI 比對出勤佐證，整理摘要送交主管與 HR。',
+      },
+    ],
+  },
+  { id: 'finance', label: '財務 Pack', team: '財務', status: 'soon', statusLabel: 'COMING SOON' },
+  { id: 'sales', label: '業務 Pack', team: '業務', status: 'soon', statusLabel: 'COMING SOON' },
+];
+
 export const useCases = [
   {
     id: 'hr',

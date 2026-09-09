@@ -7,7 +7,7 @@ import Icon from './icons';
 
 // All departments share materials and world coordinates. Only the camera travels.
 const C = { shell: '#e9ecf0', metal: '#a8b0bb', ink: '#262b34', floor: '#dfe3e8', wall: '#eceef2', light: '#b5c9e8' };
-function Box({ at=[0,0,0], size=[1,1,1], color=C.shell, radius=.035, metal=.15, ...props }) {
+export function Box({ at=[0,0,0], size=[1,1,1], color=C.shell, radius=.035, metal=.15, ...props }) {
   return <RoundedBox position={at} args={size} radius={Math.min(radius,...size.map(v=>v*.45))} smoothness={3} castShadow receiveShadow {...props}><meshStandardMaterial color={color} roughness={.48} metalness={metal}/></RoundedBox>;
 }
 function Sphere({at,size,color=C.metal}) {
@@ -26,7 +26,7 @@ function Screen({at,size=[.95,.58],variant=0}) {
   useEffect(()=>()=>texture.dispose(),[texture]);
   return <mesh position={at}><planeGeometry args={size}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh>;
 }
-function Agent({at,index=0,reduced,walking=false,working=false,seated=false,arrivalProgress,celebrate=false,active=false,hovered=false,onHover,onLeave,onSelect}) {
+export function Agent({at,index=0,reduced,walking=false,working=false,seated=false,arrivalProgress,celebrate=false,active=false,hovered=false,onHover,onLeave,onSelect}) {
   const body=useRef(), arm=useRef(),feet=useRef([]),celebration=useRef(0);
   useEffect(()=>{celebration.current=0;},[celebrate]);
   useFrame(({clock},delta)=>{
@@ -137,15 +137,19 @@ function GeneratedApp({reduced,appSpec}) {
   </group>;
 }
 
-function Office({chapter=0,reduced=false,markers=false,taskStage=0,built=false,appSpec,cards=[],hovered=null,onHover=()=>{}}) {
+// `hrCorner` swaps the HR workstation for a detailed close-up room (see ScenarioScene); `surroundingsRef`
+// exposes everything else so that scene can fade the rest of the office away. Both are optional.
+export function Office({chapter=0,reduced=false,markers=false,taskStage=0,built=false,appSpec,cards=[],hovered=null,onHover=()=>{},hrCorner=null,surroundingsRef}) {
   return <group>
+    {hrCorner&&<group position={destinations[0]} scale={.43}>{hrCorner}</group>}
+    <group ref={surroundingsRef}>
     {markers&&chapter===1&&built&&<GeneratedApp reduced={reduced} appSpec={appSpec}/>}
     <Box at={[0,-.22,0]} size={[10,.42,8]} color={C.floor} radius={.12}/>
     <Box at={[0,1.13,-3.85]} size={[10,2.6,.12]} color={C.wall}/>
     <Box at={[-4.85,1.13,0]} size={[.12,2.6,8]} color={C.wall}/>
     {[-3,-.1,2.8].map(x=><group key={x}><Box at={[x,1.47,-3.76]} size={[2.4,1.7,.035]} color='#d9e0e8' radius={.012}/><Box at={[x,1.47,-3.71]} size={[.025,1.7,.026]} color={C.metal}/><Box at={[x,1.47,-3.71]} size={[2.4,.025,.026]} color={C.metal}/></group>)}
     {[-3,-1,1,3].map(z=><Box key={z} at={[0,.002,z]} size={[9.8,.005,.009]} color='#c4cad3' radius={.001}/>)}
-    {destinations.map((at,index)=><Workstation key={index} card={cards[index]} at={at} index={index} building={appSpec?.step===3&&!built} selected={chapter===0||chapter===3||chapter===2&&index===0||chapter===4&&index===3} chapter={chapter} taskStage={taskStage} hovered={hovered} onHover={onHover} reduced={reduced} markers={markers}/>)}
+    {destinations.map((at,index)=>hrCorner&&index===0?null:<Workstation key={index} card={cards[index]} at={at} index={index} building={appSpec?.step===3&&!built} selected={chapter===0||chapter===3||chapter===2&&index===0||chapter===4&&index===3} chapter={chapter} taskStage={taskStage} hovered={hovered} onHover={onHover} reduced={reduced} markers={markers}/>)}
     <mesh position={[0,.37,-.4]} castShadow receiveShadow><cylinderGeometry args={[.75,.75,.74,48]}/><meshStandardMaterial color={C.shell} roughness={.32} metalness={.65}/></mesh>
     <mesh position={[0,.75,-.4]} rotation={[-Math.PI/2,0,0]}><torusGeometry args={[.61,.015,8,48]}/><meshBasicMaterial color={C.light}/></mesh>
     <Box at={[0,1.1,-.4]} size={[.33,.52,.33]} color={C.ink} metal={.65}/>
@@ -155,9 +159,10 @@ function Office({chapter=0,reduced=false,markers=false,taskStage=0,built=false,a
     <Box at={[-4.25,.56,-.1]} size={[.55,1.12,1.5]} color={C.ink}/>
     {[0,1,2,3].map(i=><Box key={i} at={[-3.96,.3+i*.22,-.1]} size={[.01,.014,1.15]} color='#8398b6'/>)}
     {destinations.map((to,i)=><React.Fragment key={i}><Connection to={to}/><Packet from={[0,0,-.4]} to={to} index={i} reduced={reduced}/></React.Fragment>)}
+    </group>
   </group>;
 }
-function Lights() {
+export function Lights() {
   return <><ambientLight intensity={.65}/><hemisphereLight args={['#e9eff8','#a7aab3',1]}/><directionalLight position={[-3,9,6]} intensity={2.4} castShadow shadow-mapSize={[1024,1024]} shadow-camera-left={-12} shadow-camera-right={12} shadow-camera-top={12} shadow-camera-bottom={-12} shadow-normalBias={.03}/><directionalLight position={[8,4,-6]} color='#d5e3fa' intensity={1.4}/></>;
 }
 const openingPosition=[10,8,12], openingTarget=[0,.2,0];
