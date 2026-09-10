@@ -33,8 +33,9 @@ function World({kind,entry,progress,reduced}) {
   camera.position.set(...full.position.map((v,i)=>THREE.MathUtils.lerp(v,close[i],t)));
   camera.lookAt(...full.target.map((v,i)=>THREE.MathUtils.lerp(v,target[i],t)));
   const mobile=size.width<=650, aspect=size.width/size.height;
-  camera.zoom=mobile?aspect/1.22*Math.min(1,Math.max(.6,(size.height-350)/430)):.82*Math.min(1,aspect/1.6);
-  camera.setViewOffset(size.width,size.height,-size.width*(mobile?0:.23),-size.height*(mobile?.17:0),size.width,size.height);
+  // On phones the accordion column sits above the room, so the room is framed smaller and lower.
+  camera.zoom=mobile?aspect/1.22*Math.min(.9,Math.max(.55,(size.height-420)/430)):.82*Math.min(1,aspect/1.6);
+  camera.setViewOffset(size.width,size.height,-size.width*(mobile?0:.23),-size.height*(mobile?.27:0),size.width,size.height);
   camera.updateProjectionMatrix();
  });
  return <><color attach="background" args={['#e6e8ed']}/><Lights/><Office reduced={reduced} hrCorner={<HROffice kind={kind} reduced={reduced}/>} surroundingsRef={surroundings}/><mesh rotation={[-Math.PI/2,0,0]} position={[0,-.46,0]} receiveShadow><planeGeometry args={[200,200]}/><meshStandardMaterial color="#e6e8ed" roughness={.8}/></mesh></>;
