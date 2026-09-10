@@ -1,0 +1,69 @@
+/* HR use-case section — styles carried over from the office-power-hr-preview
+   build, extracted rule-for-rule so the section looks identical here. */
+.use-case-explorer{margin-top:76px;border-top:1px solid var(--line)}
+.case-list{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
+.case-tab{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;min-height:88px;padding:0 22px;border:0;border-right:1px solid var(--line);background:transparent;color:var(--muted);text-align:left;cursor:pointer}
+.case-tab:first-child{padding-left:0}
+.case-tab:last-child{border-right:0}
+.case-tab-number{color:var(--orange);font:800 10px Archivo,sans-serif}
+.case-tab strong,.case-tab small{display:block}
+.case-tab strong{color:var(--ink);font-size:14px}
+.case-tab small{margin-top:8px;font-size:11px}
+.case-tab-arrow{color:var(--orange);font-size:20px;opacity:0;transition:opacity .2s ease,transform .2s ease}
+.case-tab:hover .case-tab-arrow,.case-tab.is-active .case-tab-arrow{opacity:1;transform:translate(3px,-3px)}
+.case-panel{display:grid;grid-template-columns:.78fr 1.22fr;gap:9vw;padding:80px 0 20px}
+.case-panel-copy{padding-top:18px}
+.case-panel-copy h3{max-width:410px;margin:23px 0 18px;font-size:clamp(32px,4vw,62px);letter-spacing:-.08em;line-height:1.07}
+.case-panel-copy p{max-width:380px;color:var(--muted);font-size:15px;line-height:1.9}
+.case-metrics{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
+.case-metrics span{border:1px solid var(--line);padding:7px 10px;color:var(--muted);font:700 10px Archivo,sans-serif}
+.accent-orange .case-metrics span:first-child{border-color:var(--orange);color:var(--orange-dark)}
+@media (max-width: 900px){.why-grid,.case-panel,.packs-showcase,.cta-section{grid-template-columns:1fr;gap:54px}.case-panel{padding-top:55px}}
+@media (max-width: 620px){.case-list{display:block}.case-tab,.case-tab:first-child{width:100%;padding:16px 0;border-right:0}.case-panel{gap:35px;padding-top:42px}.case-panel-copy h3{font-size:37px}}
+@media (prefers-reduced-motion: reduce){.hero-robot,.button,.case-tab-arrow,.pack-chevron{transition:none}}
+.product-details .use-case-explorer.case-journey{margin:0;border:0;height:max(100svh,600px);position:relative}
+.case-stage{--journey:0;position:sticky;top:0;height:100svh;min-height:600px;isolation:isolate;overflow:hidden;color:#303945;background:#e6e8ed}
+.case-stage:before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;z-index:-1;background:radial-gradient(ellipse at 75% 45%,#f8f9fa99,transparent 62%);pointer-events:none}
+.case-grid{position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;background:linear-gradient(90deg,transparent calc(14% - 1px),#a5b0be1c 14%,transparent calc(14% + 1px),transparent calc(50% - 1px),#a5b0be1c 50%,transparent calc(50% + 1px),transparent calc(86% - 1px),#a5b0be1c 86%,transparent calc(86% + 1px))}
+.case-scene{position:absolute;top:0;right:0;bottom:0;left:0;z-index:0;pointer-events:none}
+.case-scene canvas{display:block}
+.case-scene-fallback{position:absolute;left:60%;top:40%;font:500 90px Archivo,sans-serif;color:#9baabd;display:flex;flex-direction:column;align-items:center}
+.case-scene-fallback span{font-size:12px}
+.case-readout{position:absolute;right:6vw;bottom:7%;display:flex;gap:16px;align-items:center;z-index:2;background:#e6e8edbb;padding:10px 14px;border-radius:8px;animation:case-copy-in .65s ease both;pointer-events:none}
+.case-readout>strong{font:400 clamp(35px,4vw,60px) Archivo,sans-serif;letter-spacing:-.06em}
+.case-readout strong small{font-size:17px;margin-left:6px}
+.case-readout>span{font-size:10px;color:#6f7d90;line-height:1.8}
+.case-readout>span small{display:block;font-size:8px;opacity:.7}
+.case-editorial{position:absolute;z-index:3;left:6vw;top:112px;bottom:46px;width:min(500px,36%);display:flex;flex-direction:column;justify-content:center;gap:48px;pointer-events:none}
+.case-masthead{pointer-events:auto}
+.case-masthead>span{display:block;margin-bottom:24px;font:500 10px Archivo,sans-serif;letter-spacing:.06em;color:#738298}
+.case-pack-label{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.case-pack-label button{display:inline-flex;align-items:flex-start;gap:4px;height:44px;padding:12px 20px;border:0;border-radius:50px;background:transparent;color:#738298;font:400 14px/20px Archivo,Noto Sans TC,sans-serif;cursor:pointer;transition:background .25s,color .25s}
+.case-pack-label button[aria-current]{background:#303945;color:#fff}
+.case-pack-label button:disabled{cursor:default}
+.case-pack-label button small{font-size:9px;line-height:1;margin-top:2px}
+.case-pack-label button:not([aria-current]):not(:disabled):hover{color:#303945}
+.case-accordion{list-style:none;margin:0;padding:0;width:100%;pointer-events:auto}
+.case-accordion li{border-bottom:1px solid #a7b2c455}
+.case-accordion button{width:100%;display:flex;align-items:center;gap:6px;padding:16px 0;border:0;background:transparent;text-align:left;color:#738298;opacity:.5;font:400 16px/1 Archivo,Noto Sans TC,sans-serif;cursor:pointer;transition:color .3s,opacity .3s}
+.case-accordion button:hover{opacity:.85}
+.case-accordion li.is-active button{color:#303945;opacity:1;padding-bottom:0}
+.case-accordion button:focus-visible{outline:2px solid #7085a0;outline-offset:4px}
+.case-accordion-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s cubic-bezier(.2,.7,.2,1)}
+.case-accordion li.is-active .case-accordion-body{grid-template-rows:1fr}
+.case-accordion-body>.case-copy-inner{overflow:hidden;min-height:0;opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s}
+.case-accordion li.is-active>.case-accordion-body>.case-copy-inner{opacity:1;transform:none;transition-delay:.15s}
+.case-copy-inner h2{margin:24px 0 0;font:600 clamp(30px,3.3vw,44px)/1 Archivo,"Noto Sans TC",sans-serif;letter-spacing:-.02em;color:#303945}
+.case-copy-inner h2 span{display:block;margin-top:12px;color:#738298}
+.case-description{max-width:418px;margin:24px 0 16px;font-size:16px;line-height:1.8;color:#738298;text-wrap:pretty}
+@media (min-width:651px) and (max-height:760px){.case-editorial{top:96px;bottom:24px;gap:30px}.case-masthead>span{margin-bottom:16px}.case-pack-label button{height:38px;padding:9px 16px;font-size:13px}.case-accordion button{padding:12px 0}.case-copy-inner h2{margin-top:16px;font-size:34px}.case-description{margin:16px 0 12px;font-size:14px}}
+@media (max-width:900px) and (min-width:651px){.case-editorial{left:5vw;width:40%;gap:32px}.case-pack-label button{height:36px;padding:8px 12px;font-size:12px}.case-accordion button{font-size:14px}.case-copy-inner h2{font-size:30px}.case-description{font-size:13px}}
+@media (max-width:650px){.case-editorial{left:7vw;right:7vw;top:88px;bottom:auto;width:auto;gap:20px}.case-masthead>span{margin-bottom:12px;font-size:8px}.case-pack-label{gap:2px}.case-pack-label button{height:32px;padding:6px 12px;font-size:11px;gap:3px}.case-pack-label button small{font-size:7px}.case-accordion li{border-color:#a7b2c440}.case-accordion button{padding:8px 0;font-size:12px}.case-copy-inner h2{margin-top:8px;font-size:24px}.case-copy-inner h2 span{margin-top:4px}.case-description{margin:8px 0 6px;font-size:11px;line-height:1.6;max-width:300px}.case-readout{left:auto;right:7vw;bottom:20px;padding:5px 8px}.case-readout>strong{font-size:28px}.case-scene-fallback{left:40%;top:50%;font-size:65px}}
+@media (max-width:600px) and (max-height:700px){.case-editorial{top:72px;gap:14px}.case-copy-inner h2{font-size:21px}.case-description{font-size:10px}.case-accordion button{padding:6px 0;font-size:11px}.case-readout{bottom:14px}}
+@media (prefers-reduced-motion:reduce){.case-readout{animation:none}.case-accordion button,.case-accordion-body,.case-accordion-body>.case-copy-inner,.case-pack-label button{transition:none}}
+@media (min-width:651px){.case-scene{-webkit-mask-image:linear-gradient(to right,transparent 0%,transparent 38%,#000 51%,#000 100%);mask-image:linear-gradient(to right,transparent 0%,transparent 38%,#000 51%,#000 100%)}}
+.product-details .use-case-explorer,.product-details .packs-showcase,.product-details .lifecycle-grid{margin:20px 0 65px}
+.product-details .case-panel-copy h3{font-size:32px;font-weight:700;letter-spacing:-.04em;line-height:1.25}
+.case-panel{gap:5vw;padding-top:40px}
+@media (max-width:700px){.product-details .case-panel-copy h3{font-size:28px}}
+@keyframes case-copy-in{0%{opacity:0;transform:translateY(20px);filter:blur(3px)}to{opacity:1;transform:none;filter:blur(0)}}
