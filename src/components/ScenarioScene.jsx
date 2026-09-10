@@ -12,18 +12,20 @@ const shots = [
  {p:[-1.15,2.1,3.6],t:[-2.55,.7,1.12]},
 ];
 const kinds=['overtime','dispatch','leave','contract','punch'];
-function World({kind,entry,progress,reduced}) {
+function World({kind,entry,progress,reduced,onReadyChange}) {
  const {camera,size,invalidate}=useThree();
- const surroundings=useRef(),materials=useRef([]);
+ const surroundings=useRef(),materials=useRef([]),shotProgress=useRef(progress.current);
+ useEffect(()=>{onReadyChange?.(true);return()=>onReadyChange?.(false);},[onReadyChange]);
  useEffect(()=>{const found=new Set();surroundings.current.traverse(node=>{if(node.material){for(const m of (Array.isArray(node.material)?node.material:[node.material]))found.add(m);}});materials.current=[...found].map(m=>({m,opacity:m.opacity}));},[]);
  useEffect(()=>{invalidate();},[kind,reduced,size.width,size.height,invalidate]);
- useFrame(()=>{
+ useFrame((_,delta)=>{
   // Match the hero's final full-office view, then dolly into its actual HR corner.
   const t=reduced?1:THREE.MathUtils.smoothstep(entry.current,.05,1);
   const fade=1-THREE.MathUtils.smoothstep(t,.05,.9);
   surroundings.current.visible=fade>.005;
   materials.current.forEach(({m,opacity})=>{m.transparent=true;m.opacity=opacity*fade;m.depthWrite=fade>.95;});
-  const raw=reduced?kinds.indexOf(kind):progress.current;
+  shotProgress.current=reduced?progress.current:THREE.MathUtils.damp(shotProgress.current,progress.current,6,delta);
+  const raw=reduced?kinds.indexOf(kind):shotProgress.current;
   const index=Math.min(3,Math.floor(raw));
   const blend=THREE.MathUtils.smoothstep(raw-index,.18,.82);
   const close=shots[index].p.map((v,i)=>THREE.MathUtils.lerp(v,shots[index+1].p[i],blend));

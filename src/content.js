@@ -19,8 +19,8 @@ export const useCasePacks = [
         title: '月底出勤異常派件',
         visual: 'dispatch',
         cadence: '每月自動',
-        before: '逐一追缺卡、催回覆，月結耗上好幾天。',
-        after: '異常自動派到員工 LINE，HR 只看誰還沒完成。',
+        before: '月結前花 2–3 天印異常清單、逐一敲人追回覆，做完沒功勞、做錯要負責。',
+        after: '缺卡異常附上明細，自動逐員派到 LINE；HR 只看還剩誰沒處理，月結從追人變成看儀表板。',
       },
       {
         title: '特休到期預警',

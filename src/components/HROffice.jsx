@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import {Box,Agent} from './OfficeScene';
 import {useOvertime} from './OvertimeStory';
 import OvertimePeople from './OvertimePeople';
+import DispatchPeople from './DispatchPeople';
+import {dispatchState} from './dispatch-story';
 const accents={overtime:'#cca575',dispatch:'#90abc5',leave:'#9db4a1',contract:'#a99bb8',punch:'#8bb7af'};
 function Plant({at,scale=1}){
  return <group position={at} scale={scale}><mesh position={[0,.22,0]} castShadow><cylinderGeometry args={[.25,.19,.44,24]}/><meshStandardMaterial color="#d4c6b5" roughness={.8}/></mesh>{[0,1,2,3,4].map(i=><group key={i} rotation={[0,i*1.25,0]}><Box at={[0,.65,0]} size={[.025,.85,.025]} color="#869283"/><mesh position={[.15,.65+i*.09,0]} rotation={[0,0,-.65]} scale={[.14,.33,.06]} castShadow><sphereGeometry args={[1,16,12]}/><meshStandardMaterial color={i%2?'#99aa95':'#7f947d'} roughness={.8}/></mesh></group>)}</group>;
@@ -21,6 +23,22 @@ function Monitor({kind}){
   const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;return map;
  },[kind]);useEffect(()=>()=>texture.dispose(),[texture]);
  useEffect(()=>{
+  if(kind==='dispatch'){
+   const ctx=texture.image.getContext('2d'),state=dispatchState(time);
+   ctx.fillStyle='#263342';ctx.fillRect(0,0,640,400);
+   ctx.fillStyle='#afc3d8';ctx.font='22px sans-serif';ctx.fillText(time<4?'月結 · 人工催收':'月結 · 異常儀表板',30,43);
+   ctx.fillStyle='#f5c16b';ctx.font='bold 64px sans-serif';ctx.fillText(time<4?'2–3':String(state.pending),35,120);
+   ctx.fillStyle='#d2dce7';ctx.font='22px sans-serif';ctx.fillText(time<4?'天':'人待處理',160,112);
+   ctx.fillStyle='#425568';ctx.fillRect(32,143,572,9);ctx.fillStyle='#7dc898';ctx.fillRect(32,143,572*state.completed/3,9);
+   ['柏宇','佳穎','陳經理'].forEach((name,i)=>{
+    const row=state.rows[i],y=183+i*69;
+    ctx.fillStyle=row.done?'#304b45':'#354658';ctx.fillRect(30,y,580,56);
+    ctx.fillStyle=['#769fc8','#d69b87','#9c8abd'][i];ctx.beginPath();ctx.arc(56,y+18,8,0,Math.PI*2);ctx.fill();ctx.fillRect(44,y+29,24,13);
+    ctx.fillStyle='#edf2f7';ctx.font='22px sans-serif';ctx.fillText(name,85,y+33);
+    ctx.fillStyle='#bac7d5';ctx.font='19px sans-serif';ctx.fillText(row.date+' '+row.issue,190,y+33);
+    ctx.fillStyle=row.done?'#94ddad':'#f5c16b';ctx.font='bold 21px sans-serif';ctx.fillText(row.done?'✓ 已處理':time<4?'待催收':row.sent?'待處理':'待派件',490,y+33);
+   });texture.needsUpdate=true;return;
+  }
   if(kind!=='overtime')return;
   const canvas=texture.image,ctx=canvas.getContext('2d');
   ctx.fillStyle='#263342';ctx.fillRect(0,0,640,400);
@@ -51,19 +69,18 @@ function Monitor({kind}){
 export default function HROffice({kind='overtime',reduced=false}){
  const {time:storyTime}=useOvertime();
  const robot=useRef();
- const stamp=useRef(),parcel=useRef(),scan=useRef(),notice=useRef(),calendar=useRef();
- useFrame(({clock})=>{
-  const t=reduced?0:clock.elapsedTime;
+ const stamp=useRef(),scan=useRef(),notice=useRef(),calendar=useRef();
+ useFrame(()=>{
+  const t=reduced?0:storyTime;
   stamp.current.position.y=kind==='contract'?1.33+Math.max(0,Math.sin(t*2.6))*.48:1.36;
-  parcel.current.visible=kind==='dispatch';parcel.current.position.set(-.4+(t*.5%1)*1.5,1.6+Math.sin((t*.5%1)*Math.PI)*.45,-.55);
-  parcel.current.rotation.z=Math.sin(t*2)*.15;
-  notice.current.visible=kind==='punch'||kind==='dispatch';notice.current.position.y=2.28+Math.sin(t*2)*.07;
+  notice.current.visible=kind==='punch';notice.current.position.y=2.28+Math.sin(t*2)*.07;
   calendar.current.visible=kind==='leave';calendar.current.scale.setScalar(1+Math.sin(t*2)*.07);
-  scan.current.visible=kind==='overtime';scan.current.position.y=2.43-Math.min(1,Math.max(0,(storyTime-2)/3))*.91;
+  scan.current.visible=kind==='overtime'||(kind==='dispatch'&&storyTime>=4&&storyTime<7);scan.current.position.y=2.43-Math.min(1,Math.max(0,(storyTime-2)/3))*.91;
   robot.current.rotation.x=kind==='overtime'&&storyTime>=15&&storyTime<17&&!reduced?Math.sin((storyTime-15)*Math.PI*2)*.09:0;
  });
  return <group>
   {kind==='overtime'&&<OvertimePeople reduced={reduced}/>}
+  {kind==='dispatch'&&<DispatchPeople reduced={reduced}/>}
   <Box at={[0,-.14,0]} size={[6,.24,5.2]} color="#d5d9dd" radius={.06}/>
   {Array.from({length:12},(_,i)=><Box key={i} at={[-2.75+i*.5,-.011,0]} size={[.475,.015,5]} color={i%2?'#d9dcdf':'#e1e2e3'} radius={.005}/>)}
   <Box at={[0,1.9,-2.55]} size={[6,3.85,.12]} color="#e9e8e4"/>
@@ -79,7 +96,6 @@ export default function HROffice({kind='overtime',reduced=false}){
   <group position={[.95,1.67,-1.18]} rotation={[0,-.2,-.1]}><Box size={[.4,.67,.055]} color="#566474" radius={.04}/><Box at={[0,0,.035]} size={[.34,.57,.015]} color={kind==='punch'?'#b9d7ca':'#c7d2dc'}/>{[0,1,2].map(i=><Box key={i} at={[0,.15-i*.14,.05]} size={[.25,.045,.012]} color="#769484"/>)}</group>
   <group ref={notice} position={[1.03,2.28,-1.15]}><Box size={[.82,.37,.075]} color="#bbd6cb" radius={.08}/>{[-.22,0,.22].map(x=><Box key={x} at={[x,0,.047]} size={[.06,.06,.02]} color="#5c8b78"/>)}</group>
   <group ref={calendar} position={[.05,2.9,-2.37]}><Box size={[1.28,1.02,.025]} color="#a0b899"/><Box at={[0,0,.023]} size={[1.16,.9,.025]} color="#e8eee4"/>{Array.from({length:12},(_,i)=><Box key={i} at={[-.36+i%4*.24,.2-Math.floor(i/4)*.2,.045]} size={[.15,.12,.02]} color={i>5?"#829b7e":"#c1cbbd"}/>)}</group>
-  <mesh ref={parcel}><boxGeometry args={[.36,.24,.045]}/><meshStandardMaterial color="#8baecb"/></mesh>
   <group position={[1.75,0,-1.7]}><Box at={[0,.58,0]} size={[1.3,1.15,.8]} color="#b5b9b9"/>{[.28,.62,.95].map(y=><group key={y}><Box at={[0,y,.41]} size={[1.17,.28,.035]} color="#d7d8d5"/><Box at={[0,y,.44]} size={[.28,.025,.025]} color="#87929f"/></group>)}{[1.7,2.45,3.2].map((y,j)=><group key={y}><Box at={[0,y,0]} size={[1.45,.07,.65]} color="#b9ad99"/>{[0,1,2].map(i=><Box key={i} at={[-.45+i*.19,y+.22,-.12]} size={[.13,.4,.35]} color={['#9baabb','#bab0a7','#9faf9f'][(i+j)%3]} rotation={[0,0,i===2?-.12:0]}/>)}</group>)}{[-.67,.67].map(x=><Box key={x} at={[x,2.15,-.22]} size={[.045,2.45,.045]} color="#89939e"/>)}</group>
   <group position={[.05,2.95,-2.45]}><Box size={[1.1,.85,.08]} color="#b8bfc5"/><Box at={[0,-.1,.05]} size={[.95,.55,.025]} color="#eeede8"/>{Array.from({length:12},(_,i)=><Box key={i} at={[-.32+i%4*.21,.08-Math.floor(i/4)*.17,.07]} size={[.12,.09,.016]} color={kind==='overtime'&&i%4===0?'#d0ae78':kind==='leave'&&i>5?'#8da58e':'#c3cbd0'}/>)}<Box at={[0,.28,.06]} size={[.95,.14,.025]} color={kind==='leave'?'#a1b6a2':'#a6b0bc'}/></group>
   <group position={[-1.75,2.9,-2.44]}><mesh rotation={[Math.PI/2,0,0]}><cylinderGeometry args={[.37,.37,.065,40]}/><meshStandardMaterial color="#f5f3ee"/></mesh><Box at={[0,.1,.05]} size={[.025,.21,.02]} color="#6f7c8d"/><Box at={[-.08,0,.05]} size={[.17,.025,.02]} color="#6f7c8d"/></group>

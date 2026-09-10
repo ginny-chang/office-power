@@ -1,6 +1,6 @@
 /* One pinned world: editorial copy and navigation float above a shared 3D canvas. */
 .site-shell .product-details{padding:0;background:#e6e8ed}
-.product-details .use-case-explorer.case-journey{margin:0;border:0;height:540svh;position:relative}
+.product-details .use-case-explorer.case-journey{margin:0;border:0;height:max(100svh,600px);position:relative}
 .case-stage{--journey:0;position:sticky;top:0;height:100svh;min-height:600px;isolation:isolate;overflow:hidden;color:#303945;background:#e6e8ed}
 .case-stage::before{content:'';position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 75% 45%,#f8f9fa99,transparent 62%);pointer-events:none}
 .case-grid{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent calc(14% - 1px),#a5b0be1c 14%,transparent calc(14% + 1px),transparent calc(50% - 1px),#a5b0be1c 50%,transparent calc(50% + 1px),transparent calc(86% - 1px),#a5b0be1c 86%,transparent calc(86% + 1px))}
