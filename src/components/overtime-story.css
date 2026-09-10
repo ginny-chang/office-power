@@ -1,0 +1,6 @@
+.ot-person-label{display:flex;align-items:center;gap:6px;white-space:nowrap;padding:4px 8px;border-radius:12px;background:#f4f6f8e8;box-shadow:0 3px 10px #394b6010;color:#536276;font-size:10px;pointer-events:none}.ot-person-label strong{font-weight:500}.ot-person-label span{font:500 9px Manrope,sans-serif;color:#8391a3}@media(max-width:650px){.ot-person-label{font-size:8px;padding:3px 6px;gap:4px}.ot-person-label span{font-size:8px}}
+
+.ot-alert-badge{display:grid;place-items:center;width:28px;height:28px;border:2px solid #fff6df;border-radius:50%;background:#ef9b22;color:#fff;font:800 21px/1 Manrope,sans-serif;box-shadow:0 3px 8px #80512033,0 0 0 4px #f6b83a28;pointer-events:none}
+.ot-alert-badge.is-done{background:#659c7b;border-color:#edf6ee;box-shadow:0 3px 8px #385d4433;font-size:18px}
+.ot-person-label .ot-hours{color:#a8610c;font-weight:800}.ot-person-label em{font:700 9px Manrope,sans-serif;color:#a45208;background:#ffe3ad;padding:3px 5px;border-radius:6px}
+@media(max-width:650px){.ot-alert-badge{width:23px;height:23px;font-size:17px}.ot-person-label em{font-size:8px;padding:2px 3px}}
