@@ -44,7 +44,7 @@
  .capability-card strong{font-size:14px;align-self:center}
  .capability-card em{font-size:13px;line-height:1.62}
  .capability-card.is-focus{transform:none}
- .chapter-4 .office-scene{inset:140px -12% 170px}
+ .chapter-5 .office-scene{inset:140px -12% 170px}
 }
 @keyframes panel-arrive-mobile{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.capability-card,.boot-icon,.phase-flight .boot-center{animation:none;transition:none}}

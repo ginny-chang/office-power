@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import './office-tour.css';
 
 import AppBuilder, { freshSpec } from './AppBuilder';
+import BudgetDashboard from './BudgetDashboard';
 import AppPreview from './AppPreview';
 import { OPENING } from './opening-motion';
 import Icon from './icons';
@@ -15,6 +16,7 @@ export const chapters = [
   { label: 'BUILD YOUR WORKFORCE', title: '建立、部署、治理——\n都在同一個畫面。', description: '說出你需要的系統，AI 團隊協作建立。從介面、流程到權限，一次準備好。', name: '建立App', id: 'builder' },
   { label: 'WORDS BECOME WORK', title: '簡單幾句話，\nAI 員工幫你完成。', description: '說出需求，Agent 接下任務。讀取資料、整理表單、送出審核，在同一段對話裡完成。', name: '一句話完成任務', id: 'people' },
   { label: 'MEET YOUR TEAM', title: '啟用整個部門的 AI。', description: '人資、財務、業務，各有專長，共享同一個協作平台。讓每個部門，都有一位真正能工作的 AI 員工。', name: '多部門 Agent', id: 'departments' },
+  { label: 'FINOPS CONTROL', title: '每一筆 AI 費用，\n都在掌握之中。', description: '即時掌握用量，設定預算上限。達到限額，全員暫停，讓成本不再失控。', name: '資金控管', id: 'finops' },
   { label: 'READY TO WORK', title: '從想法到上線，\n只要 15 分鐘。', description: '建立、發布、部署、治理、優化。把複雜留給平台，讓你的 AI 員工準備好開始工作。', name: '立即預約', id: 'deployment' },
 ];
 
@@ -68,6 +70,11 @@ export default function OfficeTour() {
   const selectedAgent = hovered ?? autoAgent;
   const arcFocus = hovered ?? deckTick % features.length;
   const [chapter, setChapter] = useState(0);
+  // 05: spend climbs from 1,100 toward the 1,900 ceiling; the alarm is what
+  // happens when it lands, not something that sits there waiting.
+  const BUDGET_START = 1100, BUDGET_LIMIT = 1900;
+  const [budgetCost, setBudgetCost] = useState(BUDGET_START);
+  const budgetAlarm = chapter === 4 && budgetCost >= BUDGET_LIMIT;
   const [phase, setPhase] = useState('boot');
   const [loaded, setLoaded] = useState(false);
   const [taskStage, setTaskStage] = useState(0);
@@ -154,6 +161,18 @@ export default function OfficeTour() {
     const top = window.scrollY + root.current.getBoundingClientRect().top;
     window.scrollTo({ top: top + (root.current.offsetHeight - window.innerHeight) * (index / chapters.length + .025), behavior: reduced ? 'instant' : 'smooth' });
   };
+  // Re-arm whenever the chapter is entered, then creep up over roughly 14s.
+  useEffect(() => {
+    if (phase !== 'tour' || chapter !== 4) return;
+    setBudgetCost(BUDGET_START);
+  }, [phase, chapter]);
+  useEffect(() => {
+    if (phase !== 'tour' || chapter !== 4 || !visible || reduced) return;
+    if (budgetCost >= BUDGET_LIMIT) return;
+    const timer = setInterval(() => setBudgetCost((c) => Math.min(BUDGET_LIMIT, c + 7)), 120);
+    return () => clearInterval(timer);
+  }, [phase, chapter, visible, reduced, budgetCost]);
+
   const jumpToCases = () => document.getElementById('usecases')?.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'start' });
   useEffect(() => { setHovered(null); setAutoAgent(0); setDeckTick(0); }, [chapter, phase]);
   useEffect(() => {
@@ -220,7 +239,7 @@ export default function OfficeTour() {
   const begin = () => setPhase(reduced ? 'tour' : 'flight');
   return <section className="office-tour" id="top" data-ready={loaded} ref={root} aria-label="連續 3D 辦公室導覽">
     <div className={`office-sticky chapter-${chapter} phase-${phase}`} style={{'--panel-duration': `${OPENING.panelMs}ms`, '--panel-stagger': `${OPENING.staggerMs}ms`}}>
-      <div className="office-scene"><SceneBoundary onFailure={failed}><Suspense fallback={<div className="office-loading">正在載入工作空間…</div>}><OfficeScene openingStarted={openingStarted} buildStage={buildStage} panelGaze={panelGaze} progress={progress} reduced={reduced} chapter={chapter} taskStage={taskStage} celebrating={celebrating} built={built} appSpec={appSpec} hovered={chapter === 0 ? null : selectedAgent} onHover={setHovered} phase={phase} visible={visible} onReady={ready} onDone={done} /></Suspense></SceneBoundary></div>
+      <div className="office-scene"><SceneBoundary onFailure={failed}><Suspense fallback={<div className="office-loading">正在載入工作空間…</div>}><OfficeScene openingStarted={openingStarted} buildStage={buildStage} panelGaze={panelGaze} progress={progress} reduced={reduced} chapter={chapter} taskStage={taskStage} celebrating={celebrating} budgetAlarm={budgetAlarm} built={built} appSpec={appSpec} hovered={chapter === 0 ? null : selectedAgent} onHover={setHovered} phase={phase} visible={visible} onReady={ready} onDone={done} /></Suspense></SceneBoundary></div>
       {(phase === 'boot' || phase === 'flight') && <div className="office-boot">
         <div className="boot-center"><img className="boot-icon" src={`${import.meta.env.BASE_URL}officepower-app-icon.svg`} alt="" /><h1>Office Power</h1><p>不只是 AI Chat，一座長出 AI 員工的工廠</p>
           {phase === 'boot' && <span className="boot-scroll-cue" aria-hidden="true">向下捲動<i /></span>}
@@ -248,6 +267,7 @@ export default function OfficeTour() {
         </div>
         {false && chapter === 0 && <div className="platform-capabilities">{['Agent 建立與調度','知識庫與權限','多通道上線','自我升級'].map((name,i) => <button key={name} onMouseEnter={()=>setHovered(i)} onMouseLeave={()=>setHovered(null)} onFocus={()=>setHovered(i)} onBlur={()=>setHovered(null)} onClick={()=>setHovered(i)} aria-pressed={selectedAgent===i}><span>0{i+1}</span>{name}<b>↗</b></button>)}</div>}
         {chapter === 1 && <AppBuilder spec={appSpec} onChange={setAppSpec} built={built} reduced={reduced} />}
+        {chapter === 4 && <BudgetDashboard cost={budgetCost} limit={BUDGET_LIMIT} alarm={budgetAlarm} onReset={() => setBudgetCost(BUDGET_START)} />}
         {chapter === 2 && <div className="task-demo" aria-label="請假任務互動示範">
           <header><span className="bot-avatar" aria-hidden="true"><i/><i/><b><em/><em/></b></span><div><strong>HR Agent</strong><small>{taskStage === 0 ? '等待任務' : taskStage === 1 ? '正在處理你的任務' : taskStage === 2 ? '已整理完成，等待確認' : '任務完成'}</small></div><span className="demo-label">互動示範</span></header>
           {/* Read as a messaging thread: the employee on the right, the Agent on the left. */}
@@ -271,7 +291,7 @@ export default function OfficeTour() {
         </div>}
         </div>
         {chapter === 1 && built && <AppPreview key={`${appSpec.kind}-${appSpec.run}`} kind={appSpec.kind}/>}
-        {chapter === 4 && <div className="office-dim" aria-hidden="true" />}
+        {chapter === 5 && <div className="office-dim" aria-hidden="true" />}
         {chapter === 0 && <div className={`capability-arc${hovered !== null ? ' is-hovering' : ''}`} style={{ '--n': features.length }}>
           {features.map((f, i) => <button key={f.code} type="button" className={`capability-card${arcFocus === i ? ' is-focus' : ''}`}
             style={{...arcStyle(i), '--panel-index': i, '--entry-x': `${ARC[i].dx > 0 ? 90 : -90}vw`, '--entry-y': `${ARC[i].dy * 3}vh`}} aria-pressed={arcFocus === i}

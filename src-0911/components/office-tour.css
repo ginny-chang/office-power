@@ -1,4 +1,4 @@
-.office-tour{height:650svh;position:relative;background:#e6e8ed;--tour-progress:0}
+.office-tour{height:780svh;position:relative;background:#e6e8ed;--tour-progress:0}
 .office-sticky{position:sticky;top:0;height:100svh;min-height:620px;overflow:hidden;color:#252932;background:#e6e8ed}
 .office-scene{position:absolute;inset:0}.office-scene canvas{display:block;width:100%;height:100%}
 .office-copy{position:absolute;left:5vw;top:24%;width:26%;max-width:350px;z-index:9;animation:office-reveal .65s ease both;pointer-events:none}
@@ -40,7 +40,7 @@
 @keyframes boot-loading{0%{transform:translateX(-110%)}100%{transform:translateX(180%)}}
 html[data-office-phase="boot"] .site-header,html[data-office-phase="wide"] .site-header,html[data-office-phase="flight"] .site-header{opacity:0;pointer-events:none;visibility:hidden}
 @media(max-width:760px){
-.office-tour{height:710svh}.office-sticky{min-height:650px}.office-copy{top:110px;left:7vw;width:86%;max-width:none}
+.office-tour{height:852svh}.office-sticky{min-height:650px}.office-copy{top:110px;left:7vw;width:86%;max-width:none}
 .office-copy h1{font-size:29px;margin:17px 0}.office-copy>p{max-width:310px;font-size:13px}.office-scene{inset:280px -15% 150px}
 html:not([data-office-phase="tour"]) .office-scene{inset:0}
 .office-dialog{position:absolute;top:calc(100svh - 320px);left:0;max-width:none;width:86vw;background:#edf0f5eb;border:1px solid #c5cfdd;border-radius:5px;padding:12px}
@@ -80,7 +80,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
 @keyframes orbit-breathe{to{opacity:.35;transform:translateX(30px) rotate(-16deg)}}
 @media(max-width:760px){
  .office-scene::after{display:none}
- .office-tour{height:650svh}.office-sticky{min-height:700px}
+ .office-tour{height:780svh}.office-sticky{min-height:700px}
  .office-copy{top:92px;left:6vw;width:88%;max-width:none}.office-copy h1{font-size:28px;margin:12px 0}.office-copy>p{font-size:13px;max-width:340px}
  .office-scene{inset:240px -12% 85px}
  .platform-capabilities{left:6vw;right:6vw;top:auto;bottom:86px;width:auto;max-width:none;display:grid;grid-template-columns:1fr 1fr;gap:0 18px;background:#e6e8eddb;padding:8px 12px}.platform-capabilities>div{font-size:13px;gap:8px;padding:10px 0}
@@ -115,10 +115,10 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
 .bot-avatar>i{position:absolute;top:-5px;left:5px;width:5px;height:7px;border:1px solid #bbc2cd;background:#f5f6f8;transform:rotate(-22deg);border-radius:2px}.bot-avatar>i+i{left:auto;right:5px;transform:rotate(22deg)}
 .bot-avatar b{position:absolute;inset:5px 3px 5px;border-radius:7px;background:#20232a;display:flex;align-items:center;justify-content:center;gap:4px}
 .bot-avatar em{width:4px;height:9px;background:#f6f7fa;border-radius:4px}
-.chapter-4 .office-narrative{left:10%;right:10%;width:80%;top:12%;text-align:center;max-height:none;overflow:visible}
-.chapter-4 .office-copy h1 br{display:none}.chapter-4 .office-copy>p{max-width:620px;margin:0 auto}.chapter-4 .office-enter{margin-top:14px;padding:9px 18px}
-.chapter-4 .office-scene::after{display:none}
-.chapter-4 .office-caption{display:none}
+.chapter-5 .office-narrative{left:10%;right:10%;width:80%;top:12%;text-align:center;max-height:none;overflow:visible}
+.chapter-5 .office-copy h1 br{display:none}.chapter-5 .office-copy>p{max-width:620px;margin:0 auto}.chapter-5 .office-enter{margin-top:14px;padding:9px 18px}
+.chapter-5 .office-scene::after{display:none}
+.chapter-5 .office-caption{display:none}
 .deployment-panel{bottom:95px;left:10%;right:10%;padding:0;background:transparent;border:0;display:flex;flex-direction:column-reverse;gap:28px}
 .deployment-panel ol{margin:0;padding:14px 0;border-top:1px solid #bac4d1;border-bottom:0}
 .deployment-panel li{justify-content:center}
@@ -141,9 +141,9 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
  .office-narrative .platform-capabilities{margin-top:245px;display:block;background:#e6e8edee;padding:0 10px;box-sizing:border-box}
  .department-controls{margin-top:250px;background:#e6e8edee;padding:0 10px}
  .office-sticky:has(.task-demo) .office-scene{inset:245px -25% 250px}
- .chapter-4 .office-narrative{top:100px;left:6%;width:88%;right:6%}
- .chapter-4 .office-copy h1{font-size:26px}.chapter-4 .office-copy h1 br{display:block}
- .chapter-4 .office-scene{inset:245px -10% 240px}
+ .chapter-5 .office-narrative{top:100px;left:6%;width:88%;right:6%}
+ .chapter-5 .office-copy h1{font-size:26px}.chapter-5 .office-copy h1 br{display:block}
+ .chapter-5 .office-scene{inset:245px -10% 240px}
  .deployment-panel{left:6%;right:6%;bottom:90px;gap:24px}
  .deployment-metrics{gap:20px}.deployment-metrics strong{font-size:49px}
  .deployment-metrics strong>span:not(.slot-number){font-size:13px;margin-left:4px}.deployment-metrics p{font-size:13px}
@@ -167,22 +167,22 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
 .scene-pin.has-detail .pin-detail{max-height:4em;margin-top:7px;opacity:1}
 .deployment-panel{gap:0}
 .scene-depth{display:none}
-.phase-tour.chapter-4 .scene-depth{display:block;position:absolute;inset:0;z-index:2;pointer-events:none}
-.phase-tour.chapter-4 .scene-depth i{position:absolute;inset:0}
-.phase-tour.chapter-4 .scene-depth i:nth-child(1){backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);clip-path:inset(0 0 74% 0)}
-.phase-tour.chapter-4 .scene-depth i:nth-child(2){backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);clip-path:inset(26% 0 62% 0)}
-.phase-tour.chapter-4 .scene-depth i:nth-child(3){backdrop-filter:blur(3.5px);-webkit-backdrop-filter:blur(3.5px);clip-path:inset(38% 0 52% 0)}
-.phase-tour.chapter-4 .scene-depth i:nth-child(4){backdrop-filter:blur(1.6px);-webkit-backdrop-filter:blur(1.6px);clip-path:inset(48% 0 44% 0)}
+.phase-tour.chapter-5 .scene-depth{display:block;position:absolute;inset:0;z-index:2;pointer-events:none}
+.phase-tour.chapter-5 .scene-depth i{position:absolute;inset:0}
+.phase-tour.chapter-5 .scene-depth i:nth-child(1){backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);clip-path:inset(0 0 74% 0)}
+.phase-tour.chapter-5 .scene-depth i:nth-child(2){backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);clip-path:inset(26% 0 62% 0)}
+.phase-tour.chapter-5 .scene-depth i:nth-child(3){backdrop-filter:blur(3.5px);-webkit-backdrop-filter:blur(3.5px);clip-path:inset(38% 0 52% 0)}
+.phase-tour.chapter-5 .scene-depth i:nth-child(4){backdrop-filter:blur(1.6px);-webkit-backdrop-filter:blur(1.6px);clip-path:inset(48% 0 44% 0)}
 @media(max-width:760px){
  .boot-center{justify-content:flex-start;padding:14vh 6vw 0}
  .boot-center h1{--mark:36px;font-size:34px;gap:11px}
  .boot-center>p{font-size:16px;margin-top:14px}
  .boot-center>button{margin-top:30px}
  .scene-pin{font-size:13px;padding:8px 11px}.scene-pin .pin-detail{font-size:13px}
- .phase-tour.chapter-4 .scene-depth i:nth-child(1){backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
- .phase-tour.chapter-4 .scene-depth i:nth-child(2){backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
- .phase-tour.chapter-4 .scene-depth i:nth-child(3){backdrop-filter:blur(2.4px);-webkit-backdrop-filter:blur(2.4px)}
- .phase-tour.chapter-4 .scene-depth i:nth-child(4){backdrop-filter:blur(1.2px);-webkit-backdrop-filter:blur(1.2px)}
+ .phase-tour.chapter-5 .scene-depth i:nth-child(1){backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+ .phase-tour.chapter-5 .scene-depth i:nth-child(2){backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+ .phase-tour.chapter-5 .scene-depth i:nth-child(3){backdrop-filter:blur(2.4px);-webkit-backdrop-filter:blur(2.4px)}
+ .phase-tour.chapter-5 .scene-depth i:nth-child(4){backdrop-filter:blur(1.2px);-webkit-backdrop-filter:blur(1.2px)}
 }
 @media(prefers-reduced-motion:reduce){.type-caret{animation:none;opacity:0}.scene-pin .pin-detail{transition:none}}
 .brand-robot-icon{width:42px;height:44px;object-fit:contain;flex-shrink:0}
@@ -518,8 +518,8 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
    atlas.css disables backdrop-filter globally, so this one veil has to win explicitly. */
 .office-dim{position:absolute;inset:0;z-index:5;pointer-events:none;background:transparent;
  backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important}
-.chapter-4 .deployment-panel{bottom:56px}
-@media(max-width:760px){.chapter-4 .deployment-panel{bottom:76px}}
+.chapter-5 .deployment-panel{bottom:56px}
+@media(max-width:760px){.chapter-5 .deployment-panel{bottom:76px}}
 
 /* Phones: the header chapter list is hidden below 760px, so the tour footer carries
    a dot nav instead — 44px targets, current chapter shown as a widened bar. */
@@ -579,11 +579,11 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
 
  /* 05: a lighter veil, and the three numbers stacked down the screen. */
  .office-dim{backdrop-filter:blur(2.5px)!important;-webkit-backdrop-filter:blur(2.5px)!important}
- .chapter-4 .deployment-panel{bottom:74px}
- .chapter-4 .deployment-metrics{flex-direction:column;gap:14px;align-items:center;justify-content:center}
- .chapter-4 .deployment-metrics strong{font-size:36px}
- .chapter-4 .deployment-metrics strong>span:not(.slot-number){font-size:13px;margin-left:5px}
- .chapter-4 .deployment-metrics p{font-size:13px;margin-top:3px}
+ .chapter-5 .deployment-panel{bottom:74px}
+ .chapter-5 .deployment-metrics{flex-direction:column;gap:14px;align-items:center;justify-content:center}
+ .chapter-5 .deployment-metrics strong{font-size:36px}
+ .chapter-5 .deployment-metrics strong>span:not(.slot-number){font-size:13px;margin-left:5px}
+ .chapter-5 .deployment-metrics p{font-size:13px;margin-top:3px}
 }
 
 /* 02: the AI team's own checklist — each question ticks as it is settled. */
@@ -623,30 +623,30 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
 /* 05: copy, call to action and the three numbers stack down the left; the
    office sits to the right (the camera view-offset does the pushing). */
 @media(min-width:761px){
- .chapter-4 .office-narrative{left:6vw;right:auto;width:min(40vw,470px);top:50%;transform:translateY(-50%);
+ .chapter-5 .office-narrative{left:6vw;right:auto;width:min(40vw,470px);top:50%;transform:translateY(-50%);
   max-height:none;overflow:visible;text-align:left}
- .chapter-4 .office-copy h1 br{display:block}
- .chapter-4 .office-copy>p{max-width:none;margin:0}
- .chapter-4 .office-enter{margin-top:22px}
- .chapter-4 .deployment-panel{position:static;left:auto;right:auto;bottom:auto;width:100%;
+ .chapter-5 .office-copy h1 br{display:block}
+ .chapter-5 .office-copy>p{max-width:none;margin:0}
+ .chapter-5 .office-enter{margin-top:22px}
+ .chapter-5 .deployment-panel{position:static;left:auto;right:auto;bottom:auto;width:100%;
   margin-top:34px;padding:22px 0 0;border-top:1px solid #c2ccda;background:transparent;display:block}
- .chapter-4 .deployment-metrics{display:flex;flex-direction:row;justify-content:flex-start;gap:clamp(24px,3.4vw,52px)}
- .chapter-4 .deployment-metrics>div{text-align:left}
- .chapter-4 .deployment-metrics strong{justify-content:flex-start;font-size:clamp(34px,3.4vw,50px)}
- .chapter-4 .deployment-metrics strong>span:not(.slot-number){font-size:13px;margin-left:5px}
- .chapter-4 .deployment-metrics p{font-size:13px;margin-top:6px}
+ .chapter-5 .deployment-metrics{display:flex;flex-direction:row;justify-content:flex-start;gap:clamp(24px,3.4vw,52px)}
+ .chapter-5 .deployment-metrics>div{text-align:left}
+ .chapter-5 .deployment-metrics strong{justify-content:flex-start;font-size:clamp(34px,3.4vw,50px)}
+ .chapter-5 .deployment-metrics strong>span:not(.slot-number){font-size:13px;margin-left:5px}
+ .chapter-5 .deployment-metrics p{font-size:13px;margin-top:6px}
 }
 /* Phones keep the stacked, centred treatment. */
 @media(max-width:760px){
- .chapter-4 .deployment-panel{position:static;margin-top:26px;padding:0;background:transparent}
- .chapter-4 .deployment-metrics{flex-direction:row;gap:16px;justify-content:space-between;align-items:flex-start}
- .chapter-4 .deployment-metrics strong{font-size:30px}
+ .chapter-5 .deployment-panel{position:static;margin-top:26px;padding:0;background:transparent}
+ .chapter-5 .deployment-metrics{flex-direction:row;gap:16px;justify-content:space-between;align-items:flex-start}
+ .chapter-5 .deployment-metrics strong{font-size:30px}
 }
 
 /* 05 puts the office on the right, so the veil is masked off it — the blur now
    only softens the backdrop behind the left-hand column. */
 @media(min-width:761px){
- .chapter-4 .office-dim{
+ .chapter-5 .office-dim{
   -webkit-mask-image:linear-gradient(to right,#000 0%,#000 38%,transparent 56%);
   mask-image:linear-gradient(to right,#000 0%,#000 38%,transparent 56%)}
 }
