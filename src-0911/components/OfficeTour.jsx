@@ -198,7 +198,7 @@ export default function OfficeTour() {
     <div className={`office-sticky chapter-${chapter} phase-${phase}`} style={{'--panel-duration': `${OPENING.panelMs}ms`, '--panel-stagger': `${OPENING.staggerMs}ms`}}>
       <div className="office-scene"><SceneBoundary onFailure={failed}><Suspense fallback={<div className="office-loading">正在載入工作空間…</div>}><OfficeScene openingStarted={openingStarted} buildStage={buildStage} panelGaze={panelGaze} progress={progress} reduced={reduced} chapter={chapter} taskStage={taskStage} celebrating={celebrating} built={built} appSpec={appSpec} hovered={chapter === 0 ? null : selectedAgent} onHover={setHovered} phase={phase} visible={visible} onReady={ready} onDone={done} /></Suspense></SceneBoundary></div>
       {(phase === 'boot' || phase === 'flight') && <div className="office-boot">
-        <div className="boot-center"><img className="boot-icon" src="/officepower-app-icon.svg" alt="" /><h1>Office Power</h1><p>不只是 AI Chat，一座長出 AI 員工的工廠</p></div>
+        <div className="boot-center"><img className="boot-icon" src={`${import.meta.env.BASE_URL}officepower-app-icon.svg`} alt="" /><h1>Office Power</h1><p>不只是 AI Chat，一座長出 AI 員工的工廠</p></div>
       </div>}
       {phase === 'wide' && <button className="office-click-stage" onClick={begin} aria-label="點擊任意位置，進入電腦螢幕"><span>Click anywhere to begin <i>↗</i></span></button>}
       {phase === 'flight' && <button className="flight-skip" onClick={done}>略過開場 ↗</button>}

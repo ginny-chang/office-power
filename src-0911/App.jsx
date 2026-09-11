@@ -8,7 +8,7 @@ import './atlas.css';
 export default function App() {
   return <div className="site-shell">
     <header className="site-header">
-      <a className="brand" href="#top" aria-label="Office Power home"><img className="brand-robot-icon" src="/officepower-icon.svg" alt="" /><span><strong>Office Power</strong><small>Workspace OS</small></span></a>
+      <a className="brand" href="#top" aria-label="Office Power home"><img className="brand-robot-icon" src={`${import.meta.env.BASE_URL}officepower-icon.svg`} alt="" /><span><strong>Office Power</strong><small>Workspace OS</small></span></a>
       <nav className="chapter-nav" id="chapter-nav-slot" aria-label="章節導覽" />
       <a className="header-cta" href="#demo">預約 Demo <span>↗</span></a>
     </header>

@@ -48,7 +48,7 @@ export default function AppBuilder({ spec, onChange, built, reduced = false }) {
 
   return <div className="app-builder">
     <header>
-      <img src="/officepower-icon.svg" alt="" />
+      <img src={`${import.meta.env.BASE_URL}officepower-icon.svg`} alt="" />
       <div><strong>Office Power Builder</strong><small>{status}</small></div>
     </header>
     <div className="builder-thread" ref={thread}>

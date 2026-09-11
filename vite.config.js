@@ -2,6 +2,9 @@ import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
+  // GitHub Pages serves this repo under /office-power/; the workflow sets
+  // BASE_PATH so local builds and the dev server stay at the root.
+  base: process.env.BASE_PATH || '/',
   build: {
     rollupOptions: {
       input: {
