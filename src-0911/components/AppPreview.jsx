@@ -25,10 +25,19 @@ export default function AppPreview({ kind }) {
           <footer className="preview-actions"><span role="status">{submitted ? '✓ 示範申請已送出' : '資料與權限已準備好'}</span><button className="raised-action" onClick={() => setSubmitted(v => !v)}>{submitted ? '重新示範' : '送出示範申請'}<span aria-hidden="true">{submitted ? '↺' : '↗'}</span></button></footer>
         </div>
       </div>
-      <aside className="preview-float preview-connections"><span className="float-symbol"><Icon name="folder"/></span><strong>4 個系統</strong><small>已安全連接</small><div className="connection-dots" aria-hidden="true"><i/><i/><i/><i/></div></aside>
-      <aside className="preview-float preview-flow"><span className="float-eyebrow">APP WORKFLOW</span><strong>{submitted ? '已送出' : '簽核流程'}</strong><div className="workflow-stops"><span>申請</span><i/><span>審核</span><i/><span>完成</span></div><span className="workflow-ready">✓ 權限已設定</span></aside>
-      <aside className="preview-float preview-ready"><span className="ready-ring" aria-hidden="true">✓</span><span><strong>準備就緒</strong><small>介面 · 流程 · 權限</small></span></aside>
+      {/* The floats read as marks, not windows: a folder badged with its count,
+          and the approval chain as four ticked rings. */}
+      <aside className="preview-float preview-connections" aria-label="已連接 4 個系統">
+        <span className="float-symbol"><Icon name="folder"/></span>
+        <b className="float-count" aria-hidden="true">4</b>
+      </aside>
+      <aside className="preview-float preview-flow" aria-label={submitted ? '簽核流程已送出' : '簽核流程'}>
+        <div className="flow-rings" aria-hidden="true">{[0, 1, 2, 3].map((i) =>
+          <span key={i} className="flow-ring"><Icon name="check"/></span>)}</div>
+      </aside>
+      <aside className="preview-float preview-ready" aria-label="準備就緒">
+        <span className="ready-ring" aria-hidden="true"><Icon name="check"/></span>
+      </aside>
     </div>
-    <p className="app-preview-label">互動示範，不會送出真實申請</p>
   </section>;
 }

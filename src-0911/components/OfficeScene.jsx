@@ -339,7 +339,7 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
     if(t<.001)camera.position.copy(eye);
     else camera.position.lerp(eye,reduced?1:1-Math.exp(-dt*5));
     camera.lookAt(target);
-    const offset=!mobile&&tour&&(chapter===1||chapter===2)?-.18*size.width*t:0;
+    const offset=!mobile&&tour&&(chapter===1||chapter===2||chapter===4)?-.18*size.width*t:0;
     camera.setViewOffset(size.width,size.height,offset,0,size.width,size.height);
   });
   return <>

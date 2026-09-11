@@ -2,7 +2,7 @@ import React, { Component, lazy, Suspense, useCallback, useEffect, useRef, useSt
 import { createPortal } from 'react-dom';
 import './office-tour.css';
 
-import AppBuilder from './AppBuilder';
+import AppBuilder, { freshSpec } from './AppBuilder';
 import AppPreview from './AppPreview';
 import { OPENING } from './opening-motion';
 import Icon from './icons';
@@ -63,7 +63,7 @@ export default function OfficeTour() {
   const [atCases, setAtCases] = useState(false);
   const [built, setBuilt] = useState(false);
   const [buildStage, setBuildStage] = useState('idle');
-  const [appSpec,setAppSpec]=useState({kind:'leave',step:0,linked:0});
+  const [appSpec,setAppSpec]=useState(freshSpec);
   const selectedAgent = hovered ?? autoAgent;
   const arcFocus = hovered ?? deckTick % features.length;
   const [chapter, setChapter] = useState(0);
@@ -168,14 +168,18 @@ export default function OfficeTour() {
     return ()=>clearInterval(timer);
   },[phase,chapter,hovered,visible,reduced,narrow]);
   useEffect(()=>{
+    if(phase!=='tour'||chapter!==1)return;
+    setAppSpec(freshSpec());
+  },[phase,chapter]);
+  useEffect(()=>{
     setBuilt(false);
     setBuildStage('idle');
-    if(phase!=='tour'||chapter!==1||appSpec.step===0)return;
+    if(phase!=='tour'||chapter!==1)return;
     if(reduced){setBuildStage('typing');return;}
     setBuildStage('wave');
     const timer=setTimeout(()=>setBuildStage('typing'),1400);
     return ()=>clearTimeout(timer);
-  },[phase,chapter,reduced,appSpec.kind,appSpec.run,appSpec.step===0]);
+  },[phase,chapter,reduced,appSpec.run]);
   useEffect(()=>{
     if(phase!=='tour'||chapter!==1||appSpec.step!==3||buildStage!=='typing')return;
     const timer=setTimeout(()=>{setBuilt(true);setBuildStage('ready');},reduced?0:1400);
@@ -187,18 +191,36 @@ export default function OfficeTour() {
     return ()=>clearTimeout(timer);
   },[phase,done]);
   const item = chapters[chapter];
+  // The opening now holds on the portrait until the visitor scrolls; only then
+  // does the bot walk back. Page scroll is locked here, so read the intent from
+  // the input events directly.
   useEffect(() => {
     if (!loaded || phase !== 'boot') return;
     if (openingStarted.current === null) openingStarted.current = performance.now();
-    const timer = setTimeout(() => setPhase(reduced ? 'tour' : 'flight'), reduced ? 0 : Math.max(0,OPENING.retreatAt-(performance.now()-openingStarted.current)));
-    return () => clearTimeout(timer);
+    if (reduced) { setPhase('tour'); return; }
+    const walkBack = () => {
+      // Rebase the clock so the walk starts at its first frame, not mid-stride.
+      openingStarted.current = performance.now() - OPENING.retreatAt;
+      setPhase('flight');
+    };
+    const onKey = (e) => { if (['ArrowDown', 'PageDown', ' ', 'Spacebar', 'Enter'].includes(e.key)) walkBack(); };
+    window.addEventListener('wheel', walkBack, { passive: true, once: true });
+    window.addEventListener('touchmove', walkBack, { passive: true, once: true });
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('wheel', walkBack);
+      window.removeEventListener('touchmove', walkBack);
+      window.removeEventListener('keydown', onKey);
+    };
   }, [loaded, phase, reduced]);
   const begin = () => setPhase(reduced ? 'tour' : 'flight');
   return <section className="office-tour" id="top" data-ready={loaded} ref={root} aria-label="連續 3D 辦公室導覽">
     <div className={`office-sticky chapter-${chapter} phase-${phase}`} style={{'--panel-duration': `${OPENING.panelMs}ms`, '--panel-stagger': `${OPENING.staggerMs}ms`}}>
       <div className="office-scene"><SceneBoundary onFailure={failed}><Suspense fallback={<div className="office-loading">正在載入工作空間…</div>}><OfficeScene openingStarted={openingStarted} buildStage={buildStage} panelGaze={panelGaze} progress={progress} reduced={reduced} chapter={chapter} taskStage={taskStage} celebrating={celebrating} built={built} appSpec={appSpec} hovered={chapter === 0 ? null : selectedAgent} onHover={setHovered} phase={phase} visible={visible} onReady={ready} onDone={done} /></Suspense></SceneBoundary></div>
       {(phase === 'boot' || phase === 'flight') && <div className="office-boot">
-        <div className="boot-center"><img className="boot-icon" src={`${import.meta.env.BASE_URL}officepower-app-icon.svg`} alt="" /><h1>Office Power</h1><p>不只是 AI Chat，一座長出 AI 員工的工廠</p></div>
+        <div className="boot-center"><img className="boot-icon" src={`${import.meta.env.BASE_URL}officepower-app-icon.svg`} alt="" /><h1>Office Power</h1><p>不只是 AI Chat，一座長出 AI 員工的工廠</p>
+          {phase === 'boot' && <span className="boot-scroll-cue" aria-hidden="true">向下捲動<i /></span>}
+        </div>
       </div>}
       {phase === 'wide' && <button className="office-click-stage" onClick={begin} aria-label="點擊任意位置，進入電腦螢幕"><span>Click anywhere to begin <i>↗</i></span></button>}
       {phase === 'flight' && <button className="flight-skip" onClick={done}>略過開場 ↗</button>}
@@ -211,7 +233,14 @@ export default function OfficeTour() {
       {phase === 'tour' && <>
         <div className="office-narrative">
         <div className="office-copy" key={chapter}><Typewriter tag="h1" text={item.title} speed={58} reduced={reduced || chapter === 0}/>{chapter!==0&&<Typewriter tag="p" text={item.description} speed={17} delay={item.title.length * 58 + 260} reduced={reduced}/>}
-          {chapter === chapters.length - 1 && <a className="office-enter" href="#demo">預約 Demo <span>↗</span></a>}
+          {chapter === chapters.length - 1 && <>
+            <a className="office-enter" href="#demo">預約 Demo <span>↗</span></a>
+            <div className="deployment-panel"><div className="deployment-metrics">
+              <div><strong><SlotNumber value="15" reduced={reduced}/><span>分鐘</span></strong><p>快速上線</p></div>
+              <div><strong><SlotNumber value="0" reduced={reduced}/><span>秒</span></strong><p>延遲</p></div>
+              <div><strong><SlotNumber value="100" reduced={reduced}/><span>%</span></strong><p>預算可控</p></div>
+            </div></div>
+          </>}
         </div>
         {false && chapter === 0 && <div className="platform-capabilities">{['Agent 建立與調度','知識庫與權限','多通道上線','自我升級'].map((name,i) => <button key={name} onMouseEnter={()=>setHovered(i)} onMouseLeave={()=>setHovered(null)} onFocus={()=>setHovered(i)} onBlur={()=>setHovered(null)} onClick={()=>setHovered(i)} aria-pressed={selectedAgent===i}><span>0{i+1}</span>{name}<b>↗</b></button>)}</div>}
         {chapter === 1 && <AppBuilder spec={appSpec} onChange={setAppSpec} built={built} reduced={reduced} />}
@@ -224,11 +253,6 @@ export default function OfficeTour() {
         </div>
         {chapter === 1 && built && <AppPreview key={`${appSpec.kind}-${appSpec.run}`} kind={appSpec.kind}/>}
         {chapter === 4 && <div className="office-dim" aria-hidden="true" />}
-        {chapter === 4 && <div className="deployment-panel"><div className="deployment-metrics">
-          <div><strong><SlotNumber value="15" reduced={reduced}/><span>分鐘</span></strong><p>快速上線</p></div>
-          <div><strong><SlotNumber value="0" reduced={reduced}/><span>秒</span></strong><p>延遲</p></div>
-          <div><strong><SlotNumber value="100" reduced={reduced}/><span>%</span></strong><p>預算可控</p></div>
-        </div></div>}
         {chapter === 0 && <div className={`capability-arc${hovered !== null ? ' is-hovering' : ''}`} style={{ '--n': features.length }}>
           {features.map((f, i) => <button key={f.code} type="button" className={`capability-card${arcFocus === i ? ' is-focus' : ''}`}
             style={{...arcStyle(i), '--panel-index': i, '--entry-x': `${ARC[i].dx > 0 ? 90 : -90}vw`, '--entry-y': `${ARC[i].dy * 3}vh`}} aria-pressed={arcFocus === i}
