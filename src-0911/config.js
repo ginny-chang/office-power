@@ -1,3 +1,3 @@
-// The case-study section is finished but held back from the live site. Flip this
-// to true to bring back the HR pack section and its 實際案例 nav entry.
-export const SHOW_CASE_STUDIES = true;
+// Two entry points share this source tree. The Production page marks itself with
+// data-cases="off" on <html>; everything else keeps the case studies.
+export const SHOW_CASE_STUDIES = document.documentElement.dataset.cases !== 'off';
