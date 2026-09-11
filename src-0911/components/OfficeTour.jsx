@@ -4,6 +4,7 @@ import './office-tour.css';
 
 import AppBuilder, { freshSpec } from './AppBuilder';
 import BudgetDashboard from './BudgetDashboard';
+import { SHOW_CASE_STUDIES } from '../config';
 import AppPreview from './AppPreview';
 import { OPENING } from './opening-motion';
 import Icon from './icons';
@@ -251,7 +252,7 @@ export default function OfficeTour() {
         {chapters.map((c, i) => <button key={c.id} onClick={() => jump(i)} aria-current={chapter === i && !atCases ? 'step' : undefined}>
           <b>{c.name}</b>
         </button>)}
-        <button key="usecases" onClick={jumpToCases} aria-current={atCases ? 'step' : undefined}><b>實際案例</b></button>
+        {SHOW_CASE_STUDIES && <button key="usecases" onClick={jumpToCases} aria-current={atCases ? 'step' : undefined}><b>實際案例</b></button>}
       </>, navSlot)}
       {phase === 'tour' && <>
         <div className="office-narrative">
@@ -306,7 +307,7 @@ export default function OfficeTour() {
           {/* Phones lose the header chapter list, so the tour carries its own dot nav. */}
           <nav className="chapter-dots" aria-label="章節導覽">{chapters.map((c, i) =>
             <button key={c.id} type="button" onClick={() => jump(i)} aria-label={c.name} aria-current={chapter === i && !atCases ? 'step' : undefined}><i /></button>)}
-            <button key="usecases" type="button" onClick={jumpToCases} aria-label="實際案例" aria-current={atCases ? 'step' : undefined}><i /></button>
+            {SHOW_CASE_STUDIES && <button key="usecases" type="button" onClick={jumpToCases} aria-label="實際案例" aria-current={atCases ? 'step' : undefined}><i /></button>}
           </nav>
         </div><div className="office-progress" />
       </>}
