@@ -39,3 +39,6 @@
 @media(prefers-reduced-motion:reduce){.case-readout{animation:none}.case-accordion button,.case-accordion-body,.case-accordion-body>.case-copy-inner,.case-pack-label button{transition:none}}
 /* Keep the editorial column clear while close-up cameras travel through the room. */
 @media(min-width:651px){.case-scene{mask-image:linear-gradient(to right,transparent 0%,transparent 38%,#000 51%,#000 100%)}}
+
+/* HTML annotations sit above the scene mask and editorial stacking context. */
+.case-ui-overlay{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:visible}

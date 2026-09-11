@@ -1,8 +1,9 @@
-import React,{useRef} from 'react';
+import React,{useLayoutEffect,useRef} from 'react';
 import {Billboard,Html,Line} from '@react-three/drei';
 import {useFrame} from '@react-three/fiber';
 import {useOvertime} from './OvertimeStory';
 import AvatarBust from './AvatarBust';
+import {useSceneUI} from './SceneUI';
 
 // Shape, hairstyle and accessories identify each person independently of colour.
 export const people=[
@@ -11,15 +12,18 @@ export const people=[
  {name:'陳經理',role:'主管',color:'#9c8abd',skin:'#dbb493',hair:'#55535c',at:[1.65,2.65,.4],hours:null},
 ];
 export function Portrait({person,index,time,reduced,appearAt=6+index*.65,completed,showHours=true,badge="!",badgeClass="",badgeLabel,detailLayer=[5,0],badgeLayer=[20,15],detailPosition=[0,-.72,.6],children}){
- const root=useRef();const done=completed??(time>=16);
+ const overlay=useSceneUI();
+ const root=useRef();
+ useLayoutEffect(()=>{root.current.traverse(node=>{if(node.isMesh)node.layers.set(1);});},[]);
+ const done=completed??(time>=16);
  useFrame(()=>{const show=reduced?1:Math.min(1,Math.max(0,(time-appearAt)/.8));root.current.scale.setScalar(Math.max(.001,show));root.current.visible=show>0;root.current.position.y=person.at[1]+(!reduced&&time<16?Math.sin(time*1.6+index)*.035:0);});
  return <group ref={root} position={person.at}><Billboard>
   <mesh><circleGeometry args={[.59,48]}/><meshStandardMaterial color={index===0?'#dce8f3':index===1?'#f1dfd6':'#e6dfef'} roughness={.7}/></mesh>
   <mesh position={[0,0,.025]}><torusGeometry args={[.57,.018,12,64]}/><meshStandardMaterial color={person.color}/></mesh>
   <AvatarBust person={person} index={index}/>
   {(reduced||time>=appearAt)&&<>
-   <Html position={[.4,.46,.6]} center zIndexRange={badgeLayer}><div className={`ot-alert-badge${done?' is-done':badgeClass}`} role="img" aria-label={badgeLabel||(done?'已通知確認':'工時預警')}>{done?'✓':badge}</div></Html>
-   <Html position={detailPosition} center zIndexRange={detailLayer}>{children||<div className="ot-person-label"><strong>{person.name}</strong><span className={person.hours?'ot-hours':''}>{person.hours||person.role}</span>{showHours&&person.hours&&<em>+{index===0?'4':'1.5'}h</em>}</div>}</Html>
+   <Html portal={overlay} position={[.4,.46,.6]} center zIndexRange={badgeLayer}><div className={`ot-alert-badge${done?' is-done':badgeClass}`} role="img" aria-label={badgeLabel||(done?'已通知確認':'工時預警')}>{done?'✓':badge}</div></Html>
+   <Html portal={overlay} position={detailPosition} center zIndexRange={detailLayer}>{children||<div className="ot-person-label"><strong>{person.name}</strong><span className={person.hours?'ot-hours':''}>{person.hours||person.role}</span>{showHours&&person.hours&&<em>+{index===0?'4':'1.5'}h</em>}</div>}</Html>
   </>}
  </Billboard></group>;
 }

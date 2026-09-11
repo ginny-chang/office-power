@@ -1,4 +1,4 @@
-import React,{useEffect,useRef} from 'react';
+import React,{useEffect,useLayoutEffect,useRef} from 'react';
 import {Canvas,useFrame,useThree} from '@react-three/fiber';
 import {Office,Lights,sampleCamera} from './OfficeScene';
 import HROffice from './HROffice';
@@ -13,7 +13,18 @@ const shots = [
 ];
 const kinds=['overtime','dispatch','leave','contract','punch'];
 function World({kind,entry,progress,reduced,onReadyChange}) {
- const {camera,size,invalidate}=useThree();
+ const {camera,size,invalidate,scene}=useThree();
+ useLayoutEffect(()=>{scene.traverse(node=>{if(node.isLight)node.layers.enable(1);});},[scene]);
+ // Render the room first, then the portrait layer with a fresh depth buffer.
+ // Portraits retain their own facial depth while furniture cannot cover them.
+ useFrame(({gl,scene,camera})=>{
+  const mask=camera.layers.mask,autoClear=gl.autoClear,background=scene.background;
+  try{
+   camera.layers.set(0);gl.render(scene,camera);
+   gl.autoClear=false;gl.clearDepth();scene.background=null;
+   camera.layers.set(1);gl.render(scene,camera);
+  }finally{camera.layers.mask=mask;gl.autoClear=autoClear;scene.background=background;}
+ },1);
  const surroundings=useRef(),materials=useRef([]),shotProgress=useRef(progress.current);
  useEffect(()=>{onReadyChange?.(true);return()=>onReadyChange?.(false);},[onReadyChange]);
  useEffect(()=>{const found=new Set();surroundings.current.traverse(node=>{if(node.material){for(const m of (Array.isArray(node.material)?node.material:[node.material]))found.add(m);}});materials.current=[...found].map(m=>({m,opacity:m.opacity}));},[]);

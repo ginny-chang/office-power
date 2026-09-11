@@ -6,6 +6,7 @@ import {Box} from './OfficeScene';
 import {people,Portrait} from './OvertimePeople';
 import {useOvertime} from './OvertimeStory';
 import {dispatchState} from './dispatch-story';
+import {useSceneUI} from './SceneUI';
 
 // Keep each person in a separate screen column while retaining a 3D bust.
 function RosterSlot({column,summary=false,faceWidth=90,target,children}){
@@ -51,13 +52,15 @@ function Delivery({person,row,time,reduced}){
  </>;
 }
 function PaperChase({time}){
+ const overlay=useSceneUI();
  if(time>=4)return null;
  return <group position={[-.4,2.4,.4]}><Billboard>
   {[0,1,2].map(i=><group key={i} position={[(i-1)*.55,(i===1?.12:0),i*.045]} rotation={[0,0,(i-1)*-.13]}><Box size={[.62,.84,.025]} color="#f6f2ea"/>{[0,1,2,3].map(j=><React.Fragment key={j}><Box at={[-.19,.24-j*.15,.025]} size={[.065,.065,.01]} color="#dba85e"/><Box at={[.045,.24-j*.15,.025]} size={[.3,.025,.01]} color="#aeb7c1"/></React.Fragment>)}</group>)}
-  <Html center position={[0,-.72,.3]} zIndexRange={[8,6]}><div className="dispatch-manual"><span>◷</span><strong>2–3 天</strong><small>印清單 · 逐一催回覆</small></div></Html>
+  <Html portal={overlay} center position={[0,-.72,.3]} zIndexRange={[8,6]}><div className="dispatch-manual"><span>◷</span><strong>2–3 天</strong><small>印清單 · 逐一催回覆</small></div></Html>
  </Billboard></group>;
 }
 export default function DispatchPeople({reduced}){
+ const overlay=useSceneUI();
  const {time}=useOvertime();const state=dispatchState(time);
  const {size}=useThree();const mobile=size.width<=650;
  const faceWidth=mobile?Math.min(64,size.width*.2):Math.min(100,size.width*.12);
@@ -66,7 +69,7 @@ export default function DispatchPeople({reduced}){
  const recipients=useMemo(()=>people.map(p=>({...p,at:[...p.at]})),[]);
  return <group>
   <PaperChase time={time}/>
-  {time>=4&&<RosterSlot summary><Html center zIndexRange={[9,6]}><div className="dispatch-summary"><span>{state.phase==='scan'?'掃描缺卡':state.phase==='send'?'LINE 自動派件':'HR 待處理'}</span><strong>{state.pending}<small>人</small></strong><i>{state.completed}/3 已處理</i>{state.phase==='track'&&<b>{people.filter((_,i)=>!state.rows[i].done).map(p=>p.name).join(' · ')}</b>}</div></Html></RosterSlot>}
+  {time>=4&&<RosterSlot summary><Html portal={overlay} center zIndexRange={[9,6]}><div className="dispatch-summary"><span>{state.phase==='scan'?'掃描缺卡':state.phase==='send'?'LINE 自動派件':'HR 待處理'}</span><strong>{state.pending}<small>人</small></strong><i>{state.completed}/3 已處理</i>{state.phase==='track'&&<b>{people.filter((_,i)=>!state.rows[i].done).map(p=>p.name).join(' · ')}</b>}</div></Html></RosterSlot>}
   {people.map((person,i)=>{
    const row=state.rows[i];
    return <React.Fragment key={person.name}>
