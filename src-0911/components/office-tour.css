@@ -642,3 +642,11 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
  .chapter-4 .deployment-metrics{flex-direction:row;gap:16px;justify-content:space-between;align-items:flex-start}
  .chapter-4 .deployment-metrics strong{font-size:30px}
 }
+
+/* 05 puts the office on the right, so the veil is masked off it — the blur now
+   only softens the backdrop behind the left-hand column. */
+@media(min-width:761px){
+ .chapter-4 .office-dim{
+  -webkit-mask-image:linear-gradient(to right,#000 0%,#000 38%,transparent 56%);
+  mask-image:linear-gradient(to right,#000 0%,#000 38%,transparent 56%)}
+}

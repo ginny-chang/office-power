@@ -50,6 +50,7 @@ export default function OfficeTour() {
   const root = useRef();
   const progress = useRef(0);
   const openingStarted = useRef(null);
+  const nudged = useRef(false);
   const panelGaze = useRef(null);
   const aimAtPanel = (event) => {
     const box = event.currentTarget.getBoundingClientRect();
@@ -195,17 +196,21 @@ export default function OfficeTour() {
   // does the bot walk back. Page scroll is locked here, so read the intent from
   // the input events directly.
   useEffect(() => {
-    if (!loaded || phase !== 'boot') return;
-    if (openingStarted.current === null) openingStarted.current = performance.now();
-    if (reduced) { setPhase('tour'); return; }
+    if (phase !== 'boot') return;
+    if (loaded && openingStarted.current === null) openingStarted.current = performance.now();
+    if (loaded && reduced) { setPhase('tour'); return; }
     const walkBack = () => {
+      // Someone can scroll before the scene is ready; remember it and leave as
+      // soon as it is, rather than dropping the gesture on the floor.
+      if (!loaded) { nudged.current = true; return; }
       // Rebase the clock so the walk starts at its first frame, not mid-stride.
       openingStarted.current = performance.now() - OPENING.retreatAt;
       setPhase('flight');
     };
+    if (loaded && nudged.current && !reduced) { walkBack(); return; }
     const onKey = (e) => { if (['ArrowDown', 'PageDown', ' ', 'Spacebar', 'Enter'].includes(e.key)) walkBack(); };
-    window.addEventListener('wheel', walkBack, { passive: true, once: true });
-    window.addEventListener('touchmove', walkBack, { passive: true, once: true });
+    window.addEventListener('wheel', walkBack, { passive: true });
+    window.addEventListener('touchmove', walkBack, { passive: true });
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('wheel', walkBack);
