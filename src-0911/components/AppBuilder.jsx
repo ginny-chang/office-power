@@ -25,7 +25,8 @@ const questions = [
 
 export const freshSpec = () => ({ kind: 'leave', step: 0, asked: 0, linked: 0, run: performance.now() });
 
-const REQUEST_MS = 1100;
+// Long enough to type the line, then a beat to let it land before the build runs.
+const REQUEST_MS = 2200;
 
 export default function AppBuilder({ spec, onChange, built, reduced = false }) {
   const app = appOptions.leave;

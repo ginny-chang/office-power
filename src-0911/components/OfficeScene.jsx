@@ -193,7 +193,9 @@ function Office({chapter=0,reduced=false,markers=false,taskStage=0,celebrating=f
     const wallScale=1-THREE.MathUtils.smoothstep(e,.48,.78);
     backWall.current.scale.y=sideWall.current.scale.y=Math.max(.001,wallScale);
     backWall.current.visible=sideWall.current.visible=e<.8;
-    floor.current.scale.set(1+e*1.1,1,1+e*1.15);
+    floor.current.scale.set(1+e*24,1,1+e*30);
+    // The wash keeps its own scale, or it would stretch into nothing.
+    if(glow.current)glow.current.scale.setScalar(1+e*1.9);
     if(glow.current)glow.current.material.opacity=THREE.MathUtils.smoothstep(e,.05,.75);
     core.current.scale.setScalar(1+e*.85);
     nodes.current.forEach((node,i)=>{
@@ -209,7 +211,8 @@ function Office({chapter=0,reduced=false,markers=false,taskStage=0,celebrating=f
     else if(t>=state.until)state.index=-1;
   });
   return <group>
-    <group ref={floor}><Box at={[0,-.22,0]} size={[10,.42,8]} color={C.floor} radius={.12}/><FloorGlow glow={glow}/></group>
+    <group ref={floor}><Box at={[0,-.22,0]} size={[10,.42,8]} color={C.floor} radius={.12}/></group>
+    <FloorGlow glow={glow}/>
     <group ref={backWall} position={[0,-.17,-3.85]}><Box at={[0,1.3,0]} size={[10,2.6,.12]} color={C.wall}/>
     {[-3,-.1,2.8].map(x=><group key={x}><Box at={[x,1.64,.09]} size={[2.4,1.7,.035]} color='#d4dfed' radius={.012}/><Box at={[x,1.64,.14]} size={[.025,1.7,.026]} color={C.metal}/><Box at={[x,1.64,.14]} size={[2.4,.025,.026]} color={C.metal}/></group>)}</group>
     <group ref={sideWall} position={[-4.85,-.17,0]}><Box at={[0,1.3,0]} size={[.12,2.6,8]} color={C.wall}/></group>
@@ -307,8 +310,8 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
     target.set(0,.55+lift.current,0);
     // 01: desktop rings the robot with panels; phones stack the cards above it and
     // give it the bottom band, so the framing is closer and flatter there.
-    const heroEye=new THREE.Vector3(0,mobile?1.6:2.8,mobile?5.8:12.5);
-    const heroTarget=new THREE.Vector3(0,mobile?.95:1.85,0);
+    const heroEye=new THREE.Vector3(0,mobile?1.6:2.9,mobile?5.8:12.5);
+    const heroTarget=new THREE.Vector3(0,mobile?.95:2.5,0);
     // The opening frame is a shoulder-up portrait. Dolly out as the bot walks back.
     // It is framed on WIDTH, so a portrait phone has to sit further back or the
     // robot is cropped to a visor. Landscape viewports keep the original 7.5.
@@ -357,7 +360,7 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
         <Box at={[0,.035,-15]} size={[25,.025,.025]} color="#edf3fa"/>
       </group>
       <group visible={phase!=='boot'}>
-      <Box at={[0,-.1,0]} size={[11,.18,10]} color="#e9eff7" radius={.15} metal={.05}/>
+      <Box at={[0,-.1,0]} size={[400,.18,400]} color="#e9eff7" radius={.15} metal={.05}/>
       {heroLinks.map((to,i)=><Circuit key={i} to={to} index={i} reduced={reduced}/>)}
       </group>
       <group ref={bot} position={[0,-2.32,2.5]} scale={1.3}><Agent at={[0,0,0]} reduced={reduced} guide gazeActive={phase==='tour'&&chapter===0} waving={phase==='boot'} journey={journey} panelGaze={chapter===0&&phase==='tour'?panelGaze:undefined}/></group>

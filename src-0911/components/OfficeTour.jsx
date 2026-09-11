@@ -143,12 +143,11 @@ export default function OfficeTour() {
     return () => { clearTimeout(received); clearTimeout(prepared); clearTimeout(confirmed); };
   }, [chapter, phase, reduced]);
 
-  // 03 lands the task, waits a beat, then cuts in for the celebration.
+  // 03 cuts in on the Agent the moment the task reports itself complete.
   useEffect(() => {
     if (phase !== 'tour' || chapter !== 2 || taskStage !== 3) { setCelebrating(false); return; }
-    if (reduced) { setCelebrating(true); return; }
-    const timer = setTimeout(() => setCelebrating(true), 1000);
-    return () => { clearTimeout(timer); };
+    // The cut-in rides the "已完成" frame rather than trailing it.
+    setCelebrating(true);
   }, [phase, chapter, taskStage, reduced]);
 
   const jump = (index) => {
@@ -251,8 +250,23 @@ export default function OfficeTour() {
         {chapter === 1 && <AppBuilder spec={appSpec} onChange={setAppSpec} built={built} reduced={reduced} />}
         {chapter === 2 && <div className="task-demo" aria-label="請假任務互動示範">
           <header><span className="bot-avatar" aria-hidden="true"><i/><i/><b><em/><em/></b></span><div><strong>HR Agent</strong><small>{taskStage === 0 ? '等待任務' : taskStage === 1 ? '正在處理你的任務' : taskStage === 2 ? '已整理完成，等待確認' : '任務完成'}</small></div><span className="demo-label">互動示範</span></header>
-          <div className="task-conversation"><p className="user-message">我下週三、四想休特休，找小明代理。</p><div className="agent-message" role="status">{taskStage < 2 ? (taskStage === 0 ? '任務送出中…' : '收到，正在確認特休餘額與代理人…') : '假單整理好了。確認後，我會幫你送給主管。'}</div></div>
-          {taskStage >= 2 && <div className="leave-preview"><div><span>假別</span><strong>特休 · 2 天</strong></div><div><span>日期</span><strong>下週三 — 下週四</strong></div><div><span>代理人</span><strong>王小明</strong></div><div><span>特休餘額</span><strong>6 → 4 天</strong></div></div>}
+          {/* Read as a messaging thread: the employee on the right, the Agent on the left. */}
+          <div className="task-conversation">
+            <div className="chat-row is-user"><p className="chat-bubble">我下週三、四想休特休，找小明代理。</p></div>
+            <div className="chat-row is-agent">
+              <span className="chat-avatar bot-avatar" aria-hidden="true"><i/><i/><b><em/><em/></b></span>
+              <p className="chat-bubble" role="status">{taskStage < 2 ? (taskStage === 0 ? '任務送出中…' : '收到，正在確認特休餘額與代理人…') : '假單整理好了。確認後，我會幫你送給主管。'}</p>
+            </div>
+            {taskStage >= 2 && <div className="chat-row is-agent">
+              <span className="chat-avatar" aria-hidden="true" />
+              <div className="chat-bubble leave-preview">
+                <div><span>假別</span><strong>特休 · 2 天</strong></div>
+                <div><span>日期</span><strong>下週三 — 下週四</strong></div>
+                <div><span>代理人</span><strong>王小明</strong></div>
+                <div><span>特休餘額</span><strong>6 → 4 天</strong></div>
+              </div>
+            </div>}
+          </div>
           <footer>{taskStage < 2 ? <span>接收任務 → 讀取授權資料 → 整理假單</span> : taskStage === 2 ? <button onClick={() => setTaskStage(3)}>確認，送出給主管 <span>↗</span></button> : <div className="task-success" role="status">✓ 已送出給主管<small>已同步出勤系統 · 示範完成</small><button onClick={() => setTaskStage(2)}>重新確認任務 ↺</button></div>}</footer>
         </div>}
         </div>
