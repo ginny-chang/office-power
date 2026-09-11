@@ -15,7 +15,7 @@ export const chapters = [
   { label: 'BUILD YOUR WORKFORCE', title: '建立、部署、治理——\n都在同一個畫面。', description: '說出你需要的系統，AI 團隊協作建立。從介面、流程到權限，一次準備好。', name: '建立App', id: 'builder' },
   { label: 'WORDS BECOME WORK', title: '簡單幾句話，\nAI 員工幫你完成。', description: '說出需求，Agent 接下任務。讀取資料、整理表單、送出審核，在同一段對話裡完成。', name: '一句話完成任務', id: 'people' },
   { label: 'MEET YOUR TEAM', title: '啟用整個部門的 AI。', description: '人資、財務、業務，各有專長，共享同一個協作平台。讓每個部門，都有一位真正能工作的 AI 員工。', name: '多部門 Agent', id: 'departments' },
-  { label: 'READY TO WORK', title: '從想法到上線，\n只要 15 分鐘。', description: '建立、發布、部署、治理、優化。把複雜留給平台，讓你的 AI 員工準備好開始工作。', name: '實際案例', id: 'deployment' },
+  { label: 'READY TO WORK', title: '從想法到上線，\n只要 15 分鐘。', description: '建立、發布、部署、治理、優化。把複雜留給平台，讓你的 AI 員工準備好開始工作。', name: '立即預約', id: 'deployment' },
 ];
 
 // Verbatim capability copy from the supplied reference, excluding F-03.
@@ -60,6 +60,7 @@ export default function OfficeTour() {
   const [autoAgent, setAutoAgent] = useState(0);
   const [deckTick, setDeckTick] = useState(0);
   const [navSlot, setNavSlot] = useState(null);
+  const [atCases, setAtCases] = useState(false);
   const [built, setBuilt] = useState(false);
   const [buildStage, setBuildStage] = useState('idle');
   const [appSpec,setAppSpec]=useState({kind:'leave',step:0,linked:0});
@@ -75,6 +76,13 @@ export default function OfficeTour() {
   // Phones stage 02–04 differently; every use of this is additive to the desktop path.
   const [narrow, setNarrow] = useState(() => window.matchMedia('(max-width: 760px)').matches);
   useEffect(() => setNavSlot(document.getElementById('chapter-nav-slot')), []);
+  useEffect(() => {
+    const cases = document.getElementById('usecases');
+    if (!cases) return;
+    const observer = new IntersectionObserver(([seen]) => setAtCases(seen.intersectionRatio > .35), { threshold: [0, .35, .7] });
+    observer.observe(cases);
+    return () => observer.disconnect();
+  }, []);
   const ready = useCallback(() => { openingStarted.current = performance.now(); setLoaded(true); }, []);
   const done = useCallback(() => setPhase('tour'), []);
   const failed = useCallback(() => { setLoaded(true); setPhase('tour'); }, []);
@@ -146,6 +154,7 @@ export default function OfficeTour() {
     const top = window.scrollY + root.current.getBoundingClientRect().top;
     window.scrollTo({ top: top + (root.current.offsetHeight - window.innerHeight) * (index / chapters.length + .025), behavior: reduced ? 'instant' : 'smooth' });
   };
+  const jumpToCases = () => document.getElementById('usecases')?.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'start' });
   useEffect(() => { setHovered(null); setAutoAgent(0); setDeckTick(0); }, [chapter, phase]);
   useEffect(() => {
     if (phase !== 'tour' || chapter !== 0 || hovered !== null || !visible || reduced) return;
@@ -193,10 +202,12 @@ export default function OfficeTour() {
       </div>}
       {phase === 'wide' && <button className="office-click-stage" onClick={begin} aria-label="點擊任意位置，進入電腦螢幕"><span>Click anywhere to begin <i>↗</i></span></button>}
       {phase === 'flight' && <button className="flight-skip" onClick={done}>略過開場 ↗</button>}
-      {phase === 'tour' && navSlot && createPortal(
-        chapters.map((c, i) => <button key={c.id} onClick={() => jump(i)} aria-current={chapter === i ? 'step' : undefined}>
+      {phase === 'tour' && navSlot && createPortal(<>
+        {chapters.map((c, i) => <button key={c.id} onClick={() => jump(i)} aria-current={chapter === i && !atCases ? 'step' : undefined}>
           <b>{c.name}</b>
-        </button>), navSlot)}
+        </button>)}
+        <button key="usecases" onClick={jumpToCases} aria-current={atCases ? 'step' : undefined}><b>實際案例</b></button>
+      </>, navSlot)}
       {phase === 'tour' && <>
         <div className="office-narrative">
         <div className="office-copy" key={chapter}><Typewriter tag="h1" text={item.title} speed={58} reduced={reduced || chapter === 0}/>{chapter!==0&&<Typewriter tag="p" text={item.description} speed={17} delay={item.title.length * 58 + 260} reduced={reduced}/>}
@@ -231,7 +242,8 @@ export default function OfficeTour() {
         <div className="office-tour-footer"><span className="office-scroll">SCROLL TO EXPLORE <b>↓</b></span>
           {/* Phones lose the header chapter list, so the tour carries its own dot nav. */}
           <nav className="chapter-dots" aria-label="章節導覽">{chapters.map((c, i) =>
-            <button key={c.id} type="button" onClick={() => jump(i)} aria-label={c.name} aria-current={chapter === i ? 'step' : undefined}><i /></button>)}
+            <button key={c.id} type="button" onClick={() => jump(i)} aria-label={c.name} aria-current={chapter === i && !atCases ? 'step' : undefined}><i /></button>)}
+            <button key="usecases" type="button" onClick={jumpToCases} aria-label="實際案例" aria-current={atCases ? 'step' : undefined}><i /></button>
           </nav>
         </div><div className="office-progress" />
       </>}
