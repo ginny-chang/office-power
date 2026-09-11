@@ -161,7 +161,7 @@ export default function OfficeTour() {
     const top = window.scrollY + root.current.getBoundingClientRect().top;
     window.scrollTo({ top: top + (root.current.offsetHeight - window.innerHeight) * (index / chapters.length + .025), behavior: reduced ? 'instant' : 'smooth' });
   };
-  // Re-arm whenever the chapter is entered, then creep up over roughly 14s.
+  // Re-arm whenever the chapter is entered, then run to the ceiling in ~4s.
   useEffect(() => {
     if (phase !== 'tour' || chapter !== 4) return;
     setBudgetCost(BUDGET_START);
@@ -169,7 +169,7 @@ export default function OfficeTour() {
   useEffect(() => {
     if (phase !== 'tour' || chapter !== 4 || !visible || reduced) return;
     if (budgetCost >= BUDGET_LIMIT) return;
-    const timer = setInterval(() => setBudgetCost((c) => Math.min(BUDGET_LIMIT, c + 7)), 120);
+    const timer = setInterval(() => setBudgetCost((c) => Math.min(BUDGET_LIMIT, c + 10)), 50);
     return () => clearInterval(timer);
   }, [phase, chapter, visible, reduced, budgetCost]);
 

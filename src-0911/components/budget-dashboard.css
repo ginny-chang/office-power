@@ -18,3 +18,9 @@
 /* The ceiling rides alongside the spend at a smaller size. */
 .budget-total strong em{font-style:normal;font-size:.46em;font-weight:500;color:#c2566f;margin-left:4px;letter-spacing:0}
 .budget-beacon-tag{white-space:nowrap;color:#b41230;background:#fff0f3;padding:7px 12px;border-radius:8px;font:700 13px Archivo,'Noto Sans TC',sans-serif}
+
+/* The chart updates land every 50ms; a slightly longer transition turns that
+   into continuous motion rather than 20 visible steps a second. */
+.budget-bars i{transition:transform .3s cubic-bezier(.22,.61,.36,1)}
+.budget-stats svg path{transition:d .2s linear}
+@media(prefers-reduced-motion:reduce){.budget-bars i,.budget-stats svg path{transition:none}}

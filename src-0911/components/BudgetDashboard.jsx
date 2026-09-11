@@ -3,6 +3,29 @@ import './budget-dashboard.css';
 
 const dollars = (value) => '$' + Math.round(value).toLocaleString('en-US');
 
+// Both charts are driven by how far the spend has climbed, so they move with it.
+// Deterministic wobble keeps them lively without ever redrawing at random.
+const SPARK_POINTS = 8;
+function sparkPath(ratio) {
+  const points = Array.from({ length: SPARK_POINTS }, (_, i) => {
+    const along = i / (SPARK_POINTS - 1);
+    const wobble = Math.sin(i * 1.9) * .05 + Math.sin(i * 4.3) * .025;
+    // Earlier points sit lower, so the line always climbs to the live value.
+    const value = Math.max(.03, Math.min(1, ratio * (.3 + .7 * along) + wobble * along));
+    const x = along * 100;
+    const y = 22 - value * 20;
+    return `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
+  });
+  return points.join(' ');
+}
+function barHeights(ratio) {
+  return Array.from({ length: 7 }, (_, i) => {
+    const along = (i + 1) / 7;
+    const swing = Math.abs(Math.sin(i * 2.1 + ratio * 7));
+    return Math.max(.18, Math.min(1, (.3 + .7 * swing) * (.45 + .55 * along)));
+  });
+}
+
 export default function BudgetDashboard({ cost, limit, alarm, onReset }) {
   const ratio = Math.min(1, cost / limit);
   const conversations = Math.max(1, Math.round(cost * 4));
@@ -22,8 +45,8 @@ export default function BudgetDashboard({ cost, limit, alarm, onReset }) {
       </div>
     </div>
     <div className="budget-stats">
-      <div><span>總 Token 用量</span><strong>{(tokens / 1000000).toFixed(2)}<small>M</small></strong><svg viewBox="0 0 100 24" aria-hidden="true"><path d="M0 22 L14 19 L28 20 L42 13 L56 15 L70 6 L84 9 L100 2"/></svg></div>
-      <div><span>對話次數</span><strong>{conversations.toLocaleString()}</strong><div className="budget-bars" aria-hidden="true">{[.3,.5,.4,.6,.8,.65,1].map((v, i) => <i key={i} style={{ transform: `scaleY(${v})` }} />)}</div></div>
+      <div><span>總 Token 用量</span><strong>{(tokens / 1000000).toFixed(2)}<small>M</small></strong><svg viewBox="0 0 100 24" aria-hidden="true"><path d={sparkPath(ratio)}/></svg></div>
+      <div><span>對話次數</span><strong>{conversations.toLocaleString()}</strong><div className="budget-bars" aria-hidden="true">{barHeights(ratio).map((v, i) => <i key={i} style={{ transform: `scaleY(${v})` }} />)}</div></div>
       <div><span>平均成本</span><strong>{'$' + (cost / conversations).toFixed(2)}</strong><small>每次對話</small></div>
     </div>
     <div className="budget-status" role="status">

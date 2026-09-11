@@ -34,8 +34,9 @@ function Screen({at,size=[.95,.58],variant=0,alarm=false}) {
   useEffect(()=>()=>texture.dispose(),[texture]);
   return <mesh position={at}><planeGeometry args={size}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh>;
 }
-// 05: a soft blue-to-grey wash spreading out from the middle of the platform.
-function FloorGlow({glow}) {
+// A soft blue-to-grey wash spreading out from the middle of a platform. Every
+// floor in the tour carries one, so they all read the same way.
+function FloorGlow({glow,size=[10,8],opacity=.9}) {
   const texture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
     const ctx=canvas.getContext('2d');
@@ -49,8 +50,8 @@ function FloorGlow({glow}) {
   },[]);
   useEffect(()=>()=>texture.dispose(),[texture]);
   return <mesh ref={glow} rotation={[-Math.PI/2,0,0]} position={[0,.001,0]}>
-    <planeGeometry args={[10,8]}/>
-    <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} opacity={0}/>
+    <planeGeometry args={size}/>
+    <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} opacity={opacity}/>
   </mesh>;
 }
 function RobotShell() {
@@ -217,7 +218,6 @@ function Office({chapter=0,reduced=false,markers=false,taskStage=0,celebrating=f
     floor.current.scale.set(1+e*24,1,1+e*30);
     // The wash keeps its own scale, or it would stretch into nothing.
     if(glow.current)glow.current.scale.setScalar(1+e*1.9);
-    if(glow.current)glow.current.material.opacity=THREE.MathUtils.smoothstep(e,.05,.75);
     core.current.scale.setScalar(1+e*.85);
     nodes.current.forEach((node,i)=>{
       if(!node)return;
@@ -382,7 +382,7 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
     if(t<.001)camera.position.copy(eye);
     else camera.position.lerp(eye,reduced?1:1-Math.exp(-dt*5));
     camera.lookAt(target);
-    const offset=!mobile&&tour&&(chapter===1||chapter===2||chapter===5)?-.18*size.width*t:0;
+    const offset=!mobile&&tour&&(chapter===1||chapter===2||chapter===4||chapter===5)?-.18*size.width*t:0;
     camera.setViewOffset(size.width,size.height,offset,0,size.width,size.height);
   });
   return <>
@@ -401,6 +401,7 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
       </group>
       <group visible={phase!=='boot'}>
       <Box at={[0,-.1,0]} size={[400,.18,400]} color="#e9eff7" radius={.15} metal={.05}/>
+      <FloorGlow size={[34,34]} opacity={.85}/>
       {heroLinks.map((to,i)=><Circuit key={i} to={to} index={i} reduced={reduced}/>)}
       </group>
       <group ref={bot} position={[0,-2.32,2.5]} scale={1.3}><Agent at={[0,0,0]} reduced={reduced} guide gazeActive={phase==='tour'&&chapter===0} waving={phase==='boot'} journey={journey} panelGaze={chapter===0&&phase==='tour'?panelGaze:undefined}/></group>
