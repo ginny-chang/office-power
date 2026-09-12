@@ -146,8 +146,8 @@ function Fireworks({reduced}) {
  if(reduced)return null;
  return <group ref={group} position={[.5,2.4,.6]}>{particles.map((_,i)=><mesh key={i}><sphereGeometry args={[.035,6,4]}/><meshBasicMaterial color={i%3===0?'#f3cf84':i%3===1?'#b1c7ea':'#f4f7ff'}/></mesh>)}</group>;
 }
-function Workstation({at,index,selected,reduced,markers,chapter,taskStage,celebrating,budgetAlarm=false,hovered,onHover,building,waving,ambient,card,guideMotion}) {
-  const label=['HR Agent','財務 Agent','業務 Agent','IT Agent'][index%4];
+function Workstation({copy,at,index,selected,reduced,markers,chapter,taskStage,celebrating,budgetAlarm=false,soloMarker=false,hovered,onHover,building,waving,ambient,card,guideMotion}) {
+  const label=(copy?.agents?.[index%4]?.name)||'Agent';
   const worker=useRef();
   useFrame(()=>{if(worker.current)worker.current.visible=index!==0||!guideMotion||guideMotion.current>=.999;});
   const interactive=markers&&chapter===3;
@@ -173,11 +173,11 @@ function Workstation({at,index,selected,reduced,markers,chapter,taskStage,celebr
     <group ref={worker}><Agent panic={budgetAlarm} at={[0,.07,.62]} ambient={ambient} index={index} reduced={reduced} working={chapter===5||(markers&&chapter===1&&index===0&&building)} waving={markers&&chapter===1&&index===0&&waving} active={markers&&chapter===2&&index===0&&taskStage>0} celebrate={markers&&chapter===2&&index===0&&celebrating} hovered={hovered===index&&interactive} onHover={interactive?e=>{e.stopPropagation();onHover(index);}:undefined} onLeave={interactive?()=>onHover(null):undefined} onSelect={interactive?e=>{e.stopPropagation();onHover(hovered===index?null:index);}:undefined}/></group>
     {markers&&chapter===2&&index===0&&taskStage>0&&<group position={[.45,2.05,.6]}><mesh><sphereGeometry args={[.13,20,16]}/><meshStandardMaterial color="#fff0b0" emissive="#ffe298" emissiveIntensity={2}/></mesh><Box at={[0,-.16,0]} size={[.11,.09,.11]} color="#a2a9b4"/><pointLight color="#ffebad" intensity={1.3} distance={2}/></group>}
     {markers&&chapter===2&&index===0&&celebrating&&<Fireworks reduced={reduced}/>}
-    {markers&&(interactive||(chapter===2&&index===0&&taskStage>0))&&<Html position={[0,2.12,-.05]} center zIndexRange={[8,0]}>
+    {markers&&(interactive||(chapter===2&&index===0&&taskStage>0))&&!(soloMarker&&interactive&&hovered!==index)&&<Html position={[0,2.12,-.05]} center zIndexRange={[8,0]}>
     <div className="agent-marker" onMouseEnter={()=>interactive&&onHover(index)} onMouseLeave={()=>interactive&&onHover(null)}>
     {<div className="agent-bubble">
-    <div className="bubble-heading"><Icon name={chapter===0?['spark','book','chat','upgrade'][index]:['people','money','trend','shield'][index]}/><strong>{chapter===0?['Agent 建立與調度','知識庫與權限','多通道上線','自我升級'][index]:label}</strong></div>
-    {(hovered===index||chapter===2)&&<p>{chapter===0?['建立角色 · 分配任務','授權資料 · 安全存取','Web · Teams · LINE','提出改進 · 人工審核'][index]:chapter===2?['等待任務','收到任務，開始處理','假單已處理！等待確認','已完成！假單已送出給主管'][taskStage]:['請假、出勤、政策查詢','報帳、發票、預算預警','業績、報價、客戶跟進','權限、部署、版本管理'][index]}</p>}
+    <div className="bubble-heading"><Icon name={chapter===0?['spark','book','chat','upgrade'][index]:['people','money','trend','shield'][index]}/><strong>{chapter===0?copy.features[[0,4,3,5][index]].title:label}</strong></div>
+    {(hovered===index||chapter===2)&&<p>{chapter===0?copy.features[[0,4,3,5][index]].title:chapter===2?copy.task.bubbles[taskStage]:copy.agents[index%4].detail}</p>}
     </div>}</div></Html>}
   </group>;
 }
@@ -203,7 +203,7 @@ function Circuit({to,index,reduced}) {
   </React.Fragment>)}</group>;
 }
 const networkNodes=[[-8,0,-6],[0,0,-6],[8,0,-6],[-8,0,0],[8,0,0],[-8,0,6],[0,0,6],[8,0,6]];
-function Office({chapter=0,reduced=false,markers=false,taskStage=0,celebrating=false,budgetAlarm=false,built=false,appSpec,buildStage,guideMotion,hovered=null,onHover=()=>{}}) {
+function Office({copy,chapter=0,reduced=false,markers=false,taskStage=0,celebrating=false,budgetAlarm=false,soloMarker=false,built=false,appSpec,buildStage,guideMotion,hovered=null,onHover=()=>{}}) {
   const backWall=useRef(),sideWall=useRef(),core=useRef(),floor=useRef(),glow=useRef(),nodes=useRef([]),expansion=useRef(0);
   const ambient=useRef({index:-1,next:0,until:0});
   useFrame(({clock},delta)=>{
@@ -238,7 +238,7 @@ function Office({chapter=0,reduced=false,markers=false,taskStage=0,celebrating=f
     {[-3,-.1,2.8].map(x=><group key={x}><Box at={[x,1.64,.09]} size={[2.4,1.7,.035]} color='#d4dfed' radius={.012}/><Box at={[x,1.64,.14]} size={[.025,1.7,.026]} color={C.metal}/><Box at={[x,1.64,.14]} size={[2.4,.025,.026]} color={C.metal}/></group>)}</group>
     <group ref={sideWall} position={[-4.85,-.17,0]}><Box at={[0,1.3,0]} size={[.12,2.6,8]} color={C.wall}/></group>
     {[-3,-1,1,3].map(z=><Box key={z} at={[0,.002,z]} size={[9.8,.005,.009]} color='#c4cad3' radius={.001}/>)}
-    {destinations.map((at,index)=><Workstation budgetAlarm={budgetAlarm} key={index} ambient={ambient} guideMotion={guideMotion} at={at} index={index} building={buildStage==='typing'} waving={buildStage==='wave'} selected={chapter===0||chapter===3||chapter===2&&index===0||chapter===4&&index===3} chapter={chapter} taskStage={taskStage} celebrating={celebrating} hovered={hovered} onHover={onHover} reduced={reduced} markers={markers}/>)}
+    {destinations.map((at,index)=><Workstation copy={copy} budgetAlarm={budgetAlarm} soloMarker={soloMarker} key={index} ambient={ambient} guideMotion={guideMotion} at={at} index={index} building={buildStage==='typing'} waving={buildStage==='wave'} selected={chapter===0||chapter===3||chapter===2&&index===0||chapter===4&&index===3} chapter={chapter} taskStage={taskStage} celebrating={celebrating} hovered={hovered} onHover={onHover} reduced={reduced} markers={markers}/>)}
     <group ref={core}>
     <mesh position={[0,.37,-.4]} castShadow receiveShadow><cylinderGeometry args={[.75,.75,.74,48]}/><meshStandardMaterial color={C.shell} roughness={.32} metalness={.65}/></mesh>
     <mesh position={[0,.75,-.4]} rotation={[-Math.PI/2,0,0]}><torusGeometry args={[.61,.015,8,48]}/><meshBasicMaterial color={C.light}/></mesh>
@@ -247,19 +247,19 @@ function Office({chapter=0,reduced=false,markers=false,taskStage=0,celebrating=f
     </group>
     {networkNodes.map((at,i)=><group key={i} ref={el=>nodes.current[i]=el}>
       <Circuit to={at} index={i+4} reduced={reduced}/>
-      <Workstation budgetAlarm={budgetAlarm} at={at} index={i+4} chapter={chapter} reduced={reduced} markers={false}/>
+      <Workstation copy={copy} budgetAlarm={budgetAlarm} at={at} index={i+4} chapter={chapter} reduced={reduced} markers={false}/>
     </group>)}
     {false&&markers&&chapter===5&&<Html position={[0,1.88,-.4]} center distanceFactor={10} zIndexRange={[8,0]}><div className="scene-pin"><i className="pin-sheen"/><em className="pin-icon"><Icon name="shield"/></em><span className="pin-body"><b>AI Core</b><span className="pin-detail">權限 / 用量 / 執行紀錄</span></span></div></Html>}
 
     <Box at={[-4.25,.56,-.1]} size={[.55,1.12,1.5]} color={C.ink}/>
     {[0,1,2,3].map(i=><Box key={i} at={[-3.96,.3+i*.22,-.1]} size={[.01,.014,1.15]} color='#b8bec7'/>)}
-    {budgetAlarm&&<BudgetBeacon reduced={reduced}/>}
+    {budgetAlarm&&<BudgetBeacon reduced={reduced} beaconLabel={copy.budget.beacon}/>}
     {destinations.map((to,i)=><Circuit key={i} to={to} index={i} reduced={reduced}/>)}
   </group>;
 }
 // 05: the budget beacon. It is mounted only while the alarm is live, so nothing
 // sits on the core until the limit is reached.
-function BudgetBeacon({reduced}) {
+function BudgetBeacon({reduced,beaconLabel}) {
   const rotor=useRef();
   useFrame(({clock})=>{if(rotor.current)rotor.current.rotation.y=reduced?0:clock.elapsedTime*5;});
   return <group position={[0,2.05,-.4]}>
@@ -271,7 +271,7 @@ function BudgetBeacon({reduced}) {
       <pointLight color="#ff183b" intensity={6} distance={7}/>
       <mesh position={[.8,.03,0]} rotation={[0,0,-Math.PI/2]}><coneGeometry args={[.65,1.5,24,1,true]}/><meshBasicMaterial color="#ff2444" transparent opacity={.12} depthWrite={false} side={THREE.DoubleSide}/></mesh>
     </group>
-    <Html center position={[0,.82,0]} zIndexRange={[5,0]}><span className="budget-beacon-tag">！預算達限 · ERROR</span></Html>
+    <Html center position={[0,.82,0]} zIndexRange={[5,0]}><span className="budget-beacon-tag">{beaconLabel}</span></Html>
   </group>;
 }
 function Lights() {
@@ -300,7 +300,7 @@ export function sampleCamera(progress) {
 // The HR agent stands at destinations[0]; the celebration frames it head-on.
 const CELEBRATION={eye:new THREE.Vector3(-.65,2.55,6.8),mobileEye:new THREE.Vector3(-2.6,2.2,7.6),target:new THREE.Vector3(-3.25,1.4,2.77)};
 const heroLinks=[[-4.5,0,2.4],[4.5,0,2.4],[-4.5,0,-2.8],[4.5,0,-2.8],[-1.8,0,-4],[1.8,0,-4]];
-function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage,celebrating,budgetAlarm,built,appSpec,buildStage,hovered,onHover,phase,onReady,onDone}) {
+function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,taskStage,celebrating,budgetAlarm,built,appSpec,buildStage,hovered,onHover,phase,onReady,onDone}) {
   const hero=useRef(),bot=useRef(),office=useRef(),walk=useRef(0),journey=useRef(0),transition=useRef(0),announced=useRef(false),complete=useRef(false);
   // Per-chapter lift of the look-at point: raising it drops the model down the frame.
   const lift=useRef(0),cutIn=useRef(0);
@@ -342,7 +342,7 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
     office.current.position.y=-2*(1-t)-2.4*(1-officeIn.current)+2.1*appLift.current;
     const shot=sampleCamera(reduced?(chapter+.5)/6:progress.current);
     const finale=tour&&chapter===5?1:0;
-    const zoom=1+finale*1.12;
+    const zoom=1+finale*.92;
     eye.fromArray(shot.position).multiplyScalar(zoom);
     // 04 lifts the look-at point so the office clears the heading stacked above it.
     const liftGoal=tour&&chapter===3?1.15:0;
@@ -406,7 +406,7 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
       </group>
       <group ref={bot} position={[0,-2.32,2.5]} scale={1.3}><Agent at={[0,0,0]} reduced={reduced} guide gazeActive={phase==='tour'&&chapter===0} waving={phase==='boot'} journey={journey} panelGaze={chapter===0&&phase==='tour'?panelGaze:undefined}/></group>
     </group>
-    <group ref={office} visible={false}><Office chapter={chapter} reduced={reduced} markers={phase==='tour'&&chapter>0&&!(narrow&&chapter===2&&taskStage<3)} taskStage={taskStage} celebrating={celebrating} budgetAlarm={budgetAlarm} built={built} appSpec={appSpec} buildStage={buildStage} hovered={hovered} onHover={onHover}/></group>
+    <group ref={office} visible={false}><Office copy={copy} chapter={chapter} reduced={reduced} soloMarker={narrow} markers={phase==='tour'&&chapter>0&&!(narrow&&chapter===2&&taskStage<3)} taskStage={taskStage} celebrating={celebrating} budgetAlarm={budgetAlarm} built={built} appSpec={appSpec} buildStage={buildStage} hovered={hovered} onHover={onHover}/></group>
   </>;
 }
 export default function OfficeScene(props) {

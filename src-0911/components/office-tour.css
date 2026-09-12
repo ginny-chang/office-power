@@ -1,4 +1,4 @@
-.office-tour{height:780svh;position:relative;background:#e6e8ed;--tour-progress:0}
+.office-tour{height:600svh;position:relative;background:#e6e8ed;--tour-progress:0}
 .office-sticky{position:sticky;top:0;height:100svh;min-height:620px;overflow:hidden;color:#252932;background:#e6e8ed}
 .office-scene{position:absolute;inset:0}.office-scene canvas{display:block;width:100%;height:100%}
 .office-copy{position:absolute;left:5vw;top:24%;width:26%;max-width:350px;z-index:9;animation:office-reveal .65s ease both;pointer-events:none}
@@ -40,7 +40,7 @@
 @keyframes boot-loading{0%{transform:translateX(-110%)}100%{transform:translateX(180%)}}
 html[data-office-phase="boot"] .site-header,html[data-office-phase="wide"] .site-header,html[data-office-phase="flight"] .site-header{opacity:0;pointer-events:none;visibility:hidden}
 @media(max-width:760px){
-.office-tour{height:852svh}.office-sticky{min-height:650px}.office-copy{top:110px;left:7vw;width:86%;max-width:none}
+.office-tour{height:660svh}.office-sticky{min-height:650px}.office-copy{top:110px;left:7vw;width:86%;max-width:none}
 .office-copy h1{font-size:29px;margin:17px 0}.office-copy>p{max-width:310px;font-size:13px}.office-scene{inset:280px -15% 150px}
 html:not([data-office-phase="tour"]) .office-scene{inset:0}
 .office-dialog{position:absolute;top:calc(100svh - 320px);left:0;max-width:none;width:86vw;background:#edf0f5eb;border:1px solid #c5cfdd;border-radius:5px;padding:12px}
@@ -80,7 +80,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
 @keyframes orbit-breathe{to{opacity:.35;transform:translateX(30px) rotate(-16deg)}}
 @media(max-width:760px){
  .office-scene::after{display:none}
- .office-tour{height:780svh}.office-sticky{min-height:700px}
+ .office-tour{height:600svh}.office-sticky{min-height:700px}
  .office-copy{top:92px;left:6vw;width:88%;max-width:none}.office-copy h1{font-size:28px;margin:12px 0}.office-copy>p{font-size:13px;max-width:340px}
  .office-scene{inset:240px -12% 85px}
  .platform-capabilities{left:6vw;right:6vw;top:auto;bottom:86px;width:auto;max-width:none;display:grid;grid-template-columns:1fr 1fr;gap:0 18px;background:#e6e8eddb;padding:8px 12px}.platform-capabilities>div{font-size:13px;gap:8px;padding:10px 0}
@@ -582,7 +582,7 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
  .chapter-5 .deployment-panel{bottom:74px}
  .chapter-5 .deployment-metrics{flex-direction:column;gap:14px;align-items:center;justify-content:center}
  .chapter-5 .deployment-metrics strong{font-size:36px}
- .chapter-5 .deployment-metrics strong>span:not(.slot-number){font-size:13px;margin-left:5px}
+ .chapter-5 .deployment-metrics strong>span:not(.slot-number){font-size:15px;margin-left:6px}
  .chapter-5 .deployment-metrics p{font-size:13px;margin-top:3px}
 }
 
@@ -632,9 +632,9 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
   margin-top:34px;padding:22px 0 0;border-top:1px solid #c2ccda;background:transparent;display:block}
  .chapter-5 .deployment-metrics{display:flex;flex-direction:row;justify-content:flex-start;gap:clamp(24px,3.4vw,52px)}
  .chapter-5 .deployment-metrics>div{text-align:left}
- .chapter-5 .deployment-metrics strong{justify-content:flex-start;font-size:clamp(34px,3.4vw,50px)}
- .chapter-5 .deployment-metrics strong>span:not(.slot-number){font-size:13px;margin-left:5px}
- .chapter-5 .deployment-metrics p{font-size:13px;margin-top:6px}
+ .chapter-5 .deployment-metrics strong{justify-content:flex-start;font-size:clamp(44px,4.4vw,66px)}
+ .chapter-5 .deployment-metrics strong>span:not(.slot-number){font-size:15px;margin-left:6px}
+ .chapter-5 .deployment-metrics p{font-size:14px;margin-top:8px}
 }
 /* Phones keep the stacked, centred treatment. */
 @media(max-width:760px){
@@ -690,3 +690,199 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
 .builder-thread .ask,.builder-thread .said,
 .task-demo footer>span,.build-state,
 .boot-center>p{text-wrap:balance;line-break:strict;overflow-wrap:break-word}
+
+/* 03: the HR Agent bubble gets room so the title stays on one line and the
+   body never runs past two. */
+.chapter-2 .agent-bubble{white-space:normal;width:clamp(250px,22vw,320px);box-sizing:border-box}
+.chapter-2 .agent-bubble .bubble-heading strong{white-space:nowrap}
+.chapter-2 .agent-bubble p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:initial}
+@media(max-width:760px){.chapter-2 .agent-bubble{width:min(74vw,290px)}}
+
+/* The brand is a single line now, so icon and wordmark sit centred together. */
+.site-shell .site-header .brand{display:inline-flex;align-items:center;gap:11px}
+.site-shell .site-header .brand strong{font-size:17px;font-weight:600;line-height:1;letter-spacing:-.01em}
+
+/* ---------------------------------------------------------------------------
+   PHONE FRAME for 02 onwards. One shape for every chapter: the title pinned
+   top-left, its panel directly beneath, and the office holding a fixed band at
+   the bottom. Nothing here reacts to the animations, so the frame stays put as
+   a screen plays through. Selectors carry .office-sticky so they outrank the
+   per-chapter rules further up (and budget-dashboard.css, which loads later).
+   --------------------------------------------------------------------------- */
+@media(max-width:760px){
+ .office-sticky.chapter-1 .office-narrative,
+ .office-sticky.chapter-2 .office-narrative,
+ .office-sticky.chapter-3 .office-narrative,
+ .office-sticky.chapter-4 .office-narrative,
+ .office-sticky.chapter-5 .office-narrative{
+  top:84px;left:6vw;right:6vw;width:88%;max-width:none;bottom:auto;
+  transform:none;text-align:left;display:block;
+  height:auto;max-height:calc(100svh - 392px);
+  overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;pointer-events:auto}
+ .office-sticky.chapter-1 .office-narrative::-webkit-scrollbar,
+ .office-sticky.chapter-2 .office-narrative::-webkit-scrollbar,
+ .office-sticky.chapter-3 .office-narrative::-webkit-scrollbar,
+ .office-sticky.chapter-4 .office-narrative::-webkit-scrollbar,
+ .office-sticky.chapter-5 .office-narrative::-webkit-scrollbar{width:0;display:none}
+
+ /* The office owns the bottom band in every one of them. */
+ .office-sticky.chapter-1 .office-scene,
+ .office-sticky.chapter-2 .office-scene,
+ .office-sticky.chapter-3 .office-scene,
+ .office-sticky.chapter-4 .office-scene,
+ .office-sticky.chapter-5 .office-scene{inset:auto 0 0;height:296px}
+
+ /* One title size and one body size across every chapter, 01 included. */
+ .office-sticky .office-narrative .office-copy h1,
+ .office-sticky.chapter-1 .office-copy h1,
+ .office-sticky.chapter-2 .office-copy h1,
+ .office-sticky.chapter-4 .office-copy h1,
+ .office-sticky.chapter-5 .office-copy h1{font-size:27px;line-height:1.35;margin:8px 0 12px}
+ .office-sticky .office-narrative .office-copy>p{font-size:14px;line-height:1.75;max-width:none;margin:0}
+
+ /* Every panel hangs off the title in the same place. */
+ .office-sticky.chapter-1 .office-narrative .app-builder,
+ .office-sticky.chapter-2 .office-narrative .task-demo,
+ .office-sticky.chapter-4 .office-narrative .budget-dashboard,
+ .office-sticky.chapter-5 .office-narrative .deployment-panel{margin-top:16px}
+ .office-sticky.chapter-5 .office-enter{margin-top:16px}
+
+ /* 02: the finished App takes the builder's slot rather than floating over it,
+    so the column never jumps when it lands. */
+ .office-sticky.chapter-1:has(.app-preview-stage) .office-narrative .app-builder{display:none}
+ .app-preview-stage{position:static;width:100%;left:auto;right:auto;top:auto;
+  transform:none;margin:16px 0 0;perspective:800px;animation:preview-lift .7s cubic-bezier(.16,1,.3,1) both}
+ .app-preview-stack{transform:none}
+ .preview-float{position:static;display:inline-flex;align-items:center;gap:10px;
+  margin:10px 10px 0 0;transform:none;padding:10px 12px}
+ .preview-connections .float-count{position:static;margin-left:2px}
+}
+
+/* Corrections to the phone frame — these beat the earlier per-chapter rules
+   (and budget-dashboard.css, which loads after this file) on specificity. */
+@media(max-width:760px){
+ /* 02 kept hiding its title once the App landed; the frame needs it to stay. */
+ .office-sticky.chapter-1:has(.app-preview-stage) .office-narrative .office-copy{display:block}
+ .office-sticky.chapter-1:has(.app-preview-stage) .office-narrative .office-copy h1,
+ .office-sticky.chapter-2:has(.task-success) .office-narrative .office-copy h1,
+ .office-sticky.chapter-4 .office-narrative .office-copy h1{font-size:27px;line-height:1.35;margin:8px 0 12px}
+ .office-sticky.chapter-2:has(.task-success) .office-narrative .office-copy>p{display:block}
+
+ /* 03 was still running the scene full-height behind the task panel. */
+ .office-sticky.chapter-2:has(.task-demo) .office-scene,
+ .office-sticky.chapter-2:has(.task-success) .office-scene{inset:auto 0 0;height:296px}
+ .office-sticky.chapter-1:has(.app-preview-stage) .office-scene{inset:auto 0 0;height:296px}
+
+ /* 01 lines up with the rest so the run reads as one frame. */
+ .office-sticky.chapter-0 .office-narrative{top:84px}
+ .phase-tour.chapter-0 .office-scene{inset:auto 0 0;height:296px}
+ .chapter-0 .capability-arc{top:196px;bottom:312px}
+}
+
+@media(max-width:760px){
+ /* Last holdout: 02 pinned its column 6px higher once the App landed. */
+ .office-sticky.chapter-1:has(.app-preview-stage) .office-narrative{top:84px;max-height:calc(100svh - 392px);overflow-y:auto}
+}
+
+/* ---- Critique fixes (phones) ---------------------------------------------- */
+.chapter-now{display:none}
+@media(max-width:760px){
+ /* P0 · 02: the finished App stays inside the content slot instead of sitting
+    on top of the office band. */
+ .app-preview-stage{position:absolute;top:196px;left:6vw;right:6vw;width:auto;margin:0;
+  max-height:calc(100svh - 508px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+ .app-preview-stage::-webkit-scrollbar{width:0;display:none}
+
+ /* P1 · every control on a phone clears the 44px touch minimum. */
+ .raised-action,
+ .task-demo footer>button,
+ .task-success button,
+ .budget-dashboard footer button,
+ .office-enter,
+ .builder-reset.liquid-btn{min-height:44px;box-sizing:border-box}
+ .office-enter{display:inline-flex;align-items:center}
+
+ /* P2 · the dots are anonymous on their own; name the chapter they point at. */
+ .office-tour-footer{flex-direction:column;gap:4px;bottom:12px}
+ .chapter-now{display:block;font:500 13px Archivo,'Noto Sans TC',sans-serif;
+  letter-spacing:.06em;color:#6d798a;text-align:center}
+
+ /* P3 · the opening cue is a button now, so it needs a real target. */
+ .boot-scroll-cue{border:0;background:transparent;cursor:pointer;
+  padding:10px 18px;min-height:44px;pointer-events:auto}
+}
+/* The cue is tappable on every size, not just phones. */
+.boot-scroll-cue{border:0;background:transparent;cursor:pointer;padding:8px 16px;pointer-events:auto}
+.boot-center{pointer-events:none}
+.boot-center .boot-scroll-cue{pointer-events:auto}
+.boot-scroll-cue:focus-visible{outline:2px solid #627d9f;outline-offset:4px;border-radius:12px}
+
+/* ---- Language switch + desktop scroll indicator --------------------------- */
+.site-shell .site-header .header-right{display:flex;align-items:center;gap:14px}
+.lang-switch{display:inline-flex;align-items:center;gap:2px;padding:3px;border-radius:999px;
+ border:1px solid #ffffffc4;background:#ffffff5c;box-shadow:inset 0 1px 0 #ffffffb8}
+.lang-switch button{min-width:38px;min-height:32px;padding:0 10px;border:0;border-radius:999px;
+ background:transparent;cursor:pointer;color:#6a7794;
+ font:600 13px Archivo,'Noto Sans TC',sans-serif;transition:background .2s ease,color .2s ease}
+.lang-switch button:hover{color:#22305a}
+.lang-switch button.is-on{background:#fff;color:#1b2748;box-shadow:0 1px 3px #2b3b5824}
+.lang-switch button:focus-visible{outline:2px solid #627d9f;outline-offset:2px}
+
+/* Progress sits in the bottom-right corner as a legible chip: the chapter count
+   plus a short bar. A hairline rail across the full width read as noise. */
+.scroll-indicator{display:none}
+@media(min-width:761px){
+ .scroll-indicator{display:flex;align-items:center;gap:11px;position:absolute;
+  right:5vw;bottom:26px;z-index:12;pointer-events:none;
+  padding:9px 15px;border-radius:999px;border:1px solid #ffffffd9;
+  background:#ffffffab;box-shadow:0 8px 22px #2b3b5817,inset 0 1px 0 #fff}
+ .scroll-indicator b{font:600 14px Archivo,'Noto Sans TC',sans-serif;letter-spacing:.1em;
+  color:#39455c;font-variant-numeric:tabular-nums}
+ /* One segment per chapter. Finished chapters are solid; the current one fills
+    as you scroll through it, so you can see a chapter boundary coming. */
+ .scroll-indicator .rail{display:flex;gap:3px;width:112px}
+ .scroll-indicator .seg{position:relative;flex:1;height:5px;border-radius:999px;
+  background:#ccd6e5;overflow:hidden}
+ .scroll-indicator .seg.is-done{background:#3d5cc4}
+ .scroll-indicator .seg.is-now::after{content:'';position:absolute;inset:0 auto 0 0;
+  width:calc(var(--chapter-progress,0) * 100%);border-radius:inherit;
+  background:linear-gradient(90deg,#6f8bd8,#3d5cc4);transition:width .1s linear}
+}
+@media(prefers-reduced-motion:reduce){.scroll-indicator .seg.is-now::after,.lang-switch button{transition:none}}
+
+/* The opening cue is plain text, not a control. */
+.boot-scroll-cue{padding:0;border:0;background:transparent;cursor:default}
+
+/* English keeps its title line breaks. Several chapters hide the <br> so the
+   Chinese title can run on one line — harmless there, but in English it welds
+   the two halves into one word. */
+:root[data-lang="en"] .office-copy h1 br{display:inline}
+/* Latin copy runs longer than the Chinese it replaces, so the arc cards get a
+   slightly tighter measure to stop neighbours overlapping. */
+:root[data-lang="en"] .capability-card em{font-size:13px;line-height:1.6}
+:root[data-lang="en"] .capability-card{padding:16px 16px 18px;gap:8px;
+ /* Latin cards run taller, so the arc spreads a little further apart. */
+ top:calc(57% + var(--dy) * 1.26)}
+
+/* The language switch costs header width; keep everything on one line. */
+.site-shell .site-header .brand strong,
+.site-shell .site-header .header-cta{white-space:nowrap}
+@media(max-width:760px){
+ .site-shell .site-header{padding:0 4vw;gap:8px}
+ .site-shell .site-header .header-right{gap:8px}
+ .site-shell .site-header .brand{gap:8px}
+ .site-shell .site-header .brand-robot-icon{width:34px;height:36px}
+ .site-shell .site-header .brand strong{font-size:15px}
+ .lang-switch{padding:2px}
+ .lang-switch button{min-width:32px;min-height:30px;padding:0 7px;font-size:12px}
+ .site-shell .site-header .header-cta{padding:9px 13px;font-size:13px}
+}
+@media(max-width:380px){
+ /* Smallest phones: the icon carries the brand on its own. */
+ .site-shell .site-header .brand strong{display:none}
+}
+
+/* A bare <small> inherits the browser's 0.83x, which drops 13px copy to 10.8px.
+   Give it a real size; explicit per-component rules still win on specificity. */
+.site-shell small{font-size:13px}
+.site-shell .lang-switch button{font-size:13px}

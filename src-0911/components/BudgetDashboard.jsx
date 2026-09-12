@@ -1,5 +1,6 @@
 import React from 'react';
 import './budget-dashboard.css';
+import { useLang } from '../i18n';
 
 const dollars = (value) => '$' + Math.round(value).toLocaleString('en-US');
 
@@ -27,17 +28,19 @@ function barHeights(ratio) {
 }
 
 export default function BudgetDashboard({ cost, limit, alarm, onReset }) {
+  const { t } = useLang();
+  const b = t.budget;
   const ratio = Math.min(1, cost / limit);
   const conversations = Math.max(1, Math.round(cost * 4));
   const tokens = Math.round(cost * 3200);
   return <div className={`budget-dashboard${alarm ? ' is-alarm' : ''}`}>
-    <header><span><i />費用總覽</span><small>即時互動示範 · USD</small></header>
+    <header><span><i />{b.heading}</span><small>{b.live}</small></header>
     <div className="budget-total">
       <div>
-        <span>總費用</span>
+        <span>{b.total}</span>
         {/* Spend reads large, the ceiling stays quiet beside it. */}
         <strong>{dollars(cost)}<em>/{dollars(limit)}</em></strong>
-        <small>預算上限 {dollars(limit)}</small>
+        <small>{b.cap(dollars(limit))}</small>
       </div>
       <div className="budget-ring">
         <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="42"/><circle cx="50" cy="50" r="42" strokeDasharray={`${ratio * 264} 264`}/></svg>
@@ -45,14 +48,14 @@ export default function BudgetDashboard({ cost, limit, alarm, onReset }) {
       </div>
     </div>
     <div className="budget-stats">
-      <div><span>總 Token 用量</span><strong>{(tokens / 1000000).toFixed(2)}<small>M</small></strong><svg viewBox="0 0 100 24" aria-hidden="true"><path d={sparkPath(ratio)}/></svg></div>
-      <div><span>對話次數</span><strong>{conversations.toLocaleString()}</strong><div className="budget-bars" aria-hidden="true">{barHeights(ratio).map((v, i) => <i key={i} style={{ transform: `scaleY(${v})` }} />)}</div></div>
-      <div><span>平均成本</span><strong>{'$' + (cost / conversations).toFixed(2)}</strong><small>每次對話</small></div>
+      <div><span>{b.tokens}</span><strong>{(tokens / 1000000).toFixed(2)}<small>M</small></strong><svg viewBox="0 0 100 24" aria-hidden="true"><path d={sparkPath(ratio)}/></svg></div>
+      <div><span>{b.conversations}</span><strong>{conversations.toLocaleString()}</strong><div className="budget-bars" aria-hidden="true">{barHeights(ratio).map((v, i) => <i key={i} style={{ transform: `scaleY(${v})` }} />)}</div></div>
+      <div><span>{b.avg}</span><strong>{'$' + (cost / conversations).toFixed(2)}</strong><small>{b.perChat}</small></div>
     </div>
     <div className="budget-status" role="status">
-      <b>{alarm ? '！已達預算上限 · 全員暫停' : '✓ 預算內運作中'}</b>
-      <span>{alarm ? '重播即可恢復示範。' : `剩餘 ${dollars(Math.max(0, limit - cost))}，費用持續累計中。`}</span>
+      <b>{alarm ? b.hit : b.ok}</b>
+      <span>{alarm ? b.hitNote : b.okNote(dollars(Math.max(0, limit - cost)))}</span>
     </div>
-    <footer><button type="button" onClick={onReset}>↻ 重播示範</button></footer>
+    <footer><button type="button" onClick={onReset}>{b.replay}</button></footer>
   </div>;
 }

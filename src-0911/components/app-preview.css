@@ -31,3 +31,18 @@
  .chapter-1:has(.app-preview-stage) .office-narrative{top:88px;max-height:340px;overflow:auto}.chapter-1:has(.app-preview-stage) .office-copy h1{font-size:23px;margin:12px 0}.chapter-1:has(.app-preview-stage) .office-copy>p{display:none}.chapter-1:has(.app-preview-stage) .app-builder{margin-top:10px;padding:12px}.chapter-1:has(.app-preview-stage) .builder-thread>.said,.chapter-1:has(.app-preview-stage) .builder-thread>.ask,.chapter-1:has(.app-preview-stage) .builder-thread>.is-links{display:none}.chapter-1:has(.app-preview-stage) .app-builder header{margin-bottom:10px}
 }
 @media(prefers-reduced-motion:reduce){.app-preview-stage{animation:none}.raised-action{transition:none}}
+
+/* These two have to live here: this sheet loads after office-tour.css, so the
+   equivalent rules there were being overridden. */
+@media(max-width:760px){
+ /* Keep the finished App inside the content slot, clear of the office band. */
+ .app-preview-stage{position:absolute;top:196px;left:6vw;right:6vw;width:auto;margin:0;
+  transform:none;max-height:calc(100svh - 508px);
+  overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;
+  /* preview-float-centre ends on translateY(-50%), which outranks the declared
+     transform above — swap to the lift, which settles on none. */
+  animation:preview-lift .7s cubic-bezier(.16,1,.3,1) both}
+ .app-preview-stage::-webkit-scrollbar{width:0;display:none}
+ /* 44px touch minimum for the preview's submit button. */
+ .raised-action{min-height:44px;padding:11px 14px}
+}

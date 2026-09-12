@@ -56,3 +56,13 @@
 @keyframes cue-in{from{opacity:0}to{opacity:1}}
 @keyframes cue-drift{0%,100%{transform:translateY(-5px);opacity:.45}50%{transform:translateY(5px);opacity:1}}
 @media(prefers-reduced-motion:reduce){.boot-scroll-cue,.boot-scroll-cue i{animation:none}}
+
+/* 01 joins the same phone frame as the rest (this sheet loads after
+   office-tour.css, so the override has to live here). */
+@media(max-width:760px){
+ .phase-tour.chapter-0 .office-scene{inset:auto 0 0;height:296px}
+ .chapter-0 .capability-arc{top:196px;bottom:312px}
+ .chapter-0 .office-narrative{top:84px}
+ /* One title offset for every chapter, so the heading never shifts between screens. */
+ .office-sticky .office-narrative .office-copy h1{margin:8px 0 12px;font-size:27px;line-height:1.35}
+}
