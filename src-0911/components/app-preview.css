@@ -37,7 +37,7 @@
 @media(max-width:760px){
  /* Keep the finished App inside the content slot, clear of the office band. */
  .app-preview-stage{position:absolute;top:196px;left:6vw;right:6vw;width:auto;margin:0;
-  transform:none;max-height:calc(100svh - 508px);
+  transform:none;max-height:calc(100svh - 412px);
   overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;
   /* preview-float-centre ends on translateY(-50%), which outranks the declared
      transform above — swap to the lift, which settles on none. */

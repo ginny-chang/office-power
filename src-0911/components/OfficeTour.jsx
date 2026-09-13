@@ -120,11 +120,15 @@ export default function OfficeTour() {
         const next = Math.min(chapters.length - 1, Math.floor(step));
         setChapter(next);
         // 04 on phones: scrolling walks the camera through the four Agents in turn.
-        if (narrow && next === 3) setAutoAgent(Math.max(0, Math.min(3, Math.floor((step - 3) * 4))));
+        // 04 on phones walks HR -> IT -> Sales -> Finance; destinations are
+        // ordered HR, Finance, Sales, IT, so the sequence is remapped.
+        if (narrow && next === 3) setAutoAgent([0, 3, 2, 1][Math.max(0, Math.min(3, Math.floor((step - 3) * 4)))]);
         root.current.style.setProperty('--tour-progress', progress.current);
         // How far through the current chapter — that is the part that tells you
         // whether another scroll will tip you into the next one.
         root.current.style.setProperty('--chapter-progress', Math.max(0, Math.min(1, step - next)));
+        // 01 on phones trades the robot band for panel space as the chapter plays.
+        root.current.style.setProperty('--reveal', next === 0 ? Math.max(0, Math.min(1, (step - next) * 1.35)) : 0);
       });
     };
     update();

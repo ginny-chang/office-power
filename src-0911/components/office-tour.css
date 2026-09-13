@@ -859,10 +859,8 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
 :root[data-lang="en"] .office-copy h1 br{display:inline}
 /* Latin copy runs longer than the Chinese it replaces, so the arc cards get a
    slightly tighter measure to stop neighbours overlapping. */
-:root[data-lang="en"] .capability-card em{font-size:13px;line-height:1.6}
-:root[data-lang="en"] .capability-card{padding:16px 16px 18px;gap:8px;
- /* Latin cards run taller, so the arc spreads a little further apart. */
- top:calc(57% + var(--dy) * 1.26)}
+
+
 
 /* The language switch costs header width; keep everything on one line. */
 .site-shell .site-header .brand strong,
@@ -886,3 +884,125 @@ button:focus-visible,a:focus-visible{outline:2px solid #627d9f;outline-offset:5p
    Give it a real size; explicit per-component rules still win on specificity. */
 .site-shell small{font-size:13px}
 .site-shell .lang-switch button{font-size:13px}
+
+/* ---- English type scale --------------------------------------------------
+   Latin copy reads smaller than Chinese at the same px, so the panels step up
+   a size. The cards also widen: more characters per line keeps the taller type
+   from simply adding rows. ------------------------------------------------- */
+:root[data-lang="en"] .capability-card{width:clamp(244px,20vw,272px);padding:16px 18px 18px;gap:9px;
+ top:calc(57% + var(--dy) * 1.2)}
+:root[data-lang="en"] .capability-card strong{font-size:17px}
+:root[data-lang="en"] .capability-card em{font-size:14.5px;line-height:1.62}
+
+/* 02 — the builder head and its checklist */
+:root[data-lang="en"] .app-builder header strong{font-size:15px}
+:root[data-lang="en"] .app-builder header small{font-size:13.5px}
+:root[data-lang="en"] .check-copy b{font-size:15.5px}
+:root[data-lang="en"] .check-copy em{font-size:14.5px}
+:root[data-lang="en"] .app-tile em{font-size:14px}
+:root[data-lang="en"] .build-state{font-size:14px}
+
+/* 03 / 04 — the Agent bubbles */
+:root[data-lang="en"] .agent-bubble strong{font-size:17px}
+:root[data-lang="en"] .agent-bubble p{font-size:14.5px;line-height:1.6}
+:root[data-lang="en"] .chapter-3 .agent-bubble{width:clamp(210px,17vw,250px)}
+:root[data-lang="en"] .chapter-2 .agent-bubble{width:clamp(260px,23vw,330px)}
+
+/* 05 — the cost dashboard */
+:root[data-lang="en"] .budget-dashboard{font-size:14px}
+:root[data-lang="en"] .budget-dashboard header>span{font-size:15.5px}
+:root[data-lang="en"] .budget-dashboard header small{font-size:13.5px}
+:root[data-lang="en"] .budget-total span,
+:root[data-lang="en"] .budget-total small{font-size:14px}
+:root[data-lang="en"] .budget-stats span{font-size:13.5px}
+:root[data-lang="en"] .budget-stats strong{font-size:22px}
+:root[data-lang="en"] .budget-status b{font-size:14.5px}
+:root[data-lang="en"] .budget-status span{font-size:13.5px}
+:root[data-lang="en"] .budget-dashboard footer button{font-size:14px}
+
+/* 05 App screen (the leave preview) */
+:root[data-lang="en"] .preview-records h3{font-size:15px}
+:root[data-lang="en"] .preview-records p{font-size:14px}
+:root[data-lang="en"] .preview-heading p{font-size:14px}
+:root[data-lang="en"] .preview-actions>span{font-size:14px}
+
+/* 01 in English: the wider cards reach up level with the heading, so the
+   heading sits higher and a touch smaller to stay clear of them. */
+@media(min-width:761px){
+ :root[data-lang="en"] .phase-tour.chapter-0 .office-narrative{top:5%}
+ :root[data-lang="en"] .phase-tour.chapter-0 .office-copy h1{font-size:clamp(27px,3vw,41px);margin:10px 0 0}
+ :root[data-lang="en"] .chapter-0 .office-narrative{top:5%}
+ :root[data-lang="en"] .chapter-0 .office-copy h1{font-size:clamp(27px,3vw,41px);margin:10px 0 0}
+}
+
+/* 03 in English: the larger chat type pushed the panel past its column, so the
+   spacing tightens rather than the type shrinking back. */
+@media(min-width:761px){
+ :root[data-lang="en"] .chapter-2 .office-narrative{top:86px;max-height:calc(100svh - 116px)}
+ :root[data-lang="en"] .chapter-2 .office-narrative .task-demo{margin-top:14px}
+ :root[data-lang="en"] .chapter-2 .task-conversation{gap:9px;padding:10px 16px}
+ :root[data-lang="en"] .chapter-2 .chat-bubble{padding:9px 13px}
+ :root[data-lang="en"] .chapter-2 .task-demo header{padding:11px 16px}
+ :root[data-lang="en"] .chapter-2 .task-demo footer{padding:10px 16px}
+ :root[data-lang="en"] .chapter-2 .chat-bubble.leave-preview>div{padding:4px 0}
+}
+
+/* The confirm summary and the App record notes were still at 13px. Bigger rows
+   need tighter padding to stay inside the column. */
+:root[data-lang="en"] .chat-bubble.leave-preview>div{font-size:14.5px;padding:3px 0}
+:root[data-lang="en"] .task-demo footer>span{font-size:14.5px}
+:root[data-lang="en"] .task-success{font-size:14.5px}
+:root[data-lang="en"] .task-success small{font-size:13.5px}
+
+/* Final 10px for 03 in English: a tighter measure on the intro and the replay
+   button, so the panel closes inside its column. */
+@media(min-width:761px){
+ :root[data-lang="en"] .chapter-2 .office-narrative .office-copy>p{line-height:1.6}
+ :root[data-lang="en"] .chapter-2 .task-success button{margin-top:3px;padding:6px 16px}
+}
+
+/* ---- Phone staging pass 2 ------------------------------------------------- */
+@media(max-width:760px){
+ /* 4 · 02 gives the builder half the screen; the office keeps a slim strip at
+    the very bottom, and the finished App sits above it, never behind it. */
+ .office-sticky.chapter-1 .office-narrative,
+ .office-sticky.chapter-2 .office-narrative{max-height:calc(100svh - 292px)}
+ .office-sticky.chapter-1 .office-scene,
+ .office-sticky.chapter-2 .office-scene{inset:auto 0 0;height:196px}
+ .office-sticky.chapter-1:has(.app-preview-stage) .office-scene{inset:auto 0 0;height:196px}
+ .app-preview-stage{top:188px;max-height:calc(100svh - 408px)}
+
+ /* 5 · 03 matches 02 until the task is sent, then the scene takes the frame. */
+ .office-sticky.chapter-2:has(.task-demo) .office-scene,
+ .office-sticky.chapter-2:has(.task-success) .office-scene{inset:auto 0 0;height:196px}
+ .office-sticky.chapter-2:has(.task-success) .office-scene{height:330px;transition:height .6s cubic-bezier(.22,.61,.36,1)}
+ .office-sticky.chapter-2:has(.task-success) .office-narrative{max-height:calc(100svh - 420px)}
+
+ /* 6 · 04 carries no panel, so the office takes everything under the heading:
+    the agent lands mid-screen instead of hiding in a strip at the bottom. */
+ .office-sticky.chapter-3 .office-scene{inset:auto 0 0;height:calc(100svh - 342px)}
+
+ /* 7 · 05 folds the dashboard away once the cap lands so the office can breathe. */
+ .office-sticky.chapter-4:has(.is-alarm) .office-narrative{max-height:calc(100svh - 470px);
+  transition:max-height .55s cubic-bezier(.22,.61,.36,1)}
+ .office-sticky.chapter-4:has(.is-alarm) .office-scene{height:380px;
+  transition:height .55s cubic-bezier(.22,.61,.36,1)}
+ .office-sticky.chapter-4:has(.is-alarm) .budget-stats,
+ .office-sticky.chapter-4:has(.is-alarm) .budget-dashboard footer{display:none}
+
+ /* 8 · 06 hands the office everything under the metrics, so the whole floor
+    reads at the finale instead of sitting in a strip. */
+ .office-sticky.chapter-5 .office-scene{inset:auto 0 0;height:calc(100svh - 400px)}
+
+ /* 8 · 06 dims from the edges inward, so the middle of the office stays legible. */
+ .office-dim{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  background:radial-gradient(ellipse 72% 58% at 50% 62%,
+   rgba(16,28,46,0) 0%, rgba(16,28,46,.06) 45%, rgba(16,28,46,.28) 100%)}
+
+ /* 9 · every band change eases rather than snapping. */
+ .office-scene{transition:height .55s cubic-bezier(.22,.61,.36,1),inset .55s cubic-bezier(.22,.61,.36,1)}
+ .office-narrative{transition:max-height .55s cubic-bezier(.22,.61,.36,1)}
+}
+@media(max-width:760px) and (prefers-reduced-motion:reduce){
+ .office-scene,.office-narrative{transition:none}
+}

@@ -306,7 +306,7 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
   const lift=useRef(0),cutIn=useRef(0);
   // Phone-only staging: 02 lifts the office once the build lands, 03 holds the office
   // back until the task is sent, 04 walks the camera from one Agent to the next.
-  const appLift=useRef(0),officeIn=useRef(1),agentCut=useRef(0);
+  const appLift=useRef(0),officeIn=useRef(1),agentCut=useRef(0),capLift=useRef(0);
   const {camera,size,invalidate}=useThree();
   const narrow=size.width<=760;
   const eye=useMemo(()=>new THREE.Vector3(),[]),target=useMemo(()=>new THREE.Vector3(),[]);
@@ -331,18 +331,24 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
     const bounce=openingBounce(elapsed,reduced||phase!=='boot');
     bot.current.position.set(0,.08+w*.05+bounce.y,2.5*(1-w));
     bot.current.scale.set(1.3*bounce.scaleXZ,1.3*bounce.scaleY,1.3*bounce.scaleXZ);
-    // 03 on phones keeps the office off-stage until the task has been sent.
-    const holdOffice=mobile&&tour&&chapter===2&&taskStage<3;
-    const officeGoal=holdOffice?0:1;
+    // 03 on phones used to push the office off-stage until the task was sent,
+    // which read as the office having vanished. It stays in its band instead,
+    // small and low (phoneDrop below), and only the celebration moves in on it.
+    const officeGoal=1;
     officeIn.current=reduced?officeGoal:THREE.MathUtils.damp(officeIn.current,officeGoal,3,dt);
     // 02 on phones floats the office up to clear the finished App.
     const appGoal=mobile&&tour&&chapter===1&&built?1:0;
+    // 02/03 on phones keep the office low; 05 lifts it when the cap lands.
+    const phoneDrop=mobile&&tour&&(chapter===1||chapter===2)?1:0;
+    // 05 on phones: when the cap lands the office comes up into the frame.
+    const capGoal=mobile&&tour&&chapter===4&&budgetAlarm?1:0;
+    capLift.current=reduced?capGoal:THREE.MathUtils.damp(capLift.current,capGoal,2.2,dt);
     appLift.current=reduced?appGoal:THREE.MathUtils.damp(appLift.current,appGoal,2.6,dt);
     office.current.visible=t>.005&&officeIn.current>.004;
-    office.current.position.y=-2*(1-t)-2.4*(1-officeIn.current)+2.1*appLift.current;
+    office.current.position.y=-2*(1-t)-2.4*(1-officeIn.current)+2.1*appLift.current-1.35*phoneDrop+1.5*capLift.current;
     const shot=sampleCamera(reduced?(chapter+.5)/6:progress.current);
     const finale=tour&&chapter===5?1:0;
-    const zoom=1+finale*.92;
+    const zoom=1+finale*(mobile?.62:.92);
     eye.fromArray(shot.position).multiplyScalar(zoom);
     // 04 lifts the look-at point so the office clears the heading stacked above it.
     const liftGoal=tour&&chapter===3?1.15:0;
@@ -357,8 +363,20 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
     // robot is cropped to a visor. Landscape viewports keep the original 7.5.
     const aspect=size.width/Math.max(1,size.height);
     const portrait=THREE.MathUtils.clamp(2.2/(.377*aspect),5,12.8);
-    heroEye.lerp(new THREE.Vector3(0,1.98,2.5+portrait),1-w);
-    heroTarget.lerp(new THREE.Vector3(0,1.98,2.5),1-w);
+    if(mobile){
+      // The bot stands at z 2.5 and spans y .08-2.16, its face reaching down to
+      // about .78. At 4.8 away the 36deg frame is 3.12 tall, so a look-at of
+      // 1.99 cuts the bottom edge at .43 -- half way down its belly -- and sits
+      // the whole head in the lower half of the screen. The desktop opening uses
+      // the same height and a distance of 5, so the bot is the same size in both;
+      // only the phone's own portrait dolly-back is dropped, and the walk back
+      // still lands on the chapter-01 anchor above, so the shots stay continuous.
+      heroEye.lerp(new THREE.Vector3(0,1.99,7.3),1-w);
+      heroTarget.lerp(new THREE.Vector3(0,1.99,2.5),1-w);
+    }else{
+      heroEye.lerp(new THREE.Vector3(0,1.98,2.5+portrait),1-w);
+      heroTarget.lerp(new THREE.Vector3(0,1.98,2.5),1-w);
+    }
     eye.lerp(heroEye,1-t);
     target.lerp(heroTarget,1-t);
     if(mobile&&t>.01)eye.multiplyScalar(1+t*.3);
@@ -374,8 +392,9 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
     agentCut.current=reduced?cutGoal4:THREE.MathUtils.damp(agentCut.current,cutGoal4,2.8,dt);
     if(agentCut.current>.001){
       const seat=destinations[Math.max(0,Math.min(3,hovered??0))];
-      agentEye.set(seat[0]*.55,2.3,seat[2]+5.22);
-      agentTarget.set(seat[0],1.15,seat[2]+.62);
+      const near=mobile?6.4:5.22;
+      agentEye.set(seat[0]*(mobile?.42:.55),mobile?2.55:2.3,seat[2]+near);
+      agentTarget.set(seat[0],mobile?1.05:1.15,seat[2]+.62);
       eye.lerp(agentEye,agentCut.current);
       target.lerp(agentTarget,agentCut.current);
     }
