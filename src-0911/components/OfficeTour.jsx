@@ -42,6 +42,7 @@ export default function OfficeTour() {
   const features = t.features;
   const root = useRef();
   const progress = useRef(0);
+  const cards = useRef();
   const openingStarted = useRef(null);
   const nudged = useRef(false);
   const panelGaze = useRef(null);
@@ -127,6 +128,10 @@ export default function OfficeTour() {
         // How far through the current chapter — that is the part that tells you
         // whether another scroll will tip you into the next one.
         root.current.style.setProperty('--chapter-progress', Math.max(0, Math.min(1, step - next)));
+        if(narrow && next === 0 && cards.current){
+          const list=cards.current;
+          list.scrollTop=Math.max(0,list.scrollHeight-list.clientHeight)*Math.min(1,step/.78);
+        }
         // 01 on phones trades the robot band for panel space as the chapter plays.
         root.current.style.setProperty('--reveal', next === 0 ? Math.max(0, Math.min(1, (step - next) * 1.35)) : 0);
       });
@@ -286,7 +291,7 @@ export default function OfficeTour() {
         </div>
         {chapter === 1 && built && <AppPreview key={`${appSpec.kind}-${appSpec.run}`} kind={appSpec.kind}/>}
         {chapter === 5 && <div className="office-dim" aria-hidden="true" />}
-        {chapter === 0 && <div className={`capability-arc${hovered !== null ? ' is-hovering' : ''}`} style={{ '--n': features.length }}>
+        {chapter === 0 && <div ref={cards} className={`capability-arc${hovered !== null ? ' is-hovering' : ''}`} style={{ '--n': features.length }}>
           {features.map((f, i) => <button key={f.title} type="button" className={`capability-card${arcFocus === i ? ' is-focus' : ''}`}
             style={{...arcStyle(i), '--panel-index': i, '--entry-x': `${ARC[i].dx > 0 ? 90 : -90}vw`, '--entry-y': `${ARC[i].dy * 3}vh`}} aria-pressed={arcFocus === i}
             onPointerEnter={(e) => { setHovered(i); aimAtPanel(e); }} onPointerLeave={() => { setHovered(null); releasePanel(); }}

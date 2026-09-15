@@ -90,3 +90,35 @@
 @media(max-width:760px) and (prefers-reduced-motion:reduce){
  .phase-tour.chapter-0 .office-scene,.chapter-0 .capability-arc{transition:none}
 }
+
+/* Mobile continuity: one persistent canvas; camera framing owns the lower band. */
+@media(max-width:760px){
+ .office-tour .office-sticky{min-height:0}
+ .office-tour .office-sticky .office-scene,
+ .office-tour .office-sticky:has(.task-success) .office-scene,
+ .office-tour .office-sticky:has(.app-preview-stage) .office-scene,
+ .office-tour .office-sticky:has(.is-alarm) .office-scene{
+  inset:0;height:100%;transition:none}
+ .office-tour .office-scene::before{display:none}
+ .office-tour .chapter-0 .capability-arc{
+  top:196px;bottom:min(340px,38svh);overflow:hidden;overscroll-behavior:auto;
+  touch-action:pan-y;transition:none;mask-image:none;-webkit-mask-image:none}
+ .office-tour .office-sticky.chapter-1 .office-narrative{
+  top:84px;bottom:min(340px,38svh);height:auto;max-height:none;
+  display:flex;flex-direction:column;overflow:hidden;transition:none}
+ .office-tour .chapter-1 .office-copy{flex-shrink:0}
+ .office-tour .chapter-1 .app-builder{
+  display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+ .office-tour .chapter-1 .app-builder header{flex-shrink:0}
+ .office-tour .chapter-1 .builder-thread{
+  flex:1;min-height:0;height:100%;max-height:none;overflow-y:auto;overscroll-behavior:contain}
+ .office-tour .chapter-1:has(.app-preview-stage) .app-builder{display:none}
+ .office-tour .chapter-1 .app-preview-stage{
+  top:236px;bottom:min(340px,38svh);height:auto;max-height:none;overflow-y:auto}
+ .office-tour .chapter-5 .office-dim{display:none}
+ .office-tour .office-sticky.chapter-5 .office-narrative{max-height:calc(100svh - min(340px,38svh) - 84px)}
+}
+
+@media(max-width:760px){
+ .office-tour .capability-arc .capability-card{width:100%}
+}

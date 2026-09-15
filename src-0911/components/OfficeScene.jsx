@@ -304,9 +304,9 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
   const hero=useRef(),bot=useRef(),office=useRef(),walk=useRef(0),journey=useRef(0),transition=useRef(0),announced=useRef(false),complete=useRef(false);
   // Per-chapter lift of the look-at point: raising it drops the model down the frame.
   const lift=useRef(0),cutIn=useRef(0);
-  // Phone-only staging: 02 lifts the office once the build lands, 03 holds the office
-  // back until the task is sent, 04 walks the camera from one Agent to the next.
-  const appLift=useRef(0),officeIn=useRef(1),agentCut=useRef(0),capLift=useRef(0);
+  const mobileTarget=useMemo(()=>new THREE.Vector3(0,1.99,2.5),[]);
+  // Phone-only staging: keep the office anchored while the camera visits Agents.
+  const officeIn=useRef(1),agentCut=useRef(0),capLift=useRef(0);
   const {camera,size,invalidate}=useThree();
   const narrow=size.width<=760;
   const eye=useMemo(()=>new THREE.Vector3(),[]),target=useMemo(()=>new THREE.Vector3(),[]);
@@ -323,7 +323,7 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
     }else if(tour)walk.current=1;
     const w=THREE.MathUtils.smoothstep(walk.current,0,1);
     journey.current=phase==='flight'?Math.min(.99,walk.current):0;
-    const destination=tour&&chapter>0?1:0;
+    const destination=mobile&&tour?THREE.MathUtils.smoothstep(progress.current*6,.78,1.12):tour&&chapter>0?1:0;
     transition.current=reduced?destination:THREE.MathUtils.damp(transition.current,destination,3.2,dt);
     const t=transition.current;
     hero.current.visible=t<.995;
@@ -331,24 +331,18 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
     const bounce=openingBounce(elapsed,reduced||phase!=='boot');
     bot.current.position.set(0,.08+w*.05+bounce.y,2.5*(1-w));
     bot.current.scale.set(1.3*bounce.scaleXZ,1.3*bounce.scaleY,1.3*bounce.scaleXZ);
-    // 03 on phones used to push the office off-stage until the task was sent,
-    // which read as the office having vanished. It stays in its band instead,
-    // small and low (phoneDrop below), and only the celebration moves in on it.
+    // Keep the office present throughout mobile chapter transitions.
     const officeGoal=1;
     officeIn.current=reduced?officeGoal:THREE.MathUtils.damp(officeIn.current,officeGoal,3,dt);
-    // 02 on phones floats the office up to clear the finished App.
-    const appGoal=mobile&&tour&&chapter===1&&built?1:0;
-    // 02/03 on phones keep the office low; 05 lifts it when the cap lands.
-    const phoneDrop=mobile&&tour&&(chapter===1||chapter===2)?1:0;
     // 05 on phones: when the cap lands the office comes up into the frame.
     const capGoal=mobile&&tour&&chapter===4&&budgetAlarm?1:0;
     capLift.current=reduced?capGoal:THREE.MathUtils.damp(capLift.current,capGoal,2.2,dt);
-    appLift.current=reduced?appGoal:THREE.MathUtils.damp(appLift.current,appGoal,2.6,dt);
     office.current.visible=t>.005&&officeIn.current>.004;
-    office.current.position.y=-2*(1-t)-2.4*(1-officeIn.current)+2.1*appLift.current-1.35*phoneDrop+1.5*capLift.current;
+    const officeY=-2*(1-t)-2.4*(1-officeIn.current)+1.5*capLift.current;
+    office.current.position.y=mobile&&!reduced?THREE.MathUtils.damp(office.current.position.y,officeY,5,dt):officeY;
     const shot=sampleCamera(reduced?(chapter+.5)/6:progress.current);
     const finale=tour&&chapter===5?1:0;
-    const zoom=1+finale*(mobile?.62:.92);
+    const zoom=1+finale*(mobile?.4:.92);
     eye.fromArray(shot.position).multiplyScalar(zoom);
     // 04 lifts the look-at point so the office clears the heading stacked above it.
     const liftGoal=tour&&chapter===3?1.15:0;
@@ -379,7 +373,8 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
     }
     eye.lerp(heroEye,1-t);
     target.lerp(heroTarget,1-t);
-    if(mobile&&t>.01)eye.multiplyScalar(1+t*.3);
+    // Mobile framing uses a stable virtual band instead of resizing the canvas.
+    if(mobile)eye.lerp(target, -t*.10);
     // 03 cuts in on the HR agent a beat after the task lands, for the celebration.
     const cutGoal=tour&&chapter===2&&celebrating?1:0;
     cutIn.current=reduced?cutGoal:THREE.MathUtils.damp(cutIn.current,cutGoal,2.4,dt);
@@ -400,9 +395,16 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
     }
     if(t<.001)camera.position.copy(eye);
     else camera.position.lerp(eye,reduced?1:1-Math.exp(-dt*5));
-    camera.lookAt(target);
+    if(mobile){
+      mobileTarget.lerp(target,reduced?1:1-Math.exp(-dt*5));
+      camera.lookAt(mobileTarget);
+    }else camera.lookAt(target);
     const offset=!mobile&&tour&&(chapter===1||chapter===2||chapter===4||chapter===5)?-.18*size.width*t:0;
-    camera.setViewOffset(size.width,size.height,offset,0,size.width,size.height);
+    if(mobile){
+      const band=Math.min(340,size.height*.38);
+      const frameHeight=THREE.MathUtils.lerp(size.height,band,w);
+      camera.setViewOffset(size.width,frameHeight,0,frameHeight-size.height,size.width,size.height);
+    }else camera.setViewOffset(size.width,size.height,offset,0,size.width,size.height);
   });
   return <>
     <color attach="background" args={['#e6ebf2']}/><fog attach="fog" args={['#e6ebf2',22,65]}/><Lights/>
