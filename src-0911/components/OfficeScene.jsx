@@ -14,7 +14,7 @@ function Box({ at=[0,0,0], size=[1,1,1], color=C.shell, radius=.035, metal=.15, 
 function Sphere({at,size,color=C.metal}) {
   return <mesh position={at} scale={size} castShadow><sphereGeometry args={[1,20,12]}/><meshStandardMaterial color={color} roughness={.45} metalness={.3}/></mesh>;
 }
-function Screen({at,size=[.95,.58],variant=0}) {
+function Screen({at,size=[.95,.58],variant=0,alarm=false}) {
   const texture = useMemo(() => {
     const canvas=document.createElement('canvas'); canvas.width=512;canvas.height=320;
     const ctx=canvas.getContext('2d');
@@ -22,13 +22,21 @@ function Screen({at,size=[.95,.58],variant=0}) {
     ctx.fillStyle='#8999ac';ctx.font='14px sans-serif';ctx.fillText(['PEOPLE / 01','FINANCE / 02','SALES / 03','GOVERNANCE / 04'][variant],26,35);
     ctx.fillStyle='#e4eaf0';ctx.font='24px sans-serif';ctx.fillText(['Leave requests','Expense review','Account activity','Access control'][variant],26,80);
     for(let i=0;i<4;i++){ctx.fillStyle='#2c3746';ctx.fillRect(26,110+i*40,460,28);ctx.fillStyle='#93a8c3';ctx.fillRect(40,120+i*40,130+i*28,6);ctx.fillStyle='#c5d2e1';ctx.fillRect(390,118+i*40,65,10);}
+    if(alarm){
+      ctx.fillStyle='#c71936';ctx.fillRect(0,0,512,320);
+      ctx.textAlign='center';ctx.fillStyle='#fff';
+      ctx.font='bold 72px sans-serif';ctx.fillText('ERROR',256,157);
+      ctx.font='22px sans-serif';ctx.fillText('BUDGET LIMIT REACHED',256,210);
+      ctx.textAlign='left';
+    }
     const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;return map;
-  },[variant]);
+  },[variant,alarm]);
   useEffect(()=>()=>texture.dispose(),[texture]);
   return <mesh position={at}><planeGeometry args={size}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh>;
 }
-// 05: a soft blue-to-grey wash spreading out from the middle of the platform.
-function FloorGlow({glow}) {
+// A soft blue-to-grey wash spreading out from the middle of a platform. Every
+// floor in the tour carries one, so they all read the same way.
+function FloorGlow({glow,size=[10,8],opacity=.9}) {
   const texture=useMemo(()=>{
     const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
     const ctx=canvas.getContext('2d');
@@ -42,8 +50,8 @@ function FloorGlow({glow}) {
   },[]);
   useEffect(()=>()=>texture.dispose(),[texture]);
   return <mesh ref={glow} rotation={[-Math.PI/2,0,0]} position={[0,.001,0]}>
-    <planeGeometry args={[10,8]}/>
-    <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} opacity={0}/>
+    <planeGeometry args={size}/>
+    <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} opacity={opacity}/>
   </mesh>;
 }
 function RobotShell() {
@@ -55,7 +63,7 @@ function RobotShell() {
     <mesh geometry={parts.inset}><meshStandardMaterial color="#bcc1c7" roughness={.65} metalness={.08}/></mesh>
   </group>;
 }
-function Agent({at,index=0,reduced,walking=false,working=false,waving=false,ambient,seated=false,arrivalProgress,guide=false,gazeActive=false,journey,panelGaze,celebrate=false,active=false,hovered=false,onHover,onLeave,onSelect}) {
+function Agent({at,index=0,reduced,walking=false,working=false,waving=false,ambient,seated=false,arrivalProgress,guide=false,gazeActive=false,journey,panelGaze,panic=false,celebrate=false,active=false,hovered=false,onHover,onLeave,onSelect}) {
   const body=useRef(), arm=useRef(),leftArm=useRef(),feet=useRef([]),eyes=useRef([]),cursor=useRef(null),celebration=useRef(0);
   useEffect(()=>{if(!guide||!gazeActive)return;const move=e=>{cursor.current=[(e.clientX/innerWidth-.5)*2,(e.clientY/innerHeight-.5)*2];};const reset=()=>{cursor.current=null;};window.addEventListener('pointermove',move);window.addEventListener('blur',reset);return()=>{window.removeEventListener('pointermove',move);window.removeEventListener('blur',reset);};},[guide,gazeActive]);
   useEffect(()=>{celebration.current=0;},[celebrate]);
@@ -69,7 +77,7 @@ function Agent({at,index=0,reduced,walking=false,working=false,waving=false,ambi
     }
     const travel=journey?.current??0;
     const gaze=gazeActive?(panelGaze?.current??cursor.current??[Math.sin(clock.elapsedTime*.55)*.65,Math.sin(clock.elapsedTime*.37)*.3]):[0,0];
-    const facing=guide ? (travel>0?Math.PI:reduced?0:gaze[0]*.7) : waving||hovered||active ? .65 : Math.PI;
+    const facing=guide ? (travel>0?Math.PI:reduced?0:gaze[0]*.7) : panic||waving||hovered||active ? .65 : Math.PI;
     body.current.rotation.y=reduced ? facing : THREE.MathUtils.lerp(body.current.rotation.y,facing,1-Math.exp(-delta*9));
     const blinkTime=(clock.elapsedTime+index*.7)%4.6;
     const blink=reduced?1:blinkTime<.18?Math.max(.07,Math.abs(blinkTime-.09)/.09):1;
@@ -78,6 +86,20 @@ function Agent({at,index=0,reduced,walking=false,working=false,waving=false,ambi
     body.current.rotation.x=THREE.MathUtils.lerp(body.current.rotation.x,guide&&gazeActive&&!reduced&&travel===0?gaze[1]*.22:0,1-Math.exp(-delta*9));
     body.current.rotation.z=0;
     if(guide&&travel===0)feet.current.forEach(foot=>{foot.position.z=.015;foot.position.y=.16;});
+    if(panic){
+      const pt=reduced?0:clock.elapsedTime*8+index*.7;
+      arm.current.position.y=.96;leftArm.current.position.y=.96;
+      arm.current.scale.y=leftArm.current.scale.y=1.5;
+      arm.current.rotation.set(Math.sin(pt)*.45,0,2.65+Math.sin(pt)*.5);
+      leftArm.current.rotation.set(Math.cos(pt)*.45,0,-2.65+Math.cos(pt)*.5);
+      body.current.rotation.x=-.18;
+      body.current.rotation.z=reduced?0:Math.sin(pt*.65)*.07;
+      body.current.position.y=at[1]+(reduced?0:Math.abs(Math.sin(pt*.55))*.14);
+      eyes.current.forEach(eye=>{eye.scale.y=1.45;});
+      return;
+    }
+    arm.current.position.y=.7;leftArm.current.position.y=.61;
+    arm.current.scale.y=leftArm.current.scale.y=1;
     if(reduced) { arm.current.rotation.z=hovered?2.15:.18; return; }
     const t=clock.elapsedTime+index*.618;
     const typing=working||ambient?.current.index===index;
@@ -124,8 +146,8 @@ function Fireworks({reduced}) {
  if(reduced)return null;
  return <group ref={group} position={[.5,2.4,.6]}>{particles.map((_,i)=><mesh key={i}><sphereGeometry args={[.035,6,4]}/><meshBasicMaterial color={i%3===0?'#f3cf84':i%3===1?'#b1c7ea':'#f4f7ff'}/></mesh>)}</group>;
 }
-function Workstation({at,index,selected,reduced,markers,chapter,taskStage,celebrating,hovered,onHover,building,waving,ambient,card,guideMotion}) {
-  const label=['HR Agent','財務 Agent','業務 Agent','IT Agent'][index%4];
+function Workstation({copy,at,index,selected,reduced,markers,chapter,taskStage,celebrating,budgetAlarm=false,soloMarker=false,hovered,onHover,building,waving,ambient,card,guideMotion}) {
+  const label=(copy?.agents?.[index%4]?.name)||'Agent';
   const worker=useRef();
   useFrame(()=>{if(worker.current)worker.current.visible=index!==0||!guideMotion||guideMotion.current>=.999;});
   const interactive=markers&&chapter===3;
@@ -137,7 +159,7 @@ function Workstation({at,index,selected,reduced,markers,chapter,taskStage,celebr
     {[.25,.5,.75].map(y=><group key={y}><Box at={[-.87,y,-.026]} size={[.42,.008,.014]} color="#929aa4"/><Box at={[-.87,y+.1,-.016]} size={[.16,.025,.02]} color="#777f88"/></group>)}
     <Box at={[.99,.46,-.55]} size={[.08,.86,1.02]} color="#a5abb3" metal={.6}/>
     <Box at={[0,1.43,-.74]} size={[1.2,.82,.055]} color="#c5d5e9" radius={.045} metal={.8}/>
-    <Box at={[0,1.48,-.703]} size={[1.12,.65,.016]} color="#f0f5fc" radius={.025}/><Screen at={[0,1.48,-.692]} size={[1.04,.58]} variant={index%4}/>
+    <Box at={[0,1.48,-.703]} size={[1.12,.65,.016]} color="#f0f5fc" radius={.025}/><Screen at={[0,1.48,-.692]} size={[1.04,.58]} variant={index%4} alarm={budgetAlarm}/>
     <Sphere at={[0,1.826,-.702]} size={[.012,.012,.006]} color={C.ink}/>
     <Box at={[0,1.087,-.702]} size={[1.12,.075,.015]} color="#aec4e4" radius={.012}/>
     <Box at={[0,1.07,-.74]} size={[.05,.25,.06]} color={C.metal}/>
@@ -148,14 +170,14 @@ function Workstation({at,index,selected,reduced,markers,chapter,taskStage,celebr
     <Box at={[.91,1.015,-.83]} size={[.3,.045,.23]} color="#525a64"/>
     <Box at={[.91,1.27,-.83]} size={[.025,.5,.025]} color="#77808b"/>
     <Box at={[.81,1.52,-.78]} size={[.35,.08,.2]} color="#626b76" radius={.035}/>
-    <group ref={worker}><Agent at={[0,.07,.62]} ambient={ambient} index={index} reduced={reduced} working={chapter===4||(markers&&chapter===1&&index===0&&building)} waving={markers&&chapter===1&&index===0&&waving} active={markers&&chapter===2&&index===0&&taskStage>0} celebrate={markers&&chapter===2&&index===0&&celebrating} hovered={hovered===index&&interactive} onHover={interactive?e=>{e.stopPropagation();onHover(index);}:undefined} onLeave={interactive?()=>onHover(null):undefined} onSelect={interactive?e=>{e.stopPropagation();onHover(hovered===index?null:index);}:undefined}/></group>
+    <group ref={worker}><Agent panic={budgetAlarm} at={[0,.07,.62]} ambient={ambient} index={index} reduced={reduced} working={chapter===5||(markers&&chapter===1&&index===0&&building)} waving={markers&&chapter===1&&index===0&&waving} active={markers&&chapter===2&&index===0&&taskStage>0} celebrate={markers&&chapter===2&&index===0&&celebrating} hovered={hovered===index&&interactive} onHover={interactive?e=>{e.stopPropagation();onHover(index);}:undefined} onLeave={interactive?()=>onHover(null):undefined} onSelect={interactive?e=>{e.stopPropagation();onHover(hovered===index?null:index);}:undefined}/></group>
     {markers&&chapter===2&&index===0&&taskStage>0&&<group position={[.45,2.05,.6]}><mesh><sphereGeometry args={[.13,20,16]}/><meshStandardMaterial color="#fff0b0" emissive="#ffe298" emissiveIntensity={2}/></mesh><Box at={[0,-.16,0]} size={[.11,.09,.11]} color="#a2a9b4"/><pointLight color="#ffebad" intensity={1.3} distance={2}/></group>}
     {markers&&chapter===2&&index===0&&celebrating&&<Fireworks reduced={reduced}/>}
-    {markers&&(interactive||(chapter===2&&index===0&&taskStage>0))&&<Html position={[0,2.12,-.05]} center zIndexRange={[8,0]}>
+    {markers&&(interactive||(chapter===2&&index===0&&taskStage>0))&&!(soloMarker&&interactive&&hovered!==index)&&<Html position={[0,2.12,-.05]} center zIndexRange={[8,0]}>
     <div className="agent-marker" onMouseEnter={()=>interactive&&onHover(index)} onMouseLeave={()=>interactive&&onHover(null)}>
     {<div className="agent-bubble">
-    <div className="bubble-heading"><Icon name={chapter===0?['spark','book','chat','upgrade'][index]:['people','money','trend','shield'][index]}/><strong>{chapter===0?['Agent 建立與調度','知識庫與權限','多通道上線','自我升級'][index]:label}</strong></div>
-    {(hovered===index||chapter===2)&&<p>{chapter===0?['建立角色 · 分配任務','授權資料 · 安全存取','Web · Teams · LINE','提出改進 · 人工審核'][index]:chapter===2?['等待任務','收到任務，開始處理','假單已處理！等待確認','已完成！假單已送出給主管'][taskStage]:['請假、出勤、政策查詢','報帳、發票、預算預警','業績、報價、客戶跟進','權限、部署、版本管理'][index]}</p>}
+    <div className="bubble-heading"><Icon name={chapter===0?['spark','book','chat','upgrade'][index]:['people','money','trend','shield'][index]}/><strong>{chapter===0?copy.features[[0,4,3,5][index]].title:label}</strong></div>
+    {(hovered===index||chapter===2)&&<p>{chapter===0?copy.features[[0,4,3,5][index]].title:chapter===2?copy.task.bubbles[taskStage]:copy.agents[index%4].detail}</p>}
     </div>}</div></Html>}
   </group>;
 }
@@ -181,11 +203,11 @@ function Circuit({to,index,reduced}) {
   </React.Fragment>)}</group>;
 }
 const networkNodes=[[-8,0,-6],[0,0,-6],[8,0,-6],[-8,0,0],[8,0,0],[-8,0,6],[0,0,6],[8,0,6]];
-function Office({chapter=0,reduced=false,markers=false,taskStage=0,celebrating=false,built=false,appSpec,buildStage,guideMotion,hovered=null,onHover=()=>{}}) {
+function Office({copy,chapter=0,reduced=false,markers=false,taskStage=0,celebrating=false,budgetAlarm=false,soloMarker=false,built=false,appSpec,buildStage,guideMotion,hovered=null,onHover=()=>{}}) {
   const backWall=useRef(),sideWall=useRef(),core=useRef(),floor=useRef(),glow=useRef(),nodes=useRef([]),expansion=useRef(0);
   const ambient=useRef({index:-1,next:0,until:0});
   useFrame(({clock},delta)=>{
-    const goal=chapter===4?1:0;
+    const goal=chapter===5?1:0;
     expansion.current=reduced?goal:THREE.MathUtils.damp(expansion.current,goal,2.3,Math.min(delta,.05));
     const e=expansion.current;
     backWall.current.rotation.x=-Math.PI/2*THREE.MathUtils.smoothstep(e,0,.5);
@@ -193,8 +215,9 @@ function Office({chapter=0,reduced=false,markers=false,taskStage=0,celebrating=f
     const wallScale=1-THREE.MathUtils.smoothstep(e,.48,.78);
     backWall.current.scale.y=sideWall.current.scale.y=Math.max(.001,wallScale);
     backWall.current.visible=sideWall.current.visible=e<.8;
-    floor.current.scale.set(1+e*1.1,1,1+e*1.15);
-    if(glow.current)glow.current.material.opacity=THREE.MathUtils.smoothstep(e,.05,.75);
+    floor.current.scale.set(1+e*24,1,1+e*30);
+    // The wash keeps its own scale, or it would stretch into nothing.
+    if(glow.current)glow.current.scale.setScalar(1+e*1.9);
     core.current.scale.setScalar(1+e*.85);
     nodes.current.forEach((node,i)=>{
       if(!node)return;
@@ -209,12 +232,13 @@ function Office({chapter=0,reduced=false,markers=false,taskStage=0,celebrating=f
     else if(t>=state.until)state.index=-1;
   });
   return <group>
-    <group ref={floor}><Box at={[0,-.22,0]} size={[10,.42,8]} color={C.floor} radius={.12}/><FloorGlow glow={glow}/></group>
+    <group ref={floor}><Box at={[0,-.22,0]} size={[10,.42,8]} color={C.floor} radius={.12}/></group>
+    <FloorGlow glow={glow}/>
     <group ref={backWall} position={[0,-.17,-3.85]}><Box at={[0,1.3,0]} size={[10,2.6,.12]} color={C.wall}/>
     {[-3,-.1,2.8].map(x=><group key={x}><Box at={[x,1.64,.09]} size={[2.4,1.7,.035]} color='#d4dfed' radius={.012}/><Box at={[x,1.64,.14]} size={[.025,1.7,.026]} color={C.metal}/><Box at={[x,1.64,.14]} size={[2.4,.025,.026]} color={C.metal}/></group>)}</group>
     <group ref={sideWall} position={[-4.85,-.17,0]}><Box at={[0,1.3,0]} size={[.12,2.6,8]} color={C.wall}/></group>
     {[-3,-1,1,3].map(z=><Box key={z} at={[0,.002,z]} size={[9.8,.005,.009]} color='#c4cad3' radius={.001}/>)}
-    {destinations.map((at,index)=><Workstation key={index} ambient={ambient} guideMotion={guideMotion} at={at} index={index} building={buildStage==='typing'} waving={buildStage==='wave'} selected={chapter===0||chapter===3||chapter===2&&index===0||chapter===4&&index===3} chapter={chapter} taskStage={taskStage} celebrating={celebrating} hovered={hovered} onHover={onHover} reduced={reduced} markers={markers}/>)}
+    {destinations.map((at,index)=><Workstation copy={copy} budgetAlarm={budgetAlarm} soloMarker={soloMarker} key={index} ambient={ambient} guideMotion={guideMotion} at={at} index={index} building={buildStage==='typing'} waving={buildStage==='wave'} selected={chapter===0||chapter===3||chapter===2&&index===0||chapter===4&&index===3} chapter={chapter} taskStage={taskStage} celebrating={celebrating} hovered={hovered} onHover={onHover} reduced={reduced} markers={markers}/>)}
     <group ref={core}>
     <mesh position={[0,.37,-.4]} castShadow receiveShadow><cylinderGeometry args={[.75,.75,.74,48]}/><meshStandardMaterial color={C.shell} roughness={.32} metalness={.65}/></mesh>
     <mesh position={[0,.75,-.4]} rotation={[-Math.PI/2,0,0]}><torusGeometry args={[.61,.015,8,48]}/><meshBasicMaterial color={C.light}/></mesh>
@@ -223,13 +247,31 @@ function Office({chapter=0,reduced=false,markers=false,taskStage=0,celebrating=f
     </group>
     {networkNodes.map((at,i)=><group key={i} ref={el=>nodes.current[i]=el}>
       <Circuit to={at} index={i+4} reduced={reduced}/>
-      <Workstation at={at} index={i+4} chapter={chapter} reduced={reduced} markers={false}/>
+      <Workstation copy={copy} budgetAlarm={budgetAlarm} at={at} index={i+4} chapter={chapter} reduced={reduced} markers={false}/>
     </group>)}
-    {false&&markers&&chapter===4&&<Html position={[0,1.88,-.4]} center distanceFactor={10} zIndexRange={[8,0]}><div className="scene-pin"><i className="pin-sheen"/><em className="pin-icon"><Icon name="shield"/></em><span className="pin-body"><b>AI Core</b><span className="pin-detail">權限 / 用量 / 執行紀錄</span></span></div></Html>}
+    {false&&markers&&chapter===5&&<Html position={[0,1.88,-.4]} center distanceFactor={10} zIndexRange={[8,0]}><div className="scene-pin"><i className="pin-sheen"/><em className="pin-icon"><Icon name="shield"/></em><span className="pin-body"><b>AI Core</b><span className="pin-detail">權限 / 用量 / 執行紀錄</span></span></div></Html>}
 
     <Box at={[-4.25,.56,-.1]} size={[.55,1.12,1.5]} color={C.ink}/>
     {[0,1,2,3].map(i=><Box key={i} at={[-3.96,.3+i*.22,-.1]} size={[.01,.014,1.15]} color='#b8bec7'/>)}
+    {budgetAlarm&&<BudgetBeacon reduced={reduced} beaconLabel={copy.budget.beacon}/>}
     {destinations.map((to,i)=><Circuit key={i} to={to} index={i} reduced={reduced}/>)}
+  </group>;
+}
+// 05: the budget beacon. It is mounted only while the alarm is live, so nothing
+// sits on the core until the limit is reached.
+function BudgetBeacon({reduced,beaconLabel}) {
+  const rotor=useRef();
+  useFrame(({clock})=>{if(rotor.current)rotor.current.rotation.y=reduced?0:clock.elapsedTime*5;});
+  return <group position={[0,2.05,-.4]}>
+    <mesh position={[0,-.28,0]}><cylinderGeometry args={[.46,.51,.17,40]}/><meshStandardMaterial color="#8798af" metalness={.8} roughness={.24}/></mesh>
+    <mesh><sphereGeometry args={[.43,32,20,0,Math.PI*2,0,Math.PI/2]}/><meshPhysicalMaterial color="#f52643" transparent opacity={.62} roughness={.13} metalness={.15} depthWrite={false}/></mesh>
+    <mesh position={[0,-.12,0]}><cylinderGeometry args={[.43,.43,.24,32,1,true]}/><meshPhysicalMaterial color="#e82240" transparent opacity={.5} depthWrite={false}/></mesh>
+    <group ref={rotor}>
+      <mesh position={[0,.02,0]}><boxGeometry args={[.5,.28,.13]}/><meshStandardMaterial color="#ff5460" emissive="#ff1635" emissiveIntensity={2}/></mesh>
+      <pointLight color="#ff183b" intensity={6} distance={7}/>
+      <mesh position={[.8,.03,0]} rotation={[0,0,-Math.PI/2]}><coneGeometry args={[.65,1.5,24,1,true]}/><meshBasicMaterial color="#ff2444" transparent opacity={.12} depthWrite={false} side={THREE.DoubleSide}/></mesh>
+    </group>
+    <Html center position={[0,.82,0]} zIndexRange={[5,0]}><span className="budget-beacon-tag">{beaconLabel}</span></Html>
   </group>;
 }
 function Lights() {
@@ -243,11 +285,12 @@ const cameraStops=[
   {p:[8,7,12],t:[0,.8,0]},
   {p:[8,7.2,11],t:[0,.4,0]},
   {p:[7,8,10],t:[-.4,.3,-.5]},
+  {p:[7.4,7.4,10.4],t:[-.2,.55,-.4]},
   {p:[9,8,12],t:[0,.3,0]},
 ];
 export function sampleCamera(progress) {
-  const x=Math.max(0,Math.min(1,progress))*5;
-  const index=Math.min(4,Math.floor(x));
+  const x=Math.max(0,Math.min(1,progress))*6;
+  const index=Math.min(5,Math.floor(x));
   const f=THREE.MathUtils.smoothstep(x-index,0,1);
   return {
     position:cameraStops[index].p.map((v,i)=>THREE.MathUtils.lerp(v,cameraStops[index+1].p[i],f)),
@@ -257,13 +300,13 @@ export function sampleCamera(progress) {
 // The HR agent stands at destinations[0]; the celebration frames it head-on.
 const CELEBRATION={eye:new THREE.Vector3(-.65,2.55,6.8),mobileEye:new THREE.Vector3(-2.6,2.2,7.6),target:new THREE.Vector3(-3.25,1.4,2.77)};
 const heroLinks=[[-4.5,0,2.4],[4.5,0,2.4],[-4.5,0,-2.8],[4.5,0,-2.8],[-1.8,0,-4],[1.8,0,-4]];
-function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage,celebrating,built,appSpec,buildStage,hovered,onHover,phase,onReady,onDone}) {
+function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,taskStage,celebrating,budgetAlarm,built,appSpec,buildStage,hovered,onHover,phase,onReady,onDone}) {
   const hero=useRef(),bot=useRef(),office=useRef(),walk=useRef(0),journey=useRef(0),transition=useRef(0),announced=useRef(false),complete=useRef(false);
   // Per-chapter lift of the look-at point: raising it drops the model down the frame.
   const lift=useRef(0),cutIn=useRef(0);
   // Phone-only staging: 02 lifts the office once the build lands, 03 holds the office
   // back until the task is sent, 04 walks the camera from one Agent to the next.
-  const appLift=useRef(0),officeIn=useRef(1),agentCut=useRef(0);
+  const appLift=useRef(0),officeIn=useRef(1),agentCut=useRef(0),capLift=useRef(0);
   const {camera,size,invalidate}=useThree();
   const narrow=size.width<=760;
   const eye=useMemo(()=>new THREE.Vector3(),[]),target=useMemo(()=>new THREE.Vector3(),[]);
@@ -288,18 +331,24 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
     const bounce=openingBounce(elapsed,reduced||phase!=='boot');
     bot.current.position.set(0,.08+w*.05+bounce.y,2.5*(1-w));
     bot.current.scale.set(1.3*bounce.scaleXZ,1.3*bounce.scaleY,1.3*bounce.scaleXZ);
-    // 03 on phones keeps the office off-stage until the task has been sent.
-    const holdOffice=mobile&&tour&&chapter===2&&taskStage<3;
-    const officeGoal=holdOffice?0:1;
+    // 03 on phones used to push the office off-stage until the task was sent,
+    // which read as the office having vanished. It stays in its band instead,
+    // small and low (phoneDrop below), and only the celebration moves in on it.
+    const officeGoal=1;
     officeIn.current=reduced?officeGoal:THREE.MathUtils.damp(officeIn.current,officeGoal,3,dt);
     // 02 on phones floats the office up to clear the finished App.
     const appGoal=mobile&&tour&&chapter===1&&built?1:0;
+    // 02/03 on phones keep the office low; 05 lifts it when the cap lands.
+    const phoneDrop=mobile&&tour&&(chapter===1||chapter===2)?1:0;
+    // 05 on phones: when the cap lands the office comes up into the frame.
+    const capGoal=mobile&&tour&&chapter===4&&budgetAlarm?1:0;
+    capLift.current=reduced?capGoal:THREE.MathUtils.damp(capLift.current,capGoal,2.2,dt);
     appLift.current=reduced?appGoal:THREE.MathUtils.damp(appLift.current,appGoal,2.6,dt);
     office.current.visible=t>.005&&officeIn.current>.004;
-    office.current.position.y=-2*(1-t)-2.4*(1-officeIn.current)+2.1*appLift.current;
-    const shot=sampleCamera(reduced?(chapter+.5)/5:progress.current);
-    const finale=tour&&chapter===4?1:0;
-    const zoom=1+finale*1.12;
+    office.current.position.y=-2*(1-t)-2.4*(1-officeIn.current)+2.1*appLift.current-1.35*phoneDrop+1.5*capLift.current;
+    const shot=sampleCamera(reduced?(chapter+.5)/6:progress.current);
+    const finale=tour&&chapter===5?1:0;
+    const zoom=1+finale*(mobile?.62:.92);
     eye.fromArray(shot.position).multiplyScalar(zoom);
     // 04 lifts the look-at point so the office clears the heading stacked above it.
     const liftGoal=tour&&chapter===3?1.15:0;
@@ -307,15 +356,27 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
     target.set(0,.55+lift.current,0);
     // 01: desktop rings the robot with panels; phones stack the cards above it and
     // give it the bottom band, so the framing is closer and flatter there.
-    const heroEye=new THREE.Vector3(0,mobile?1.6:2.8,mobile?5.8:12.5);
-    const heroTarget=new THREE.Vector3(0,mobile?.95:1.85,0);
+    const heroEye=new THREE.Vector3(0,mobile?1.6:2.9,mobile?5.8:12.5);
+    const heroTarget=new THREE.Vector3(0,mobile?.95:2.5,0);
     // The opening frame is a shoulder-up portrait. Dolly out as the bot walks back.
     // It is framed on WIDTH, so a portrait phone has to sit further back or the
     // robot is cropped to a visor. Landscape viewports keep the original 7.5.
     const aspect=size.width/Math.max(1,size.height);
     const portrait=THREE.MathUtils.clamp(2.2/(.377*aspect),5,12.8);
-    heroEye.lerp(new THREE.Vector3(0,1.98,2.5+portrait),1-w);
-    heroTarget.lerp(new THREE.Vector3(0,1.98,2.5),1-w);
+    if(mobile){
+      // The bot stands at z 2.5 and spans y .08-2.16, its face reaching down to
+      // about .78. At 4.8 away the 36deg frame is 3.12 tall, so a look-at of
+      // 1.99 cuts the bottom edge at .43 -- half way down its belly -- and sits
+      // the whole head in the lower half of the screen. The desktop opening uses
+      // the same height and a distance of 5, so the bot is the same size in both;
+      // only the phone's own portrait dolly-back is dropped, and the walk back
+      // still lands on the chapter-01 anchor above, so the shots stay continuous.
+      heroEye.lerp(new THREE.Vector3(0,1.99,7.3),1-w);
+      heroTarget.lerp(new THREE.Vector3(0,1.99,2.5),1-w);
+    }else{
+      heroEye.lerp(new THREE.Vector3(0,1.98,2.5+portrait),1-w);
+      heroTarget.lerp(new THREE.Vector3(0,1.98,2.5),1-w);
+    }
     eye.lerp(heroEye,1-t);
     target.lerp(heroTarget,1-t);
     if(mobile&&t>.01)eye.multiplyScalar(1+t*.3);
@@ -331,15 +392,16 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
     agentCut.current=reduced?cutGoal4:THREE.MathUtils.damp(agentCut.current,cutGoal4,2.8,dt);
     if(agentCut.current>.001){
       const seat=destinations[Math.max(0,Math.min(3,hovered??0))];
-      agentEye.set(seat[0]*.55,2.3,seat[2]+5.22);
-      agentTarget.set(seat[0],1.15,seat[2]+.62);
+      const near=mobile?6.4:5.22;
+      agentEye.set(seat[0]*(mobile?.42:.55),mobile?2.55:2.3,seat[2]+near);
+      agentTarget.set(seat[0],mobile?1.05:1.15,seat[2]+.62);
       eye.lerp(agentEye,agentCut.current);
       target.lerp(agentTarget,agentCut.current);
     }
     if(t<.001)camera.position.copy(eye);
     else camera.position.lerp(eye,reduced?1:1-Math.exp(-dt*5));
     camera.lookAt(target);
-    const offset=!mobile&&tour&&(chapter===1||chapter===2)?-.18*size.width*t:0;
+    const offset=!mobile&&tour&&(chapter===1||chapter===2||chapter===4||chapter===5)?-.18*size.width*t:0;
     camera.setViewOffset(size.width,size.height,offset,0,size.width,size.height);
   });
   return <>
@@ -357,12 +419,13 @@ function AtlasWorld({openingStarted,progress,panelGaze,reduced,chapter,taskStage
         <Box at={[0,.035,-15]} size={[25,.025,.025]} color="#edf3fa"/>
       </group>
       <group visible={phase!=='boot'}>
-      <Box at={[0,-.1,0]} size={[11,.18,10]} color="#e9eff7" radius={.15} metal={.05}/>
+      <Box at={[0,-.1,0]} size={[400,.18,400]} color="#e9eff7" radius={.15} metal={.05}/>
+      <FloorGlow size={[34,34]} opacity={.85}/>
       {heroLinks.map((to,i)=><Circuit key={i} to={to} index={i} reduced={reduced}/>)}
       </group>
       <group ref={bot} position={[0,-2.32,2.5]} scale={1.3}><Agent at={[0,0,0]} reduced={reduced} guide gazeActive={phase==='tour'&&chapter===0} waving={phase==='boot'} journey={journey} panelGaze={chapter===0&&phase==='tour'?panelGaze:undefined}/></group>
     </group>
-    <group ref={office} visible={false}><Office chapter={chapter} reduced={reduced} markers={phase==='tour'&&chapter>0&&!(narrow&&chapter===2&&taskStage<3)} taskStage={taskStage} celebrating={celebrating} built={built} appSpec={appSpec} buildStage={buildStage} hovered={hovered} onHover={onHover}/></group>
+    <group ref={office} visible={false}><Office copy={copy} chapter={chapter} reduced={reduced} soloMarker={narrow} markers={phase==='tour'&&chapter>0&&!(narrow&&chapter===2&&taskStage<3)} taskStage={taskStage} celebrating={celebrating} budgetAlarm={budgetAlarm} built={built} appSpec={appSpec} buildStage={buildStage} hovered={hovered} onHover={onHover}/></group>
   </>;
 }
 export default function OfficeScene(props) {
