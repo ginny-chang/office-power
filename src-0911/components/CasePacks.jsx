@@ -2,9 +2,11 @@ import React, { Component, lazy, Suspense, useEffect, useRef, useState } from 'r
 import ScenarioClock from './scenario-time.jsx';
 import { scenarioBlurbs, scenarioHeadings, scenarioReadouts } from '../hr-packs';
 import './use-case.css';
+import {SceneUIContext} from '../../src/components/SceneUI';
 
-// The 3D scenes are a vendored build artifact; see src-0911/vendor/.
-const ScenarioScene = lazy(() => import('../vendor/ScenarioScene.chunk.js'));
+// Editable HR scene shares the Hero robot instead of using a frozen build.
+const ScenarioScene = lazy(() => import('./HRScenarioScene'));
+const ModeledHROffice = lazy(() => import('./ModeledHROffice'));
 
 class SceneBoundary extends Component {
   state = { failed: false };
@@ -19,20 +21,22 @@ class SceneBoundary extends Component {
 // Mounted only once the stage is near the viewport, so the chunk is never
 // fetched for visitors who don't reach this section.
 function CaseScene({ kind, progress, entry, reduced, onReadyChange }) {
-  const host = useRef();
+  const host = useRef(), overlay = useRef();
   const [near, setNear] = useState(false);
   useEffect(() => {
     const observer = new IntersectionObserver(([seen]) => setNear(seen.isIntersecting), { rootMargin: '160px' });
     observer.observe(host.current);
     return () => observer.disconnect();
   }, []);
-  return <div className="case-scene" ref={host} aria-hidden="true">
+  return <SceneUIContext.Provider value={overlay}><div className={`case-scene${(['overtime','dispatch','leave','contract','punch'].includes(kind)) ? ' case-scene--modeled' : ''}`} ref={host} aria-hidden="true">
     {near && <SceneBoundary>
       <Suspense fallback={<div className="case-scene-fallback">OP<span>正在準備 HR 工作空間</span></div>}>
-        <ScenarioScene onReadyChange={onReadyChange} kind={kind} progress={progress} entry={entry} reduced={reduced} />
+        {(['overtime','dispatch','leave','contract','punch'].includes(kind))
+          ? <ModeledHROffice onReadyChange={onReadyChange} scenario={kind} />
+          : <ScenarioScene onReadyChange={onReadyChange} kind={kind} progress={progress} entry={entry} reduced={reduced} />}
       </Suspense>
     </SceneBoundary>}
-  </div>;
+  </div><div className="case-ui-overlay" ref={overlay} aria-hidden="true" /></SceneUIContext.Provider>;
 }
 
 export default function CasePacks({ packs }) {
@@ -87,7 +91,7 @@ export default function CasePacks({ packs }) {
   const readout = scenarioReadouts[active];
 
   return <ScenarioClock active scenario={active} replay={replay} playing={playing} onComplete={advance} entry={entry} reduced={reduced}>
-    <div className="use-case-explorer case-journey" ref={editorial}>
+    <div className={`use-case-explorer case-journey${active < 5 ? ' case-journey--modeled' : ''}`} ref={editorial}>
       <div className={`case-stage case-stage--${scenario.visual}`} ref={stage}>
         <div className="case-grid" aria-hidden="true" />
         <CaseScene onReadyChange={setReady} kind={scenario.visual} progress={index} entry={entry} reduced={reduced} />
@@ -117,10 +121,7 @@ export default function CasePacks({ packs }) {
             })}
           </ol>
         </div>
-        {active > 1 && <div className="case-readout" key={scenario.visual}>
-          <strong>{readout[0]}<small>{readout[1]}</small></strong>
-          <span>{readout[2]}<small>情境示意</small></span>
-        </div>}
+
       </div>
     </div>
   </ScenarioClock>;

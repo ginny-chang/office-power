@@ -63,7 +63,7 @@ function RobotShell() {
     <mesh geometry={parts.inset}><meshStandardMaterial color="#bcc1c7" roughness={.65} metalness={.08}/></mesh>
   </group>;
 }
-function Agent({at,index=0,reduced,walking=false,working=false,waving=false,ambient,seated=false,arrivalProgress,guide=false,gazeActive=false,journey,panelGaze,panic=false,celebrate=false,active=false,hovered=false,onHover,onLeave,onSelect}) {
+export function Agent({at,index=0,reduced,walking=false,working=false,waving=false,ambient,seated=false,arrivalProgress,guide=false,gazeActive=false,journey,panelGaze,panic=false,celebrate=false,active=false,hovered=false,onHover,onLeave,onSelect}) {
   const body=useRef(), arm=useRef(),leftArm=useRef(),feet=useRef([]),eyes=useRef([]),cursor=useRef(null),celebration=useRef(0);
   useEffect(()=>{if(!guide||!gazeActive)return;const move=e=>{cursor.current=[(e.clientX/innerWidth-.5)*2,(e.clientY/innerHeight-.5)*2];};const reset=()=>{cursor.current=null;};window.addEventListener('pointermove',move);window.addEventListener('blur',reset);return()=>{window.removeEventListener('pointermove',move);window.removeEventListener('blur',reset);};},[guide,gazeActive]);
   useEffect(()=>{celebration.current=0;},[celebrate]);

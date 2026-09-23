@@ -68,12 +68,12 @@ export const scenarioHeadings = [
     "先提醒。"
   ],
   [
-    "月結不用追人，",
-    "只看還剩誰。"
+    "異常送到人，",
+    "進度看得見。"
   ],
   [
-    "把特休，",
-    "排進計畫。"
+    "特休到期前，",
+    "先把休假安排好。"
   ],
   [
     "重要的日子，",
@@ -87,8 +87,8 @@ export const scenarioHeadings = [
 
 export const scenarioBlurbs = [
   "不用月底手動比對，現在每週自動掃描加班時數，接近門檻就主動通知本人與主管。",
-  "從花 2–3 天印清單、逐一催收，到缺卡明細自動派送 LINE；HR 只看還剩誰沒處理。",
-  "不用年底才算折現；到期前 90 天提醒剩餘特休，提早安排休假。",
+  "不用逐一催回覆；異常自動派到員工 LINE，HR 只看誰還沒完成。",
+  "提前 90 天提醒剩餘天數與預估折現金額，通知員工與主管，安排進度同步 HR。",
   "不靠記憶追日期；試用期或合約到期前 30 天，主動提醒主管與 HR。",
   "不用找表單、追主管；LINE 說一句，AI 比對佐證並整理補卡摘要。"
 ];
@@ -123,4 +123,4 @@ export const scenarioReadouts = [
 ];
 
 // Seconds each scenario plays before advancing on its own.
-export const scenarioDurations = [25, 25, 12, 12, 12];
+export const scenarioDurations = [29, 29, 24, 24, 24];

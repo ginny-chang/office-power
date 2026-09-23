@@ -12,7 +12,7 @@ const shots = [
  {p:[-1.15,2.1,3.6],t:[-2.55,.7,1.12]},
 ];
 const kinds=['overtime','dispatch','leave','contract','punch'];
-function World({kind,entry,progress,reduced,onReadyChange}) {
+function World({kind,entry,progress,reduced,onReadyChange,RobotComponent}) {
  const {camera,size,invalidate,scene}=useThree();
  useLayoutEffect(()=>{scene.traverse(node=>{if(node.isLight)node.layers.enable(1);});},[scene]);
  // Render the room first, then the portrait layer with a fresh depth buffer.
@@ -51,6 +51,6 @@ function World({kind,entry,progress,reduced,onReadyChange}) {
   camera.setViewOffset(size.width,size.height,-size.width*(mobile?0:.23),-size.height*(mobile?.27:0),size.width,size.height);
   camera.updateProjectionMatrix();
  });
- return <><color attach="background" args={['#e6e8ed']}/><Lights/><Office reduced={reduced} hrCorner={<HROffice kind={kind} reduced={reduced}/>} surroundingsRef={surroundings}/><mesh rotation={[-Math.PI/2,0,0]} position={[0,-.46,0]} receiveShadow><planeGeometry args={[200,200]}/><meshStandardMaterial color="#e6e8ed" roughness={.8}/></mesh></>;
+ return <><color attach="background" args={['#e6e8ed']}/><Lights/><Office reduced={reduced} hrCorner={<HROffice kind={kind} reduced={reduced} RobotComponent={RobotComponent}/>} surroundingsRef={surroundings}/><mesh rotation={[-Math.PI/2,0,0]} position={[0,-.46,0]} receiveShadow><planeGeometry args={[200,200]}/><meshStandardMaterial color="#e6e8ed" roughness={.8}/></mesh></>;
 }
 export default function ScenarioScene(props){return <Canvas shadows dpr={[1,1.5]} frameloop={props.reduced?'demand':'always'} camera={{position:[9,8,12],fov:36}} gl={{antialias:true}}><World {...props}/></Canvas>;}

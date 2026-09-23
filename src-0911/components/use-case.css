@@ -106,3 +106,12 @@
 
 /* Same orphan guard for the use-case copy. */
 .case-copy-inner h2,.case-description,.case-accordion li button,.case-readout>span{text-wrap:balance;line-break:strict}
+.case-ui-overlay{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:visible}
+
+/* The modeled room owns its composition; do not fade its left wall. */
+.case-scene.case-scene--modeled{-webkit-mask-image:none;mask-image:none}
+
+@media(max-width:650px){
+ .product-details .use-case-explorer.case-journey--modeled,.case-journey--modeled .case-stage{height:max(100svh,880px)}
+ .case-journey--modeled .real-hr-office{top:53%}
+}

@@ -1,0 +1,28 @@
+.real-hr-office{position:absolute;inset:0 0 0 36%;z-index:1;overflow:hidden;pointer-events:none;background:#e6e8ed}.real-hr-canvas{position:absolute;inset:0}.real-hr-canvas canvas{display:block}.real-hr-status{position:absolute;top:11%;left:50%;transform:translateX(-50%);max-width:92%;white-space:nowrap;border:1px solid #fff;background:#f8fafbe8;border-radius:14px;padding:13px 20px;color:#3e5168;font-size:14px;box-shadow:0 8px 25px #3042540b;animation:hr-status-in .5s ease both}.real-hr-status>span{font-size:10px;letter-spacing:1px;color:#8393a2;display:block;margin-bottom:5px}.real-hr-cards{position:absolute;bottom:5%;left:50%;transform:translateX(-50%);display:flex;gap:19px;z-index:3}.real-hr-card{width:135px;height:206px;border-radius:19px;border:1.5px solid white;background:linear-gradient(145deg,#fff,#edf2f7);padding:12px 9px;position:relative;text-align:center;color:#34465f;box-shadow:0 7px 22px #30405220;animation:hr-card-in .65s both;animation-delay:var(--delay)}.real-hr-card.is-processing{outline:2px solid #8baec8}.real-hr-avatar{width:86px;height:86px;border-radius:50%;overflow:hidden;margin:auto;background:var(--tint);position:relative}.real-hr-avatar img{position:absolute;width:123px;max-width:none;left:-20px;top:-4px}.real-hr-card strong{display:block;font-size:18px;margin:7px 0}.real-hr-card b{display:block;background:var(--tint);border-radius:12px;font-size:15px;padding:5px 0}.real-hr-card small{display:block;font-size:10px;margin-top:9px}.real-hr-badge{position:absolute;z-index:5;right:-8px;top:-12px;width:31px;height:31px;border-radius:50%;background:#e9ac43;border:2px solid white;color:white;font-size:22px;line-height:27px}.real-hr-badge.is-done{background:#6cab91}.real-hr-line{position:absolute;z-index:4;top:8px;left:6px;border:2px solid white;background:#62a785;color:white;font-size:8px;border-radius:50%;width:28px;height:28px;line-height:24px;animation:hr-card-in .4s both}
+@keyframes hr-card-in{from{opacity:0;translate:0 18px}to{opacity:1;translate:0 0}}@keyframes hr-status-in{from{opacity:0;margin-top:7px}to{opacity:1;margin-top:0}}
+@media(max-width:900px) and (min-width:651px){.real-hr-office{left:40%}.real-hr-card{width:106px;height:182px}.real-hr-cards{gap:10px}.real-hr-avatar{width:70px;height:70px}.real-hr-avatar img{width:100px;left:-16px}.real-hr-card strong{font-size:15px}.real-hr-card b{font-size:12px}.real-hr-status{font-size:12px}}
+@media(max-width:650px){.real-hr-office{inset:49% 0 0}.real-hr-status{top:1%;font-size:10px;padding:7px 11px}.real-hr-status>span{font-size:8px;margin:0}.real-hr-cards{bottom:3%;gap:9px}.real-hr-card{width:86px;height:130px;padding:7px 5px;border-radius:13px}.real-hr-avatar{width:48px;height:48px}.real-hr-avatar img{width:69px;left:-11px;top:-2px}.real-hr-card strong{font-size:12px;margin:4px 0}.real-hr-card b{font-size:10px;padding:3px}.real-hr-card small{font-size:7px;margin-top:5px}.real-hr-badge{width:23px;height:23px;line-height:19px;font-size:16px;right:-5px;top:-10px}.real-hr-line{width:20px;height:20px;line-height:16px;font-size:6px}}
+@media(prefers-reduced-motion:reduce){.real-hr-status,.real-hr-card,.real-hr-line{animation:none}}
+
+/* Storyboard-style white dotted routes, anchored at the helper's feet. */
+.real-hr-connections{position:absolute;inset:0;width:100%;height:100%;z-index:2;overflow:visible;pointer-events:none;opacity:0}
+.real-hr-connections.is-visible{opacity:1}
+.real-hr-connections path{fill:none;stroke:#fff;stroke-width:3.5;stroke-linecap:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 1px 1px #53616f25);stroke-dasharray:.1 11;stroke-dashoffset:0}
+.real-hr-connections.is-visible path{animation:hr-connect .65s ease-out both;animation-delay:var(--wire-delay)}
+@keyframes hr-connect{from{opacity:0}to{opacity:1}}
+@media(max-width:650px){.real-hr-connections path{stroke-width:3;stroke-dasharray:.1 8}}
+@media(prefers-reduced-motion:reduce){.real-hr-connections path{animation:none!important}}
+
+.real-hr-badge.is-waiting{background:#a4b0bf}
+
+.real-hr-office--leave .real-hr-card b,.real-hr-office--leave .real-hr-card small{white-space:nowrap}
+@media(max-width:650px){.real-hr-office--leave .real-hr-card b{font-size:9px}.real-hr-office--leave .real-hr-card small{font-size:6.5px}}
+
+.real-hr-office--contract .real-hr-card b{font-size:13px;white-space:nowrap}
+.real-hr-office--contract .real-hr-card small{white-space:nowrap}
+@media(max-width:900px){.real-hr-office--contract .real-hr-card b{font-size:10px}}
+@media(max-width:650px){.real-hr-office--contract .real-hr-card b{font-size:8px}}
+
+.real-hr-office--punch .real-hr-card b{font-size:12px;white-space:nowrap}
+.real-hr-office--punch .real-hr-card small{white-space:nowrap;font-size:9px}
+@media(max-width:600px){.real-hr-office--punch .real-hr-card b{font-size:8px}.real-hr-office--punch .real-hr-card small{font-size:6px}}

@@ -66,7 +66,7 @@ function Monitor({kind}){
  },[kind,time,texture]);
  return <group position={[-.45,1.96,-1.25]}><Box size={[1.8,1.18,.12]} color="#a8b2be" radius={.06}/><mesh position={[0,.02,.07]}><planeGeometry args={[1.65,1.03]}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh><Box at={[0,-.68,0]} size={[.09,.3,.1]} color="#9da8b6"/><Box at={[0,-.83,.1]} size={[.6,.045,.38]} color="#a6b1be"/></group>;
 }
-export default function HROffice({kind='overtime',reduced=false}){
+export default function HROffice({kind='overtime',reduced=false,RobotComponent=Agent}){
  const {time:storyTime}=useOvertime();
  const robot=useRef();
  const stamp=useRef(),scan=useRef(),notice=useRef(),calendar=useRef();
@@ -91,7 +91,7 @@ export default function HROffice({kind='overtime',reduced=false}){
   <Monitor kind={kind}/><Box at={[-.58,1.28,-.65]} size={[1.05,.045,.35]} color="#eef0ef"/>
   <Box at={[.12,1.28,-.6]} size={[.18,.05,.26]} color="#e6e8e8" radius={.06}/>
   <group ref={scan} position={[-.45,1.8,-1.16]}><Box size={[1.61,.022,.015]} color="#e0bd90"/></group>
-  <group ref={robot} position={[-.8,.23,.2]} rotation={[0,.1,0]}><Agent at={[0,0,0]} reduced={reduced} active={kind!=='overtime'||storyTime>=9&&storyTime<12}/></group><Box at={[-.8,.21,.2]} size={[.85,.13,.75]} color="#a7b1bd" radius={.1}/>
+  <group ref={robot} position={[-.8,.23,.2]} rotation={[0,.1,0]}><RobotComponent at={[0,0,0]} reduced={reduced} active={kind!=='overtime'||storyTime>=9&&storyTime<12}/></group><Box at={[-.8,.21,.2]} size={[.85,.13,.75]} color="#a7b1bd" radius={.1}/>
   <Box at={[-.8,.035,.6]} size={[2.8,.035,2.45]} color="#c3c9cf" radius={.15}/>
   <group position={[.95,1.67,-1.18]} rotation={[0,-.2,-.1]}><Box size={[.4,.67,.055]} color="#566474" radius={.04}/><Box at={[0,0,.035]} size={[.34,.57,.015]} color={kind==='punch'?'#b9d7ca':'#c7d2dc'}/>{[0,1,2].map(i=><Box key={i} at={[0,.15-i*.14,.05]} size={[.25,.045,.012]} color="#769484"/>)}</group>
   <group ref={notice} position={[1.03,2.28,-1.15]}><Box size={[.82,.37,.075]} color="#bbd6cb" radius={.08}/>{[-.22,0,.22].map(x=><Box key={x} at={[x,0,.047]} size={[.06,.06,.02]} color="#5c8b78"/>)}</group>

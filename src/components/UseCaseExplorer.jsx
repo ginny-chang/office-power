@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ScenarioVisual from './ScenarioVisual';
+import RealHROffice from './RealHROffice';
 import {OvertimeProvider} from './OvertimeStory';
 import './use-case-stage.css';
 
-const titles = [ ['加班超標前，','先提醒。'], ['月結不用追人，','只看還剩誰。'], ['把特休，','排進計畫。'], ['重要的日子，','不再漏接。'], ['忘了打卡？','說一句就好。'] ];
-const descriptions = ['不用月底手動比對，現在每週自動掃描加班時數，接近門檻就主動通知本人與主管。','從花 2–3 天印清單、逐一催收，到缺卡明細自動派送 LINE；HR 只看還剩誰沒處理。','不用年底才算折現；到期前 90 天提醒剩餘特休，提早安排休假。','不靠記憶追日期；試用期或合約到期前 30 天，主動提醒主管與 HR。','不用找表單、追主管；LINE 說一句，AI 比對佐證並整理補卡摘要。'];
+const titles = [ ['加班超標前，','先提醒。'], ['異常送到人，','進度看得見。'], ['特休到期前，','先把休假安排好。'], ['重要的日子，','不再漏接。'], ['忘了打卡？','說一句就好。'] ];
+const descriptions = ['不用月底手動比對，現在每週自動掃描加班時數，接近門檻就主動通知本人與主管。','不用逐一催回覆；異常自動派到員工 LINE，HR 只看誰還沒完成。','提前 90 天提醒剩餘天數與預估折現金額，通知員工與主管，安排進度同步 HR。','不靠記憶追日期；試用期或合約到期前 30 天，主動提醒主管與 HR。','不用找表單、追主管；LINE 說一句，AI 比對佐證並整理補卡摘要。'];
 const metrics = [['44','h','接近門檻，已通知'], ['4','人','異常待完成'], ['6','天','剩餘特休'], ['30','天','到期前提醒'], ['09:05','','到班佐證已比對']];
 
 export default function UseCaseExplorer({ packs }) {
@@ -51,7 +52,7 @@ export default function UseCaseExplorer({ packs }) {
   return <OvertimeProvider active scenario={active} replay={replay} playing={playing} onComplete={complete} entry={entry} reduced={reduced}><div className="use-case-explorer case-journey" ref={root}>
     <div className={`case-stage case-stage--${current.visual}`} ref={stage}>
       <div className="case-grid" aria-hidden="true" />
-      <ScenarioVisual onReadyChange={setSceneReady} kind={current.visual} progress={progress} entry={entry} reduced={reduced} />
+      {active<5?<RealHROffice onReadyChange={setSceneReady} scenario={current.visual}/>:<ScenarioVisual onReadyChange={setSceneReady} kind={current.visual} progress={progress} entry={entry} reduced={reduced} />}
       <div className="case-editorial">
         <header className="case-masthead">
           <span>USE CASES</span>
@@ -72,7 +73,6 @@ export default function UseCaseExplorer({ packs }) {
           })}
         </ol>
       </div>
-      {active>1&&<div className="case-readout" key={current.visual}><strong>{metric[0]}<small>{metric[1]}</small></strong><span>{metric[2]}<small>情境示意</small></span></div>}
     </div>
   </div></OvertimeProvider>;
 }
