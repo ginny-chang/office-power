@@ -1,0 +1,27 @@
+.chapter-4 .office-narrative{top:12%;left:4vw;width:min(36vw,440px);max-height:calc(88svh - 45px);pointer-events:auto}
+.chapter-4 .office-narrative .office-copy h1{font-size:clamp(25px,2.5vw,38px);margin:0 0 10px}
+.chapter-4 .office-narrative .office-copy>p{font-size:14px;line-height:1.6;margin:0 0 18px}
+.budget-dashboard{--budget-accent:#2867cb;background:#f4f8ffed;border:1px solid #fff;border-radius:22px;padding:20px;box-shadow:0 16px 50px #254c7b18;color:#254065;font-size:13px;font-variant-numeric:tabular-nums;transition:background .3s,border-color .3s}
+.budget-dashboard.is-alarm{--budget-accent:#c71936;border-color:#ed9ba9;background:#fff5f6f5}
+.budget-dashboard header>span{font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px}.budget-dashboard header i{width:7px;height:7px;border-radius:50%;background:var(--budget-accent)}
+.budget-dashboard small,.budget-stats span,.budget-total span{color:#596b84}.budget-dashboard header small{font-size:13px}
+.budget-total{display:flex;justify-content:space-between;align-items:center;padding:20px 0}.budget-total strong{display:block;font-size:38px;letter-spacing:-1.5px;color:var(--budget-accent);line-height:1.25}.budget-total small{font-size:13px}
+.budget-ring{position:relative;width:88px;height:88px;flex-shrink:0}.budget-ring svg{width:100%;transform:rotate(-90deg)}.budget-ring circle{fill:none;stroke:#dce5f2;stroke-width:7}.budget-ring circle+circle{stroke:var(--budget-accent);stroke-linecap:round;transition:stroke-dasharray .45s,stroke .3s}.budget-ring>b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px}.budget-ring small{font-size:13px}
+.budget-stats{display:grid;grid-template-columns:1.1fr 1fr 1fr;padding:16px 0;border-block:1px solid #b8c8df66;gap:10px}.budget-stats>div+div{border-left:1px solid #b8c8df66;padding-left:12px}.budget-stats span{font-size:13px;white-space:nowrap}.budget-stats strong{display:block;font-size:21px;margin:6px 0}.budget-stats strong small{font-size:13px;margin-left:2px}.budget-stats svg{width:100%;height:22px;fill:none;stroke:var(--budget-accent);stroke-width:2}.budget-bars{display:flex;gap:4px;height:22px}.budget-bars i{flex:1;background:var(--budget-accent);opacity:.65;transform-origin:bottom;border-radius:2px}
+.budget-stats.is-compact{grid-template-columns:1.1fr 1fr}
+.budget-status{background:#e0eafa88;border-radius:10px;padding:11px 12px}.is-alarm .budget-status{background:#fbe0e5;color:#a6102a}.budget-status b,.budget-status span{display:block}.budget-status span{font-size:13px;margin-top:5px}.budget-dashboard footer{margin-top:14px}.budget-dashboard button{border:0;background:transparent;color:#365478;padding:8px 0;cursor:pointer;font:inherit;font-weight:600}.budget-dashboard button:last-child{color:var(--budget-accent)}.budget-dashboard button:disabled{opacity:.45;cursor:default}.budget-dashboard :focus-visible{outline:2px solid var(--budget-accent);outline-offset:4px}
+
+@media(max-width:1000px) and (min-width:761px){.chapter-4 .office-narrative{width:39vw;left:3vw}.budget-dashboard{padding:14px}.budget-total strong{font-size:30px}}
+@media(max-width:760px){.chapter-4 .office-narrative{top:90px;left:5%;width:90%;max-height:calc(100svh - 110px)}.chapter-4 .office-scene{inset:430px -12% 0}.chapter-4 .office-narrative .office-copy h1{font-size:23px}.chapter-4 .office-copy h1 br{display:none}.chapter-4 .office-narrative .office-copy>p{display:none}.budget-dashboard{padding:12px 15px}.budget-total{padding:8px 0}.budget-total strong{font-size:28px}.budget-ring{width:62px;height:62px}.budget-ring>b{font-size:18px}.budget-stats{padding:8px 0}.budget-stats strong{font-size:18px;margin:3px 0}.budget-stats svg,.budget-bars{height:14px}.budget-status{padding:7px 10px}.budget-status span{display:none}.budget-dashboard footer{margin-top:3px}.chapter-4 .office-caption{display:none}}
+@media(prefers-reduced-motion:reduce){.budget-dashboard,.budget-ring circle{transition:none}}
+@media(min-width:761px) and (max-height:800px){.chapter-4 .office-narrative{top:12%;max-height:calc(88svh - 20px)}.chapter-4 .office-narrative .office-copy h1{font-size:28px;line-height:1.25}.chapter-4 .office-narrative .office-copy>p{font-size:13px;margin-bottom:12px}.budget-dashboard{padding:16px}.budget-total{padding:10px 0}.budget-total strong{font-size:32px}.budget-ring{width:72px;height:72px}.budget-stats{padding:10px 0}.budget-dashboard footer{margin-top:7px}.budget-status{padding:9px 11px}}
+
+/* The ceiling rides alongside the spend at a smaller size. */
+.budget-total strong em{font-style:normal;font-size:.46em;font-weight:500;color:#c2566f;margin-left:4px;letter-spacing:0}
+.budget-beacon-tag{white-space:nowrap;color:#b41230;background:#fff0f3;padding:7px 12px;border-radius:8px;font:700 13px Archivo,'Noto Sans TC',sans-serif}
+
+/* The chart updates land every 50ms; a slightly longer transition turns that
+   into continuous motion rather than 20 visible steps a second. */
+.budget-bars i{transition:transform .3s cubic-bezier(.22,.61,.36,1)}
+.budget-stats svg path{transition:d .2s linear}
+@media(prefers-reduced-motion:reduce){.budget-bars i,.budget-stats svg path{transition:none}}
