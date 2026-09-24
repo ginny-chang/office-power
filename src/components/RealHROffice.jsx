@@ -92,7 +92,7 @@ export default function RealHROffice({onReadyChange,scenario='overtime',lang='zh
   </svg>}
   {!contract&&!punch&&(punch||step>=((dispatch||leave||contract)?2:3))&&<div className="real-hr-cards" ref={cards}>{people.map(([name,id,tint,value],i)=>{if(!visibleStoryPerson(scenario,step,i))return null;const localized=en?englishCard(scenario,step,i):null;const detail=punch?punchCard(step,i):contract?contractCard(step,i,t):leave?leaveCard(step,i,t):dispatch?dispatchCard(step,i):null,done=detail?detail.done:step>=6||(step===5&&i<2);return <div key={id} data-person={i} className={`real-hr-card ${(detail?detail.focus:i===2&&step===5)?'is-processing':''}`} style={{'--tint':tint,'--delay':i*.15+'s'}}>
    {(detail?detail.line:step===4)&&<span className="real-hr-line">LINE</span>}<span className={`real-hr-badge ${done?'is-done':detail?.waiting?'is-waiting':''}`}>{detail?detail.badge:done?'✓':step===4?'↗':'!'}</span>
-   <div className="real-hr-avatar"><img src={`${import.meta.env.BASE_URL}hr-workspace/${id}.png`} alt=""/></div><strong>{en?personNames[i]:name}</strong><b>{localized?localized.value:detail?detail.value:value}</b><small>{localized?localized.status:detail?detail.status:step===3?(i<2?'超過 40h 預警線':'收到團隊預警'):step===4?'LINE 通知已送出':step===5?(i<2?'員工已回覆':'等待主管處理'):step===6?'排班調整已確認':'已記錄 · HR 已收到'}</small>
+   <div className="real-hr-avatar"><img src={`${import.meta.env.BASE_URL}hr-workspace/${id}.webp`} alt=""/></div><strong>{en?personNames[i]:name}</strong><b>{localized?localized.value:detail?detail.value:value}</b><small>{localized?localized.status:detail?detail.status:step===3?(i<2?'超過 40h 預警線':'收到團隊預警'):step===4?'LINE 通知已送出':step===5?(i<2?'員工已回覆':'等待主管處理'):step===6?'排班調整已確認':'已記錄 · HR 已收到'}</small>
   </div>;})}</div>}
  </div>;
 }

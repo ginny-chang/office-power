@@ -5,7 +5,7 @@ export default function PunchConversation({phase,time,lang,reduced}){
  const en=lang==='en';
  const message=en?'I missed my clock-out today. I left at 18:30.':'今天忘記打卡，18:30 下班。';
  const typed=reduced||phase>0?message:message.slice(0,Math.floor(Math.max(0,time-.5)/2.1*message.length));
- const avatar=id=>`${import.meta.env.BASE_URL}hr-workspace/${id}.png`;
+ const avatar=id=>`${import.meta.env.BASE_URL}hr-workspace/${id}.webp`;
  const fields=en?[['Date','Today'],['Clock-out','18:30'],['Reason','Missed punch']]:[['日期','今天'],['下班時間','18:30'],['原因','忘記打卡']];
  return <div className={`punch-conversation phase-${phase}`} aria-label={en?'Message to attendance request':'從訊息到補卡申請'}>
   <div className="punch-phone">
