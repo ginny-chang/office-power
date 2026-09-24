@@ -170,7 +170,7 @@ function Workstation({copy,at,index,selected,reduced,markers,chapter,taskStage,c
     <Box at={[.91,1.015,-.83]} size={[.3,.045,.23]} color="#525a64"/>
     <Box at={[.91,1.27,-.83]} size={[.025,.5,.025]} color="#77808b"/>
     <Box at={[.81,1.52,-.78]} size={[.35,.08,.2]} color="#626b76" radius={.035}/>
-    <group ref={worker}><Agent panic={budgetAlarm} at={[0,.07,.62]} ambient={ambient} index={index} reduced={reduced} working={chapter===5||(markers&&chapter===1&&index===0&&building)} waving={markers&&chapter===1&&index===0&&waving} active={markers&&chapter===2&&index===0&&taskStage>0} celebrate={markers&&chapter===2&&index===0&&celebrating} hovered={hovered===index&&interactive} onHover={interactive?e=>{e.stopPropagation();onHover(index);}:undefined} onLeave={interactive?()=>onHover(null):undefined} onSelect={interactive?e=>{e.stopPropagation();onHover(hovered===index?null:index);}:undefined}/></group>
+    <group ref={worker} name={index===0?'hr-handoff-agent':undefined}><Agent panic={budgetAlarm} at={[0,.07,.62]} ambient={ambient} index={index} reduced={reduced} working={chapter===5||(markers&&chapter===1&&index===0&&building)} waving={markers&&chapter===1&&index===0&&waving} active={markers&&chapter===2&&index===0&&taskStage>0} celebrate={markers&&chapter===2&&index===0&&celebrating} hovered={hovered===index&&interactive} onHover={interactive?e=>{e.stopPropagation();onHover(index);}:undefined} onLeave={interactive?()=>onHover(null):undefined} onSelect={interactive?e=>{e.stopPropagation();onHover(hovered===index?null:index);}:undefined}/></group>
     {markers&&chapter===2&&index===0&&taskStage>0&&<group position={[.45,2.05,.6]}><mesh><sphereGeometry args={[.13,20,16]}/><meshStandardMaterial color="#fff0b0" emissive="#ffe298" emissiveIntensity={2}/></mesh><Box at={[0,-.16,0]} size={[.11,.09,.11]} color="#a2a9b4"/><pointLight color="#ffebad" intensity={1.3} distance={2}/></group>}
     {markers&&chapter===2&&index===0&&celebrating&&<Fireworks reduced={reduced}/>}
     {markers&&(interactive||(chapter===2&&index===0&&taskStage>0))&&!(soloMarker&&interactive&&hovered!==index)&&<Html position={[0,2.12,-.05]} center zIndexRange={[8,0]}>
@@ -203,13 +203,16 @@ function Circuit({to,index,reduced}) {
   </React.Fragment>)}</group>;
 }
 const networkNodes=[[-8,0,-6],[0,0,-6],[8,0,-6],[-8,0,0],[8,0,0],[-8,0,6],[0,0,6],[8,0,6]];
-function Office({copy,chapter=0,reduced=false,markers=false,taskStage=0,celebrating=false,budgetAlarm=false,soloMarker=false,built=false,appSpec,buildStage,guideMotion,hovered=null,onHover=()=>{}}) {
+function Office({handoff,copy,chapter=0,reduced=false,markers=false,taskStage=0,celebrating=false,budgetAlarm=false,soloMarker=false,built=false,appSpec,buildStage,guideMotion,hovered=null,onHover=()=>{}}) {
+  const seats=useRef([]);
   const backWall=useRef(),sideWall=useRef(),core=useRef(),floor=useRef(),glow=useRef(),nodes=useRef([]),expansion=useRef(0);
   const ambient=useRef({index:-1,next:0,until:0});
   useFrame(({clock},delta)=>{
     const goal=chapter===5?1:0;
     expansion.current=reduced?goal:THREE.MathUtils.damp(expansion.current,goal,2.3,Math.min(delta,.05));
     const e=expansion.current;
+    const focus=!reduced&&chapter===5?THREE.MathUtils.smoothstep(handoff?.current.progress||0,0,.65):0;
+    seats.current.forEach((seat,i)=>{if(seat)seat.scale.setScalar(i===0?1:Math.max(.001,1-focus));});
     backWall.current.rotation.x=-Math.PI/2*THREE.MathUtils.smoothstep(e,0,.5);
     sideWall.current.rotation.z=Math.PI/2*THREE.MathUtils.smoothstep(e,0,.5);
     const wallScale=1-THREE.MathUtils.smoothstep(e,.48,.78);
@@ -218,12 +221,12 @@ function Office({copy,chapter=0,reduced=false,markers=false,taskStage=0,celebrat
     floor.current.scale.set(1+e*24,1,1+e*30);
     // The wash keeps its own scale, or it would stretch into nothing.
     if(glow.current)glow.current.scale.setScalar(1+e*1.9);
-    core.current.scale.setScalar(1+e*.85);
+    core.current.scale.setScalar((1+e*.85)*Math.max(.001,1-focus));
     nodes.current.forEach((node,i)=>{
       if(!node)return;
       const n=THREE.MathUtils.smoothstep(e,.3+i*.032,.55+i*.032);
       node.visible=n>0;
-      node.scale.setScalar(Math.max(.001,n));
+      node.scale.setScalar(Math.max(.001,n*(1-focus)));
       node.position.y=(1-n)*-.65+Math.sin(n*Math.PI)*.25;
     });
     const state=ambient.current,t=clock.elapsedTime;
@@ -238,7 +241,7 @@ function Office({copy,chapter=0,reduced=false,markers=false,taskStage=0,celebrat
     {[-3,-.1,2.8].map(x=><group key={x}><Box at={[x,1.64,.09]} size={[2.4,1.7,.035]} color='#d4dfed' radius={.012}/><Box at={[x,1.64,.14]} size={[.025,1.7,.026]} color={C.metal}/><Box at={[x,1.64,.14]} size={[2.4,.025,.026]} color={C.metal}/></group>)}</group>
     <group ref={sideWall} position={[-4.85,-.17,0]}><Box at={[0,1.3,0]} size={[.12,2.6,8]} color={C.wall}/></group>
     {[-3,-1,1,3].map(z=><Box key={z} at={[0,.002,z]} size={[9.8,.005,.009]} color='#c4cad3' radius={.001}/>)}
-    {destinations.map((at,index)=><Workstation copy={copy} budgetAlarm={budgetAlarm} soloMarker={soloMarker} key={index} ambient={ambient} guideMotion={guideMotion} at={at} index={index} building={buildStage==='typing'} waving={buildStage==='wave'} selected={chapter===0||chapter===3||chapter===2&&index===0||chapter===4&&index===3} chapter={chapter} taskStage={taskStage} celebrating={celebrating} hovered={hovered} onHover={onHover} reduced={reduced} markers={markers}/>)}
+    {destinations.map((at,index)=><group key={index} ref={el=>seats.current[index]=el}><Workstation copy={copy} budgetAlarm={budgetAlarm} soloMarker={soloMarker} key={index} ambient={ambient} guideMotion={guideMotion} at={at} index={index} building={buildStage==='typing'} waving={buildStage==='wave'} selected={chapter===0||chapter===3||chapter===2&&index===0||chapter===4&&index===3} chapter={chapter} taskStage={taskStage} celebrating={celebrating} hovered={hovered} onHover={onHover} reduced={reduced} markers={markers}/></group>)}
     <group ref={core}>
     <mesh position={[0,.37,-.4]} castShadow receiveShadow><cylinderGeometry args={[.75,.75,.74,48]}/><meshStandardMaterial color={C.shell} roughness={.32} metalness={.65}/></mesh>
     <mesh position={[0,.75,-.4]} rotation={[-Math.PI/2,0,0]}><torusGeometry args={[.61,.015,8,48]}/><meshBasicMaterial color={C.light}/></mesh>
@@ -300,7 +303,7 @@ export function sampleCamera(progress) {
 // The HR agent stands at destinations[0]; the celebration frames it head-on.
 const CELEBRATION={eye:new THREE.Vector3(-.65,2.55,6.8),mobileEye:new THREE.Vector3(-2.6,2.2,7.6),target:new THREE.Vector3(-3.25,1.4,2.77)};
 const heroLinks=[[-4.5,0,2.4],[4.5,0,2.4],[-4.5,0,-2.8],[4.5,0,-2.8],[-1.8,0,-4],[1.8,0,-4]];
-function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,taskStage,celebrating,budgetAlarm,built,appSpec,buildStage,hovered,onHover,phase,onReady,onDone}) {
+function AtlasWorld({handoff,copy,openingStarted,progress,panelGaze,reduced,chapter,taskStage,celebrating,budgetAlarm,built,appSpec,buildStage,hovered,onHover,phase,onReady,onDone}) {
   const hero=useRef(),bot=useRef(),office=useRef(),walk=useRef(0),journey=useRef(0),transition=useRef(0),announced=useRef(false),complete=useRef(false);
   // Per-chapter lift of the look-at point: raising it drops the model down the frame.
   const lift=useRef(0),cutIn=useRef(0);
@@ -398,10 +401,20 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
       eye.lerp(agentEye,agentCut.current);
       target.lerp(agentTarget,agentCut.current);
     }
+    // Match-cut from the existing HR workstation into the case-study office.
+    const focus=!reduced&&tour&&chapter===5?THREE.MathUtils.smoothstep(handoff?.current.progress||0,0,.45):0;
+    if(focus>0){
+      agentEye.set(-.4,3.3,7.8);
+      const landing=THREE.MathUtils.smoothstep(handoff?.current.progress||0,.64,.94);
+      agentTarget.set(-3.25,1.0-.4*landing,2.77);
+      agentEye.sub(agentTarget).multiplyScalar(1+landing*.4).add(agentTarget);
+      eye.lerp(agentEye,focus);target.lerp(agentTarget,focus);
+    }
     if(t<.001)camera.position.copy(eye);
     else camera.position.lerp(eye,reduced?1:1-Math.exp(-dt*5));
     camera.lookAt(target);
-    const offset=!mobile&&tour&&(chapter===1||chapter===2||chapter===4||chapter===5)?-.18*size.width*t:0;
+    let offset=!mobile&&tour&&(chapter===1||chapter===2||chapter===4||chapter===5)?-.18*size.width*t:0;
+    if(!mobile&&focus>0)offset=THREE.MathUtils.lerp(offset,(-.25+.05*THREE.MathUtils.smoothstep(handoff?.current.progress||0,.64,.94))*size.width,focus);
     camera.setViewOffset(size.width,size.height,offset,0,size.width,size.height);
   });
   return <>
@@ -425,9 +438,30 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
       </group>
       <group ref={bot} position={[0,-2.32,2.5]} scale={1.3}><Agent at={[0,0,0]} reduced={reduced} guide gazeActive={phase==='tour'&&chapter===0} waving={phase==='boot'} journey={journey} panelGaze={chapter===0&&phase==='tour'?panelGaze:undefined}/></group>
     </group>
-    <group ref={office} visible={false}><Office copy={copy} chapter={chapter} reduced={reduced} soloMarker={narrow} markers={phase==='tour'&&chapter>0&&!(narrow&&chapter===2&&taskStage<3)} taskStage={taskStage} celebrating={celebrating} budgetAlarm={budgetAlarm} built={built} appSpec={appSpec} buildStage={buildStage} hovered={hovered} onHover={onHover}/></group>
+    <group ref={office} visible={false}><Office handoff={handoff} copy={copy} chapter={chapter} reduced={reduced} soloMarker={narrow} markers={phase==='tour'&&chapter>0&&!(narrow&&chapter===2&&taskStage<3)} taskStage={taskStage} celebrating={celebrating} budgetAlarm={budgetAlarm} built={built} appSpec={appSpec} buildStage={buildStage} hovered={hovered} onHover={onHover}/></group>
   </>;
 }
+// Render the selected HR helper after clearing depth so the retreating desks
+// never cover it. Restore the ordinary pass outside the scroll transition.
+function HandoffCompositor({handoff,reduced,chapter}){
+ const saved=useRef(null);
+ const restore=()=>{if(!saved.current)return;const {meshes,materials,lights}=saved.current;meshes.forEach(([o,mask])=>o.layers.mask=mask);materials.forEach(([m,opacity,transparent,depthWrite])=>{m.opacity=opacity;m.transparent=transparent;m.depthWrite=depthWrite;m.needsUpdate=true;});lights.forEach(([o,mask])=>o.layers.mask=mask);saved.current=null;};
+ useEffect(()=>()=>restore(),[]);
+ useFrame(({gl,scene,camera})=>{
+  const p=handoff?.current.progress||0,active=!reduced&&chapter===5&&p>0&&p<1;
+  if(!active){restore();gl.render(scene,camera);return;}
+  if(!saved.current){
+   const helper=scene.getObjectByName('hr-handoff-agent'),selected=new Set();helper?.traverse(o=>selected.add(o));
+   const meshes=[],materials=new Map(),lights=[];
+   scene.traverse(o=>{if(o.isLight){lights.push([o,o.layers.mask]);o.layers.enable(1);}if(!o.isMesh)return;meshes.push([o,o.layers.mask]);const front=selected.has(o);o.layers.set(front?1:0);for(const m of Array.isArray(o.material)?o.material:[o.material]){if(!materials.has(m))materials.set(m,[m,m.opacity,m.transparent,m.depthWrite,front]);}});
+   saved.current={meshes,materials:[...materials.values()],lights};
+  }
+  const retreat=1-THREE.MathUtils.smoothstep(p,.28,.56),helperOpacity=1-THREE.MathUtils.smoothstep(p,.80,.94);
+  saved.current.materials.forEach(([m,opacity,,,front])=>{if(!m.transparent){m.transparent=true;m.needsUpdate=true;}m.opacity=opacity*(front?helperOpacity:retreat);m.depthWrite=front;});
+  const background=scene.background,mask=camera.layers.mask,auto=gl.autoClear;scene.background=null;gl.setClearColor('#e6e8ed',0);gl.autoClear=true;camera.layers.set(0);gl.render(scene,camera);gl.autoClear=false;gl.clearDepth();camera.layers.set(1);gl.render(scene,camera);camera.layers.mask=mask;scene.background=background;gl.autoClear=auto;
+ },1);
+ return null;
+}
 export default function OfficeScene(props) {
-  return <Canvas shadows frameloop={props.visible&&!props.reduced?'always':'demand'} dpr={[1,1.5]} camera={{position:[0,1.98,7.5],fov:36,near:.05,far:250}} gl={{antialias:true,powerPreference:'high-performance'}}><AtlasWorld {...props}/></Canvas>;
+  return <Canvas shadows frameloop={props.visible&&!props.reduced?'always':'demand'} dpr={[1,1.5]} camera={{position:[0,1.98,7.5],fov:36,near:.05,far:250}} gl={{antialias:true,powerPreference:'high-performance'}}><AtlasWorld {...props}/><HandoffCompositor handoff={props.handoff} reduced={props.reduced} chapter={props.chapter}/></Canvas>;
 }

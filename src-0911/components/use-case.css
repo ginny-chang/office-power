@@ -115,3 +115,14 @@
  .product-details .use-case-explorer.case-journey--modeled,.case-journey--modeled .case-stage{height:max(100svh,880px)}
  .case-journey--modeled .real-hr-office{top:53%}
 }
+
+:root[data-lang="en"] .case-copy-inner h2{font-size:clamp(27px,3vw,43px);line-height:1.15}
+:root[data-lang="en"] .case-pack-label{flex-wrap:wrap}
+
+@media(max-width:650px){:root[data-lang="en"] .case-copy-inner h2{font-size:25px}:root[data-lang="en"] .case-description{font-size:12px}}
+
+/* Roadmap labels sit above the pack name instead of extending its line. */
+.case-pack-label button{position:relative}
+.case-pack-label button:disabled{padding-top:17px}
+.case-pack-label button small{position:absolute;right:12px;top:2px;margin:0;font-size:9px;line-height:1;white-space:nowrap;letter-spacing:.1px}
+@media(max-width:650px){.case-pack-label button:disabled{padding-top:12px}.case-pack-label button small{right:8px;top:0;font-size:8px}}

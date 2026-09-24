@@ -36,11 +36,12 @@ class SceneBoundary extends Component {
   render() { return this.state.failed ? <div className="office-loading">此裝置無法顯示 3D。<br />仍可捲動探索每個部門的應用。</div> : this.props.children; }
 }
 
-export default function OfficeTour() {
+export default function OfficeTour({handoff}) {
   const { t } = useLang();
   const chapters = t.chapters;
   const features = t.features;
   const root = useRef();
+  const initialHashHandled=useRef(false);
   const progress = useRef(0);
   const openingStarted = useRef(null);
   const nudged = useRef(false);
@@ -82,6 +83,13 @@ export default function OfficeTour() {
     observer.observe(cases);
     return () => observer.disconnect();
   }, []);
+  useEffect(()=>{
+    if(phase!=='tour'||initialHashHandled.current)return;
+    initialHashHandled.current=true;
+    if(location.hash!=='#usecases')return;
+    const frame=requestAnimationFrame(()=>{const el=document.getElementById('usecases');if(el)window.scrollTo({top:scrollY+el.getBoundingClientRect().top+(reduced?0:innerHeight),behavior:'instant'});});
+    return()=>cancelAnimationFrame(frame);
+  },[phase,reduced]);
   const ready = useCallback(() => { openingStarted.current = performance.now(); setLoaded(true); }, []);
   const done = useCallback(() => setPhase('tour'), []);
   const failed = useCallback(() => { setLoaded(true); setPhase('tour'); }, []);
@@ -171,7 +179,7 @@ export default function OfficeTour() {
     return () => clearInterval(timer);
   }, [phase, chapter, visible, reduced, budgetCost]);
 
-  const jumpToCases = () => document.getElementById('usecases')?.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'start' });
+  const jumpToCases = () => {const el=document.getElementById('usecases');if(el)window.scrollTo({top:scrollY+el.getBoundingClientRect().top+(reduced?0:innerHeight),behavior:reduced?'instant':'smooth'});};
   useEffect(() => { setHovered(null); setAutoAgent(0); setDeckTick(0); }, [chapter, phase]);
   useEffect(() => {
     if (phase !== 'tour' || chapter !== 0 || hovered !== null || !visible || reduced) return;
@@ -237,7 +245,7 @@ export default function OfficeTour() {
   const begin = () => setPhase(reduced ? 'tour' : 'flight');
   return <section className="office-tour" id="top" data-ready={loaded} ref={root} aria-label="連續 3D 辦公室導覽">
     <div className={`office-sticky chapter-${chapter} phase-${phase}`} style={{'--panel-duration': `${OPENING.panelMs}ms`, '--panel-stagger': `${OPENING.staggerMs}ms`}}>
-      <div className="office-scene"><SceneBoundary onFailure={failed}><Suspense fallback={<div className="office-loading">{t.loading}</div>}><OfficeScene copy={t} openingStarted={openingStarted} buildStage={buildStage} panelGaze={panelGaze} progress={progress} reduced={reduced} chapter={chapter} taskStage={taskStage} celebrating={celebrating} budgetAlarm={budgetAlarm} built={built} appSpec={appSpec} hovered={chapter === 0 ? null : selectedAgent} onHover={setHovered} phase={phase} visible={visible} onReady={ready} onDone={done} /></Suspense></SceneBoundary></div>
+      <div className="office-scene"><SceneBoundary onFailure={failed}><Suspense fallback={<div className="office-loading">{t.loading}</div>}><OfficeScene handoff={handoff} copy={t} openingStarted={openingStarted} buildStage={buildStage} panelGaze={panelGaze} progress={progress} reduced={reduced} chapter={chapter} taskStage={taskStage} celebrating={celebrating} budgetAlarm={budgetAlarm} built={built} appSpec={appSpec} hovered={chapter === 0 ? null : selectedAgent} onHover={setHovered} phase={phase} visible={visible} onReady={ready} onDone={done} /></Suspense></SceneBoundary></div>
       {(phase === 'boot' || phase === 'flight') && <div className="office-boot">
         <div className="boot-center"><img className="boot-icon" src={`${import.meta.env.BASE_URL}officepower-app-icon.svg`} alt="" /><h1>{t.brand}</h1><p>{t.bootTagline}</p>
           {phase === 'boot' && <span className="boot-scroll-cue">{t.scrollCue}<i /></span>}
@@ -303,7 +311,7 @@ export default function OfficeTour() {
             {SHOW_CASE_STUDIES && <button key="usecases" type="button" onClick={jumpToCases} aria-label={t.caseStudies} aria-current={atCases ? 'step' : undefined}><i /></button>}
           </nav>
           <span className="chapter-now" aria-hidden="true">{item.name}</span>
-        </div><div className="office-progress" />
+        </div>
         {/* Desktop scroll indicator: a rail plus the chapter count. */}
         <div className="scroll-indicator" aria-hidden="true">
           <b>{String(chapter + 1).padStart(2, '0')} / {String(chapters.length).padStart(2, '0')}</b>

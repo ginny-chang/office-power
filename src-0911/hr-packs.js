@@ -1,3 +1,4 @@
+import {CASE_DURATIONS} from '../src/components/hr-workspace/CompactTimeline';
 // HR use-case content, carried over from the office-power-hr-preview build.
 // One pack is live; the other two are placeholders on the roadmap.
 export const hrPacks = [
@@ -123,4 +124,4 @@ export const scenarioReadouts = [
 ];
 
 // Seconds each scenario plays before advancing on its own.
-export const scenarioDurations = [29, 29, 24, 24, 24];
+export const scenarioDurations = CASE_DURATIONS;

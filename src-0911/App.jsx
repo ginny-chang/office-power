@@ -1,3 +1,5 @@
+import useOfficeHandoff from './components/use-office-handoff';
+import './components/office-handoff.css';
 import React from 'react';
 import OfficeTour from './components/OfficeTour';
 import CasePacks from './components/CasePacks';
@@ -9,6 +11,7 @@ import './atlas.css';
 
 export default function App() {
   const { lang, setLang, t } = useLang();
+  const handoff=useOfficeHandoff();
   return <div className="site-shell">
     <header className="site-header">
       <a className="brand" href="#top" aria-label="Office Power home"><img className="brand-robot-icon" src={`${import.meta.env.BASE_URL}officepower-icon.svg`} alt="" /><strong>{t.brand}</strong></a>
@@ -24,9 +27,9 @@ export default function App() {
       </div>
     </header>
     <main>
-      <OfficeTour/>
+      <OfficeTour handoff={handoff}/>
       {SHOW_CASE_STUDIES && <section className="product-details" id="usecases">
-        <CasePacks packs={hrPacks}/>
+        <CasePacks packs={hrPacks} handoff={handoff}/>
       </section>}
       <section className="final-invitation" id="demo"><span>{t.finale.eyebrow}</span><h2>{t.finale.title.split('\n').map((line, i) => <React.Fragment key={i}>{i > 0 && <br/>}{line}</React.Fragment>)}</h2><p>{t.finale.lede}</p><a className="header-cta" href="https://officepower-website.pages.dev/#cta" target="_blank" rel="noreferrer">{t.finale.cta}</a><small>{t.finale.note}</small></section>
     </main>

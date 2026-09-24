@@ -1,0 +1,31 @@
+/* One viewport of overlap: the outgoing office stays pinned while the
+   incoming case scene fades in. Scene timers wait until the overlap settles. */
+.site-shell{--handoff-blend:0;--handoff-copy:0;--handoff-source-copy:1;--handoff-pin:0px;--handoff-scale:.88}
+@media(prefers-reduced-motion:no-preference){
+ .site-shell .office-tour{z-index:1}
+ .site-shell .office-sticky{transform:translateY(var(--handoff-pin));will-change:transform}
+ .site-shell[data-handoff="done"] .office-sticky{visibility:hidden}
+ .site-shell .office-sticky.chapter-5 .office-scene{opacity:1}
+ .site-shell .office-sticky.chapter-5 .office-narrative,.site-shell .office-sticky.chapter-5 .office-tour-footer,.site-shell .office-sticky.chapter-5 .scroll-indicator{opacity:var(--handoff-source-copy)}
+ .site-shell #usecases{position:relative;z-index:2;margin-top:-100svh;background:transparent}
+ .site-shell #usecases .use-case-explorer.case-journey{height:200svh}
+ .site-shell #usecases .case-stage{background:rgba(230,232,237,var(--handoff-blend))}
+ .site-shell #usecases .case-scene,.site-shell #usecases .case-ui-overlay{opacity:var(--handoff-blend)}
+ .site-shell #usecases .real-hr-canvas{transform:scale(var(--handoff-scale));transform-origin:50% 62%}
+ .site-shell #usecases .case-editorial,.site-shell #usecases .real-hr-status,.site-shell #usecases .real-hr-cards,.site-shell #usecases .real-hr-connections{opacity:var(--handoff-copy)}
+ .site-shell[data-handoff="before"] #usecases,.site-shell[data-handoff="active"] #usecases .case-editorial{pointer-events:none}
+ .site-shell #usecases .real-hr-status{opacity:var(--handoff-copy)!important}
+ .site-shell #usecases .real-hr-connections:not(.is-visible){opacity:0}
+}
+@media(prefers-reduced-motion:no-preference) and (max-width:650px){
+ .site-shell #usecases .use-case-explorer.case-journey{height:calc(100svh + max(100svh,880px))}
+}
+
+@media(prefers-reduced-motion:no-preference){.site-shell[data-handoff="before"] #usecases *,.site-shell[data-handoff="active"] #usecases .case-editorial *{pointer-events:none!important}}
+
+@media(prefers-reduced-motion:no-preference){
+ .site-shell[data-handoff="active"] .office-tour{z-index:3;background:transparent;pointer-events:none}
+ .site-shell[data-handoff="active"] .office-sticky{background:transparent;pointer-events:none}
+ .site-shell[data-handoff="active"] .office-sticky .office-scene::after{display:none}
+ .site-shell #usecases .contract-desk-story,.site-shell #usecases .punch-conversation{opacity:var(--handoff-copy)}
+}

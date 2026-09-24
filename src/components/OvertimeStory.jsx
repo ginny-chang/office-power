@@ -1,8 +1,9 @@
+import {CASE_DURATIONS} from './hr-workspace/CompactTimeline';
 import React,{createContext,useContext,useEffect,useRef,useState} from 'react';
 import './overtime-story.css';
 export const OvertimeContext=createContext({time:0,reduced:true});
 export const useOvertime=()=>useContext(OvertimeContext);
-export const scenarioDurations=[29,29,24,24,24];
+export const scenarioDurations=CASE_DURATIONS;
 export function OvertimeProvider({active,entry,reduced,children,scenario=0,playing,onComplete,replay=0}){
  const [time,setTime]=useState(0);
  const sample=useRef({time:0,stamp:performance.now()});

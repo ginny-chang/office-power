@@ -14,7 +14,6 @@
 .office-tour-footer nav{display:flex;gap:16px}.office-tour-footer nav button{border:0;background:transparent;color:#84909f;cursor:pointer;min-width:30px;min-height:44px;padding:8px 4px;font-size:13px;display:grid;gap:9px;justify-items:center}
 .office-tour-footer nav i{height:3px;width:3px;border-radius:4px;background:#b8c0cb;transition:width .25s}
 .office-tour-footer nav button[aria-current]{color:#303949}.office-tour-footer nav button[aria-current] i{width:22px;background:#586b83}
-.office-progress{position:absolute;bottom:0;left:0;right:0;height:2px;background:#8998ad;transform:scaleX(var(--tour-progress));transform-origin:left}
 .office-dialog{max-width:275px;border-top:1px solid #bec5cf;margin-top:25px;padding-top:14px}
 .office-dialog>span{font-size:13px;color:#7d8794;letter-spacing:.07em}.office-dialog>p{font-size:13px;color:#454e5d;margin:12px 0}
 .office-dialog>div{display:flex;align-items:start;gap:9px;padding:10px 0}.office-dialog b{font:600 13px Archivo,sans-serif;flex-shrink:0;background:#ced5df;color:#505d71;border-radius:6px;width:24px;height:24px;display:grid;place-items:center}

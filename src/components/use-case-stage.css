@@ -42,3 +42,9 @@
 
 /* HTML annotations sit above the scene mask and editorial stacking context. */
 .case-ui-overlay{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:visible}
+
+/* Roadmap labels sit above the pack name instead of extending its line. */
+.case-pack-label button{position:relative}
+.case-pack-label button:disabled{padding-top:17px}
+.case-pack-label button small{position:absolute;right:12px;top:2px;margin:0;font-size:9px;line-height:1;white-space:nowrap;letter-spacing:.1px}
+@media(max-width:650px){.case-pack-label button:disabled{padding-top:12px}.case-pack-label button small{right:8px;top:0;font-size:8px}}

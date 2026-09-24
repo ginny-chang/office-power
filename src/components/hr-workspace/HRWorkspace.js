@@ -1,3 +1,4 @@
+import {paintEnglishStory} from './EnglishStory.js';
 import {paintStoryVisual} from './StoryVisuals.js';
 import {punchStep,PUNCH_STARTS,paintPunch} from './PunchStory.js';
 import * as THREE from 'three';
@@ -11,7 +12,7 @@ export const STEP_STARTS=[0,3,7,11,14,18,22,25];
 export const STEP_LABELS=['每週一 09:00 · 排程啟動','每週掃描加班時數','發現 2 人超過 40h 預警線','柏宇 44h · 佳穎 41.5h','LINE 通知員工與主管','陳經理正在調整排班','排班調整已確認','已記錄 · HR 已收到'];
 export function overtimeStep(time){let i=7;while(i>0&&time<STEP_STARTS[i])i--;return i;}
 
-export function createHRWorkspace({scenario='overtime'}={}){
+export function createHRWorkspace({scenario='overtime',lang='zh'}={}){
  const punch=scenario==='punch',dispatch=scenario==='dispatch',leave=scenario==='leave',contract=scenario==='contract';
  const scene=new THREE.Scene();scene.background=new THREE.Color('#e6e8ed');
  const group=new THREE.Group();scene.add(group);const textures=[],materials=[],geometries=[];
@@ -142,6 +143,7 @@ export function createHRWorkspace({scenario='overtime'}={}){
  }
  let lastPaint=-1;
  function paint(time,step){
+ if(lang==='en'){paintEnglishStory(ctx,scenario,time,step);screenTexture.needsUpdate=true;return;}
  if(punch){paintPunch(ctx,time,step);paintStoryVisual(ctx,scenario,time,step);screenTexture.needsUpdate=true;return;}
  if(contract){paintContract(ctx,time,step);paintStoryVisual(ctx,scenario,time,step);screenTexture.needsUpdate=true;return;}
  if(leave){paintLeave(ctx,time,step);paintStoryVisual(ctx,scenario,time,step);screenTexture.needsUpdate=true;return;}
@@ -155,5 +157,5 @@ export function createHRWorkspace({scenario='overtime'}={}){
  }
  function update(time,{reducedMotion=false}={}){const step=punch?punchStep(time):contract?contractStep(time):leave?leaveStep(time):dispatch?dispatchStep(time):overtimeStep(time);const nodding=(leave||contract||punch)?(step===4||step===5):dispatch?(step===5||step===7):(step===3||step===6);robot.update(time,{action:'typing',reducedMotion:reducedMotion||nodding,intensity:.8});if(nodding&&!reducedMotion)robot.joints.head.rotation.x=.07+(1-Math.cos((time-(punch?PUNCH_STARTS:contract?CONTRACT_STARTS:leave?LEAVE_STARTS:dispatch?DISPATCH_STARTS:STEP_STARTS)[step])*3.4))*.07;const animateScreen=punch?(step<=2):(leave||contract)?(step===1||step===5):dispatch?(step===1||step===4||step===7):(step===1||step===2);const frame=animateScreen?Math.floor(time*30):step*100000;if(frame!==lastPaint){paint(time,step);lastPaint=frame;}keys.forEach((k,i)=>k.position.y=1.12-(reducedMotion?0:Math.max(0,Math.sin(time*15+i*.8))*.003));return step;}
  update(0);
- return {scene,robot,update,dispose(){robot.dispose();textures.forEach(t=>t.dispose());geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());}};
+ return {scene,robot,update,setLanguage(next){if(lang===next)return false;lang=next;lastPaint=-1;return true;},dispose(){robot.dispose();textures.forEach(t=>t.dispose());geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());}};
 }
