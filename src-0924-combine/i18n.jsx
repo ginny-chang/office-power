@@ -11,17 +11,18 @@ export const detectLang = () => {
 
 const LangContext = createContext({ lang: 'zh', t: null, setLang: () => {} });
 export const useLang = () => useContext(LangContext);
+const LANGUAGE_STORAGE_KEY = 'op-lang-0924-combine';
 
 export function LangProvider({ children }) {
   const [lang, setLang] = useState(() => {
     try {
-      const saved = localStorage.getItem('op-lang');
+      const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
       if (saved === 'zh' || saved === 'en') return saved;
-    } catch { /* private mode, fall through to detection */ }
-    return detectLang();
+    } catch { /* private mode, fall through to the original language */ }
+    return 'zh';
   });
   useEffect(() => {
-    try { localStorage.setItem('op-lang', lang); } catch { /* not fatal */ }
+    try { localStorage.setItem(LANGUAGE_STORAGE_KEY, lang); } catch { /* not fatal */ }
     document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
     document.documentElement.dataset.lang = lang;
   }, [lang]);
