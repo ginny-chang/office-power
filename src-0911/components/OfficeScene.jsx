@@ -100,6 +100,7 @@ function Agent({at,index=0,reduced,walking=false,working=false,waving=false,ambi
     }
     arm.current.position.y=.7;leftArm.current.position.y=.61;
     arm.current.scale.y=leftArm.current.scale.y=1;
+    leftArm.current.rotation.z=-.18;
     if(reduced) { arm.current.rotation.z=hovered?2.15:.18; return; }
     const t=clock.elapsedTime+index*.618;
     const typing=working||ambient?.current.index===index;
@@ -298,7 +299,7 @@ export function sampleCamera(progress) {
   };
 }
 // The HR agent stands at destinations[0]; the celebration frames it head-on.
-const CELEBRATION={eye:new THREE.Vector3(-.65,2.55,6.8),mobileEye:new THREE.Vector3(-2.6,2.2,7.6),target:new THREE.Vector3(-3.25,1.4,2.77)};
+const CELEBRATION={eye:new THREE.Vector3(-.65,2.55,6.8),mobileEye:new THREE.Vector3(-2.85,2.05,6.55),target:new THREE.Vector3(-3.25,1.34,2.77)};
 const heroLinks=[[-4.5,0,2.4],[4.5,0,2.4],[-4.5,0,-2.8],[4.5,0,-2.8],[-1.8,0,-4],[1.8,0,-4]];
 function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,taskStage,celebrating,budgetAlarm,built,appSpec,buildStage,hovered,onHover,phase,onReady,onDone}) {
   const hero=useRef(),bot=useRef(),office=useRef(),walk=useRef(0),journey=useRef(0),transition=useRef(0),announced=useRef(false),complete=useRef(false);
@@ -374,7 +375,7 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
     eye.lerp(heroEye,1-t);
     target.lerp(heroTarget,1-t);
     // Mobile framing uses a stable virtual band instead of resizing the canvas.
-    if(mobile)eye.lerp(target, -t*.10);
+    if(mobile)eye.lerp(target, t*.08);
     // 03 cuts in on the HR agent a beat after the task lands, for the celebration.
     const cutGoal=tour&&chapter===2&&celebrating?1:0;
     cutIn.current=reduced?cutGoal:THREE.MathUtils.damp(cutIn.current,cutGoal,2.4,dt);
@@ -387,9 +388,9 @@ function AtlasWorld({copy,openingStarted,progress,panelGaze,reduced,chapter,task
     agentCut.current=reduced?cutGoal4:THREE.MathUtils.damp(agentCut.current,cutGoal4,2.8,dt);
     if(agentCut.current>.001){
       const seat=destinations[Math.max(0,Math.min(3,hovered??0))];
-      const near=mobile?6.4:5.22;
-      agentEye.set(seat[0]*(mobile?.42:.55),mobile?2.55:2.3,seat[2]+near);
-      agentTarget.set(seat[0],mobile?1.05:1.15,seat[2]+.62);
+      const near=mobile?5.45:5.22;
+      agentEye.set(seat[0]*(mobile?.52:.55),mobile?2.25:2.3,seat[2]+near);
+      agentTarget.set(seat[0],mobile?1.25:1.15,seat[2]+.62);
       eye.lerp(agentEye,agentCut.current);
       target.lerp(agentTarget,agentCut.current);
     }

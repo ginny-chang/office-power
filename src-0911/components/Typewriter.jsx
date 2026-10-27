@@ -10,15 +10,20 @@ export default function Typewriter({ text, speed = 48, delay = 0, reduced = fals
   useEffect(() => {
     if (reduced) { setTyped(total); return; }
     setTyped(0);
-    let index = 0, tick;
-    const start = setTimeout(() => {
-      tick = setInterval(() => {
-        index += 1;
-        setTyped(index);
-        if (index >= total) clearInterval(tick);
-      }, speed);
-    }, delay);
-    return () => { clearTimeout(start); clearInterval(tick); };
+    let frame;
+    const startedAt = performance.now();
+    const tick = (now) => {
+      const elapsed = now - startedAt - delay;
+      if (elapsed < 0) {
+        frame = requestAnimationFrame(tick);
+        return;
+      }
+      const next = Math.min(total, Math.floor(elapsed / speed) + 1);
+      setTyped((current) => current === next ? current : next);
+      if (next < total) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
   }, [text, total, speed, delay, reduced]);
 
   const done = typed >= total;

@@ -12,10 +12,10 @@ export const freshSpec = () => ({ kind: 'leave', step: 0, asked: 0, linked: 0, r
 // Long enough to type the line, then a beat to let it land before the build runs.
 const REQUEST_MS = 2200;
 
-export default function AppBuilder({ spec, onChange, built, reduced = false }) {
+export default function AppBuilder({ spec, onChange, built, reduced = false, desktop = false }) {
   const { t } = useLang();
   const b = t.builder;
-  const questions = b.questions;
+  const questions = desktop ? b.questions.slice(0, 3) : b.questions;
   const links = b.links;
   const asked = spec.asked || 0;
   const linked = spec.linked || 0;
@@ -102,7 +102,7 @@ export default function AppBuilder({ spec, onChange, built, reduced = false }) {
       {!built && spec.step >= 2 && <p className="build-state" role="status">
         {spec.step === 2 ? b.linkedCount(linked, links.length) : b.building}
       </p>}
-      {built && <LiquidButton type="button" className="builder-reset" onClick={() => onChange(freshSpec())}>{b.replay}</LiquidButton>}
+      {built && !desktop && <LiquidButton type="button" className="builder-reset" onClick={() => onChange(freshSpec())}>{b.replay}</LiquidButton>}
     </div>
     <div className={`builder-toast${toast ? ' is-in' : ''}`} role="status" aria-live="polite">
       {toast ? b.toast : ''}

@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "components": {
+    "calm-agent-page": {
+      "libraries": [],
+      "controls": {
+        "canvas": { "type": "color", "label": "Canvas", "value": "#f7f8fc", "target": { "kind": "cssVar", "name": "--canvas" } },
+        "ink": { "type": "color", "label": "Ink", "value": "#192033", "target": { "kind": "cssVar", "name": "--ink" } },
+        "accent": { "type": "color", "label": "Accent", "value": "#4b63e8", "target": { "kind": "cssVar", "name": "--accent" } },
+        "radius": { "type": "number", "label": "Card radius", "value": 20, "min": 12, "max": 32, "step": 1, "target": { "kind": "cssVar", "name": "--radius" } }
+      }
+    },
+    "agent-brief": {
+      "libraries": [],
+      "controls": {
+        "confidence": { "type": "number", "label": "Confidence", "value": 92, "min": 0, "max": 100, "step": 1, "target": { "kind": "property", "name": "confidence" } }
+      }
+    },
+    "approval-card": {
+      "libraries": [],
+      "controls": {
+        "highlight": { "type": "color", "label": "Approval tint", "value": "#edf0ff", "target": { "kind": "cssVar", "name": "--approval-tint" } }
+      }
+    },
+    "delivery-card": { "libraries": [], "controls": {} },
+    "agent-rail": { "libraries": [], "controls": {} }
+  }
+}

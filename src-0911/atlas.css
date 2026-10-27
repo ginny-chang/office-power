@@ -122,3 +122,108 @@
 @media(max-width:760px){
  .office-tour .capability-arc .capability-card{width:100%}
 }
+
+/* Desktop refinement: align the chapter rhythm without touching the phone frame. */
+@media(min-width:761px){
+ :root[data-lang="en"] .phase-tour.chapter-0 .office-narrative,
+ :root[data-lang="en"] .chapter-0 .office-narrative{top:10%}
+ :root[data-lang="en"] .chapter-0 .capability-card{top:calc(61% + var(--dy) * 1.2)}
+
+ .office-sticky.chapter-1 .office-copy h1,
+ .office-sticky.chapter-2 .office-copy h1{
+  font-size:clamp(27px,3vw,45px);line-height:1.3;margin:18px 0}
+
+ :root .office-sticky.chapter-2 .office-narrative{
+  width:360px;max-width:360px;top:50%;transform:translateY(-50%);max-height:none}
+ .office-sticky.chapter-2 .task-demo{
+  width:360px;height:430px;margin-top:16px;display:flex;flex-direction:column}
+ .office-sticky.chapter-2 .task-conversation{
+  flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+ .office-sticky.chapter-2 .task-demo header,
+ .office-sticky.chapter-2 .task-demo footer{flex:none}
+}
+
+/* 2026-09 desktop alignment: 02 and 03 use the same title scale as 05. */
+@media(min-width:761px){
+ .office-sticky.chapter-1 .office-copy h1,
+ .office-sticky.chapter-2 .office-copy h1{
+  font-size:clamp(25px,2.5vw,38px);line-height:1.3}
+}
+
+/* The in-tour booking action is the same primary action as the header CTA. */
+.site-shell .office-enter{
+ display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border:1px solid #ffffff3d;
+ border-radius:20px;background:linear-gradient(140deg,#3d5cc4,#24356d);color:#f0f3f8;
+ font:500 13px/14px Archivo,'Noto Sans TC',sans-serif;
+ box-shadow:inset 0 1px 0 #ffffff45,0 8px 20px #27407f2e;
+ transition:transform .22s ease,box-shadow .22s ease}
+.site-shell .site-header .header-cta{line-height:14px}
+.site-shell .office-enter:hover{transform:translateY(-1px);box-shadow:inset 0 1px 0 #ffffff54,0 12px 26px #27407f3d}
+
+/* Mobile refinement: keep each panel fully visible, preserve the desktop content,
+   and use the same compact progress chip instead of a separate dot system. */
+@media(max-width:760px){
+ .office-tour-footer{display:none}
+ .scroll-indicator{display:flex;align-items:center;gap:11px;position:absolute;right:5vw;bottom:14px;
+  z-index:18;pointer-events:none;padding:9px 15px;border:1px solid #ffffffd9;border-radius:999px;
+  background:#ffffffc7;box-shadow:0 8px 22px #2b3b5817,inset 0 1px 0 #fff}
+ .scroll-indicator b{font:600 14px Archivo,'Noto Sans TC',sans-serif;letter-spacing:.1em;
+  color:#39455c;font-variant-numeric:tabular-nums}
+ .scroll-indicator .rail{display:flex;gap:3px;width:112px}
+ .scroll-indicator .seg{position:relative;flex:1;height:5px;border-radius:999px;background:#ccd6e5;overflow:hidden}
+ .scroll-indicator .seg.is-done{background:#3d5cc4}
+ .scroll-indicator .seg.is-now::after{content:'';position:absolute;inset:0 auto 0 0;
+  width:calc(var(--chapter-progress,0) * 100%);height:100%;border-radius:inherit;
+  background:linear-gradient(90deg,#6f8bd8,#3d5cc4);transition:width .1s linear}
+
+ .office-tour .office-sticky.chapter-1 .office-narrative,
+ .office-tour .office-sticky.chapter-2 .office-narrative,
+ .office-tour .office-sticky.chapter-4 .office-narrative{
+  overflow:hidden;overscroll-behavior:none}
+ .office-tour .chapter-1 .builder-thread{overflow:hidden;overscroll-behavior:none}
+ .office-tour .chapter-1 .app-builder,
+ .office-tour .chapter-1 .app-preview-stage,
+ .office-tour .chapter-2 .task-demo,
+ .office-tour .chapter-4 .budget-dashboard{pointer-events:none}
+
+ /* 02 finished App: scale the complete desktop-like card into its viewport slot. */
+ .office-tour .chapter-1 .app-preview-stage{top:202px;bottom:min(330px,36svh);overflow:hidden}
+ .office-tour .chapter-1 .app-preview-stack{width:116%;margin-left:-8%;transform:scale(.86);transform-origin:top center}
+ .office-tour .chapter-1 .preview-content{padding:14px 12px 12px}
+ .office-tour .chapter-1 .preview-heading{margin-bottom:10px}
+ .office-tour .chapter-1 .preview-actions{margin-top:10px}
+
+ /* 02/03 panels are display-only on phones and fit without internal scrolling. */
+ .office-tour .chapter-1 .app-builder{font-size:12px}
+ .office-tour .chapter-1 .app-builder header{padding:9px 12px}
+ .office-tour .chapter-1 .builder-thread{padding:8px 12px 10px}
+ .office-tour .chapter-1 .builder-checklist{gap:5px}
+ .office-tour .chapter-1 .builder-checklist li{padding:6px 8px}
+ .office-tour .chapter-1 .check-copy b{font-size:13px}
+ .office-tour .chapter-1 .check-copy em{font-size:12px}
+
+ .office-tour .chapter-2 .task-demo{font-size:12px}
+ .office-tour .chapter-2 .task-demo header{padding:8px 12px}
+ .office-tour .chapter-2 .task-conversation{gap:6px;padding:7px 12px}
+ .office-tour .chapter-2 .chat-bubble{max-width:86%;padding:7px 10px;font-size:13px;line-height:1.45}
+ .office-tour .chapter-2 .chat-bubble.leave-preview{width:86%;max-width:86%}
+ .office-tour .chapter-2 .chat-bubble.leave-preview>div{padding:2px 0;font-size:12px}
+ .office-tour .chapter-2 .task-demo footer{padding:7px 12px}
+
+ /* 05 now uses the same two metrics and status content as desktop. */
+ .office-tour .chapter-4 .budget-dashboard{padding:10px 13px}
+ .office-tour .chapter-4 .budget-total{padding:6px 0}
+ .office-tour .chapter-4 .budget-stats{grid-template-columns:1.1fr 1fr;padding:6px 0}
+ .office-tour .chapter-4 .budget-status{padding:6px 9px}
+}
+
+@media(max-width:390px), (max-width:760px) and (max-height:720px){
+ .office-tour .chapter-1 .app-preview-stack{width:124%;margin-left:-12%;transform:scale(.80)}
+ .office-tour .chapter-1 .app-preview-stage{top:190px;bottom:min(300px,34svh)}
+ .office-tour .chapter-1 .app-builder{transform:scale(.92);transform-origin:top left;width:108.7%}
+ .office-tour .chapter-2 .task-demo{transform:scale(.92);transform-origin:top left;width:108.7%}
+}
+
+@media(prefers-reduced-motion:reduce){
+ .site-shell .office-enter,.scroll-indicator .seg.is-now::after{transition:none}
+}

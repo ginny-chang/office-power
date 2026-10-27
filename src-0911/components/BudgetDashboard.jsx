@@ -10,9 +10,8 @@ const SPARK_POINTS = 8;
 function sparkPath(ratio) {
   const points = Array.from({ length: SPARK_POINTS }, (_, i) => {
     const along = i / (SPARK_POINTS - 1);
-    const wobble = Math.sin(i * 1.9) * .05 + Math.sin(i * 4.3) * .025;
-    // Earlier points sit lower, so the line always climbs to the live value.
-    const value = Math.max(.03, Math.min(1, ratio * (.3 + .7 * along) + wobble * along));
+    // A steady cumulative curve: every point is higher than the one before it.
+    const value = Math.max(.03, Math.min(1, ratio * (.28 + .72 * along)));
     const x = along * 100;
     const y = 22 - value * 20;
     return `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
@@ -27,7 +26,7 @@ function barHeights(ratio) {
   });
 }
 
-export default function BudgetDashboard({ cost, limit, alarm, onReset }) {
+export default function BudgetDashboard({ cost, limit, alarm, onReset, desktop = false }) {
   const { t } = useLang();
   const b = t.budget;
   const ratio = Math.min(1, cost / limit);
@@ -47,15 +46,15 @@ export default function BudgetDashboard({ cost, limit, alarm, onReset }) {
         <b>{Math.round(ratio * 100)}<small>%</small></b>
       </div>
     </div>
-    <div className="budget-stats">
+    <div className={`budget-stats${desktop ? ' is-compact' : ''}`}>
       <div><span>{b.tokens}</span><strong>{(tokens / 1000000).toFixed(2)}<small>M</small></strong><svg viewBox="0 0 100 24" aria-hidden="true"><path d={sparkPath(ratio)}/></svg></div>
       <div><span>{b.conversations}</span><strong>{conversations.toLocaleString()}</strong><div className="budget-bars" aria-hidden="true">{barHeights(ratio).map((v, i) => <i key={i} style={{ transform: `scaleY(${v})` }} />)}</div></div>
-      <div><span>{b.avg}</span><strong>{'$' + (cost / conversations).toFixed(2)}</strong><small>{b.perChat}</small></div>
+      {!desktop && <div><span>{b.avg}</span><strong>{'$' + (cost / conversations).toFixed(2)}</strong><small>{b.perChat}</small></div>}
     </div>
     <div className="budget-status" role="status">
       <b>{alarm ? b.hit : b.ok}</b>
-      <span>{alarm ? b.hitNote : b.okNote(dollars(Math.max(0, limit - cost)))}</span>
+      <span>{alarm ? (desktop ? b.hitNoteDone : b.hitNote) : b.okNote(dollars(Math.max(0, limit - cost)))}</span>
     </div>
-    <footer><button type="button" onClick={onReset}>{b.replay}</button></footer>
+    {!desktop && <footer><button type="button" onClick={onReset}>{b.replay}</button></footer>}
   </div>;
 }

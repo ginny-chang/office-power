@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Icon from './icons';
 import Typewriter from './Typewriter';
 import LiquidButton from './LiquidButton';
@@ -16,6 +16,10 @@ export default function AppBuilder({ spec, onChange, built, reduced = false }) {
   const linked = spec.linked || 0;
   const chosen = spec.step > 0;
   const [toast, setToast] = useState(false);
+  const thread = useRef();
+
+  // The thread grows as the build runs, so keep its tail in view.
+  useEffect(() => { const el = thread.current; if (el) el.scrollTop = el.scrollHeight; }, [spec, built]);
 
   // Finishing is announced by a toast rather than a coloured bar.
   useEffect(() => {
@@ -43,10 +47,10 @@ export default function AppBuilder({ spec, onChange, built, reduced = false }) {
       <img src="/officepower-icon.svg" alt="" />
       <div><strong>Office Power Builder</strong><small>{status}</small></div>
     </header>
-    <div className="builder-thread">
+    <div className="builder-thread" ref={thread}>
       <p className="ask">想讓 AI 團隊建立哪一種 App？</p>
       <div className="app-grid">{Object.entries(appOptions).map(([key, one]) =>
-        <button key={key} type="button" className={`app-tile${spec.kind === key && chosen ? ' is-on' : ''}`} aria-pressed={spec.kind === key && chosen} onClick={() => onChange({ ...fresh, kind: key, step: 1 })}>
+        <button key={key} type="button" className={`app-tile${spec.kind === key && chosen ? ' is-on' : ''}`} aria-pressed={spec.kind === key && chosen} onClick={() => onChange({ ...fresh, kind: key, step: 1, run: performance.now() })}>
           <span className="app-icon"><Icon name={one.icon} /></span><em>{one.name}</em>
         </button>)}</div>
 

@@ -1,0 +1,126 @@
+[
+  {
+    "contentId": "src-calm/pages/calm-agent-page.js",
+    "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/form[1]",
+    "changes": {
+      "lineHeight": {
+        "cssProperty": "lineHeight",
+        "value": "1.2999999999999998",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/form[1]"
+      }
+    },
+    "method": "visual-inline-style-patch",
+    "updatedAt": "2026-10-16T09:35:55.657Z",
+    "sourceHash": "b313de169bee025b"
+  },
+  {
+    "contentId": "src-calm/pages/calm-agent-page.js",
+    "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/div[1]",
+    "changes": {
+      "lineHeight": {
+        "cssProperty": "lineHeight",
+        "value": "1.2999999999999998",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/form[1]"
+      },
+      "color": {
+        "cssProperty": "color",
+        "value": "#5671ff",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/div[1]"
+      }
+    },
+    "method": "visual-inline-style-patch",
+    "updatedAt": "2026-10-16T09:37:09.297Z",
+    "sourceHash": "364127b2defa7e33"
+  },
+  {
+    "contentId": "src-calm/pages/calm-agent-page.js",
+    "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/div[1]",
+    "changes": {
+      "lineHeight": {
+        "cssProperty": "lineHeight",
+        "value": "1.2999999999999998",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/form[1]"
+      },
+      "color": {
+        "cssProperty": "color",
+        "value": "#5671ff",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/div[1]"
+      }
+    },
+    "method": "visual-inline-style-patch",
+    "updatedAt": "2026-10-16T09:37:09.827Z",
+    "sourceHash": "364127b2defa7e33"
+  },
+  {
+    "contentId": "src-calm/pages/calm-agent-page.js",
+    "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/h2[1]",
+    "changes": {
+      "lineHeight": {
+        "cssProperty": "lineHeight",
+        "value": "1.2999999999999998",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/form[1]"
+      },
+      "color": {
+        "cssProperty": "color",
+        "value": "#5671ff",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/div[1]"
+      },
+      "fontSize": {
+        "cssProperty": "fontSize",
+        "value": "23px",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/h2[1]"
+      }
+    },
+    "method": "visual-inline-style-patch",
+    "updatedAt": "2026-10-16T09:37:19.933Z",
+    "sourceHash": "7b2286b4d75e161a"
+  },
+  {
+    "contentId": "src-calm/pages/calm-agent-page.js",
+    "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/h2[1]",
+    "changes": {
+      "lineHeight": {
+        "cssProperty": "lineHeight",
+        "value": "1.2999999999999998",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/form[1]"
+      },
+      "color": {
+        "cssProperty": "color",
+        "value": "#5671ff",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/div[1]"
+      },
+      "fontSize": {
+        "cssProperty": "fontSize",
+        "value": "22px",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/h2[1]"
+      }
+    },
+    "method": "visual-inline-style-patch",
+    "updatedAt": "2026-10-16T09:37:20.603Z",
+    "sourceHash": "cc8579a734061f38"
+  },
+  {
+    "contentId": "src-calm/pages/calm-agent-page.js",
+    "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/h2[1]",
+    "changes": {
+      "lineHeight": {
+        "cssProperty": "lineHeight",
+        "value": "1.2999999999999998",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/form[1]"
+      },
+      "color": {
+        "cssProperty": "color",
+        "value": "#5671ff",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/div[1]"
+      },
+      "fontSize": {
+        "cssProperty": "fontSize",
+        "value": "22px",
+        "xpath": "//*[@data-content-id=\"src-calm/pages/calm-agent-page.js\"]/div[1]/main[1]/section[1]/agent-brief[1]/section[1]/h2[1]"
+      }
+    },
+    "method": "visual-inline-style-patch",
+    "updatedAt": "2026-10-16T09:37:22.573Z",
+    "sourceHash": "cc8579a734061f38"
+  }
+]

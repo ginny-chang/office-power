@@ -62,11 +62,6 @@ export default function OfficeTour() {
   const selectedAgent = hovered ?? autoAgent;
   const arcFocus = hovered ?? deckTick % features.length;
   const [chapter, setChapter] = useState(0);
-  // 05: spend climbs from 1,100 toward the 1,900 ceiling; the alarm is what
-  // happens when it lands, not something that sits there waiting.
-  const BUDGET_START = 1100, BUDGET_LIMIT = 1900;
-  const [budgetCost, setBudgetCost] = useState(BUDGET_START);
-  const budgetAlarm = chapter === 4 && budgetCost >= BUDGET_LIMIT;
   const [phase, setPhase] = useState('boot');
   const [loaded, setLoaded] = useState(false);
   const [taskStage, setTaskStage] = useState(0);
@@ -75,6 +70,11 @@ export default function OfficeTour() {
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   // Phones stage 02–04 differently; every use of this is additive to the desktop path.
   const [narrow, setNarrow] = useState(() => window.matchMedia('(max-width: 760px)').matches);
+  // 05 presents the same 1800 → 1900 story on every viewport.
+  const budgetStart = 1800;
+  const BUDGET_LIMIT = 1900;
+  const [budgetCost, setBudgetCost] = useState(budgetStart);
+  const budgetAlarm = chapter === 4 && budgetCost >= BUDGET_LIMIT;
   useEffect(() => setNavSlot(document.getElementById('chapter-nav-slot')), []);
   useEffect(() => {
     const cases = document.getElementById('usecases');
@@ -164,17 +164,23 @@ export default function OfficeTour() {
     const top = window.scrollY + root.current.getBoundingClientRect().top;
     window.scrollTo({ top: top + (root.current.offsetHeight - window.innerHeight) * (index / chapters.length + .025), behavior: reduced ? 'instant' : 'smooth' });
   };
-  // Re-arm whenever the chapter is entered, then run to the ceiling in ~2.4s.
+  // Re-arm whenever the chapter is entered, then climb steadily to the ceiling.
   useEffect(() => {
     if (phase !== 'tour' || chapter !== 4) return;
-    setBudgetCost(BUDGET_START);
-  }, [phase, chapter]);
+    setBudgetCost(budgetStart);
+  }, [phase, chapter, budgetStart]);
   useEffect(() => {
     if (phase !== 'tour' || chapter !== 4 || !visible || reduced) return;
-    if (budgetCost >= BUDGET_LIMIT) return;
-    const timer = setInterval(() => setBudgetCost((c) => Math.min(BUDGET_LIMIT, c + 17)), 50);
+    const startedAt = performance.now();
+    const duration = narrow ? 20000 : 2400;
+    const tick = () => {
+      const ratio = Math.min(1, (performance.now() - startedAt) / duration);
+      setBudgetCost(Math.round(budgetStart + (BUDGET_LIMIT - budgetStart) * ratio));
+    };
+    tick();
+    const timer = setInterval(tick, 50);
     return () => clearInterval(timer);
-  }, [phase, chapter, visible, reduced, budgetCost]);
+  }, [phase, chapter, visible, reduced, narrow, budgetStart]);
 
   const jumpToCases = () => document.getElementById('usecases')?.scrollIntoView({ behavior: reduced ? 'instant' : 'smooth', block: 'start' });
   useEffect(() => { setHovered(null); setAutoAgent(0); setDeckTick(0); }, [chapter, phase]);
@@ -258,7 +264,7 @@ export default function OfficeTour() {
       </>, navSlot)}
       {phase === 'tour' && <>
         <div className="office-narrative">
-        <div className="office-copy" key={chapter}><Typewriter tag="h1" text={item.title} speed={58} reduced={reduced || chapter === 0}/>{chapter!==0&&<Typewriter tag="p" text={item.description} speed={17} delay={item.title.length * 58 + 260} reduced={reduced}/>}
+        <div className="office-copy" key={chapter}><Typewriter tag="h1" text={item.title} speed={Math.max(5, Math.floor(280 / item.title.length))} reduced={reduced || chapter === 0}/>{chapter!==0&&<Typewriter tag="p" text={item.description} speed={Math.max(2, Math.floor(340 / item.description.length))} delay={320} reduced={reduced}/>}
           {chapter === chapters.length - 1 && <>
             <a className="office-enter" href="#demo">{t.bookDemo} <span>↗</span></a>
             <div className="deployment-panel"><div className="deployment-metrics">
@@ -268,8 +274,8 @@ export default function OfficeTour() {
           </>}
         </div>
         {false && chapter === 0 && <div className="platform-capabilities">{['Agent 建立與調度','知識庫與權限','多通道上線','自我升級'].map((name,i) => <button key={name} onMouseEnter={()=>setHovered(i)} onMouseLeave={()=>setHovered(null)} onFocus={()=>setHovered(i)} onBlur={()=>setHovered(null)} onClick={()=>setHovered(i)} aria-pressed={selectedAgent===i}><span>0{i+1}</span>{name}<b>↗</b></button>)}</div>}
-        {chapter === 1 && <AppBuilder spec={appSpec} onChange={setAppSpec} built={built} reduced={reduced} />}
-        {chapter === 4 && <BudgetDashboard cost={budgetCost} limit={BUDGET_LIMIT} alarm={budgetAlarm} onReset={() => setBudgetCost(BUDGET_START)} />}
+        {chapter === 1 && <AppBuilder spec={appSpec} onChange={setAppSpec} built={built} reduced={reduced} desktop={!narrow} />}
+        {chapter === 4 && <BudgetDashboard cost={budgetCost} limit={BUDGET_LIMIT} alarm={budgetAlarm} onReset={() => setBudgetCost(budgetStart)} desktop />}
         {chapter === 2 && <div className="task-demo" aria-label={t.task.demoLabel}>
           <header><span className="bot-avatar" aria-hidden="true"><i/><i/><b><em/><em/></b></span><div><strong>{t.task.agent}</strong><small>{t.task.stages[taskStage]}</small></div><span className="demo-label">{t.task.demoLabel}</span></header>
           {/* Read as a messaging thread: the employee on the right, the Agent on the left. */}
@@ -286,7 +292,7 @@ export default function OfficeTour() {
               </div>
             </div>}
           </div>
-          <footer>{taskStage < 2 ? <span>{t.task.steps}</span> : taskStage === 2 ? <button onClick={() => setTaskStage(3)}>{t.task.confirm} <span>↗</span></button> : <div className="task-success" role="status">{t.task.success}<small>{t.task.successNote}</small><button onClick={() => setTaskStage(2)}>{t.task.redo}</button></div>}</footer>
+          <footer>{taskStage < 2 ? <span>{t.task.steps}</span> : taskStage === 2 ? (narrow ? <button onClick={() => setTaskStage(3)}>{t.task.confirm} <span>↗</span></button> : <span>{t.task.confirm}</span>) : <div className="task-success" role="status">{t.task.success}<small>{t.task.successNote}</small>{narrow && <button onClick={() => setTaskStage(2)}>{t.task.redo}</button>}</div>}</footer>
         </div>}
         </div>
         {chapter === 1 && built && <AppPreview key={`${appSpec.kind}-${appSpec.run}`} kind={appSpec.kind}/>}
@@ -301,7 +307,7 @@ export default function OfficeTour() {
             <em>{f.body}</em>
           </button>)}
         </div>}
-        <div className="office-tour-footer"><span className="office-scroll">{t.scrollExplore} <b>↓</b></span>
+        <div className="office-tour-footer">
           {/* Phones lose the header chapter list, so the tour carries its own dot nav. */}
           <nav className="chapter-dots" aria-label={t.chaptersNav}>{chapters.map((c, i) =>
             <button key={chapterIds[i]} type="button" onClick={() => jump(i)} aria-label={c.name} aria-current={chapter === i && !atCases ? 'step' : undefined}><i /></button>)}
