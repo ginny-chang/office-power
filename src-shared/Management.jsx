@@ -1,0 +1,6 @@
+import React,{useEffect,useRef,useId} from 'react';
+import {X} from 'lucide-react';
+export function Modal({title,children,onClose,onSave}){const ref=useRef();const titleId=useId();useEffect(()=>{ref.current.showModal()},[]);return <dialog ref={ref} className="manage-modal" aria-labelledby={titleId} onCancel={onClose}><form onSubmit={e=>{e.preventDefault();onSave?.()}}><header><h2 id={titleId}>{title}</h2><button type="button" aria-label="關閉" onClick={onClose}><X size={20}/></button></header><div className="form-body">{children}</div><footer><button type="button" onClick={onClose}>取消</button>{onSave&&<button className="primary" type="submit">儲存</button>}</footer></form></dialog>}
+export function Field({label,value,onChange,area=false,...props}){const Tag=area?'textarea':'input';return <label className="manage-field">{label}<Tag value={value} onChange={e=>onChange(e.target.value)} {...props}/></label>}
+export function download(name,text,type='text/plain'){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+export function csv(rows){return '\uFEFF'+rows.map(row=>row.map(value=>{let s=String(value??'');if(/^[=+@\-]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"'}).join(',')).join('\r\n')}

@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import {createRobotShell} from '../src/components/robot-shell.js';
 import AgentIcon from '../src-shared/AgentIcon.jsx';
 import {renderToStaticMarkup} from 'react-dom/server';
+import {Settings2} from 'lucide-react';
 import {officeLayout} from './office-layout.js';
 // Desk and robot geometry adapted from the landing page's reservation scene.
 const C = { shell: '#e7eefb', metal: '#a6b8d4', ink: '#203c86', floor: '#a8bfe5', wall: '#dce7f8', light: '#ffffff' };
@@ -68,12 +69,15 @@ function BaseGlow({color,radius}){
  useEffect(()=>()=>texture.dispose(),[texture]);
  return <mesh raycast={()=>null} rotation={[-Math.PI/2,0,0]} position={[0,.015,0]}><planeGeometry args={[radius*4,radius*4]}/><meshBasicMaterial map={texture} color={color} transparent opacity={.65} depthWrite={false} toneMapped={false}/></mesh>
 }
-function Station({agent,index,onSelect,read,reduced}){
+function Station({agent,index,onSelect,onSettings,read,reduced}){
  const [hovered,setHovered]=useState(false);const at=agent.at;
+ const hoverTimer=useRef();useEffect(()=>()=>clearTimeout(hoverTimer.current),[]);
+ const enter=()=>{clearTimeout(hoverTimer.current);setHovered(true)};
+ const leave=()=>{clearTimeout(hoverTimer.current);hoverTimer.current=setTimeout(()=>setHovered(false),220)};
  const tint=agent.status==='attention'?'#ffc274':agent.status==='error'?'#ff819d':'#ffffff';
  const radius=agent.id==='nova'?1.85:1.65;
- const hoverProps={onPointerEnter:()=>setHovered(true),onPointerLeave:()=>setHovered(false),onFocus:()=>setHovered(true),onBlur:()=>setHovered(false)};
- return <group position={at} onPointerOver={e=>{e.stopPropagation();setHovered(true)}} onPointerOut={()=>setHovered(false)}>
+ const hoverProps={onPointerEnter:enter,onPointerLeave:leave,onFocus:enter,onBlur:leave};
+ return <group position={at} onPointerOver={e=>{e.stopPropagation();enter()}} onPointerOut={leave}>
     <BaseGlow color={tint} radius={radius}/>
     <mesh position={[0,.15,0]} castShadow receiveShadow><cylinderGeometry args={[radius,radius,.28,96]}/><meshStandardMaterial color="#f5f7fd" roughness={.3}/></mesh>
     <mesh position={[0,.303,0]} rotation={[-Math.PI/2,0,0]} receiveShadow><circleGeometry args={[radius-.13,96]}/><meshStandardMaterial color="#ffffff" roughness={.45}/></mesh>
@@ -92,7 +96,7 @@ function Station({agent,index,onSelect,read,reduced}){
       <Sphere at={[.57,.79,-.09]} size={[.07,.026,.10]} color="#c4cddb"/>
     </group>
  <Agent at={[-.22,.31,-.38]} index={index} reduced={reduced} hovered={hovered} onHover={e=>{e.stopPropagation();setHovered(true)}} onLeave={()=>setHovered(false)} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
- <Html position={[.18,.47,1.24]} center zIndexRange={[5,1]}><button {...hoverProps} data-agent={agent.id} data-hovered={hovered} className="bot-label" style={{padding:'7px 11px',borderRadius:12,fontSize:12,color:agent.color,background:'#fcfdff',boxShadow:'0 3px 10px #66779920'}} onClick={()=>onSelect(agent.id)}><AgentIcon agent={agent.id} size={21}/>{agent.name}</button></Html>
+ <Html position={[.18,.47,1.24]} center zIndexRange={[5,1]}><div className="bot-name-actions" {...hoverProps} data-hovered={hovered}><button data-agent={agent.id} data-hovered={hovered} className="bot-label" style={{padding:'7px 11px',borderRadius:12,fontSize:12,color:agent.color,background:'#fcfdff',boxShadow:'0 3px 10px #66779920'}} onClick={()=>onSelect(agent.id)}><AgentIcon agent={agent.id} emoji={agent.emoji} size={21}/>{agent.name}</button><button className="bot-settings-button" aria-label={`設定 ${agent.name}`} onClick={e=>{e.stopPropagation();onSettings(agent.id)}}><Settings2 size={14}/>設定</button></div></Html>
  {agent.event&&!read.includes(agent.id)&&<Html position={[0,3.15,.1]} center zIndexRange={[8,6]}><button {...hoverProps} className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></button></Html>}
  </group>
 }
@@ -131,7 +135,7 @@ function BlueFloor(){
  useEffect(()=>()=>texture.dispose(),[texture]);
  return <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.025,0]}><planeGeometry args={[160,130]}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh>
 }
-function Scene({agents,allAgents=agents,onSelect,read,reset,reduced,onReady}){
+function Scene({agents,allAgents=agents,onSelect,onSettings,read,reset,reduced,onReady}){
  const controls=useRef(),intro=useRef(!reduced);
  const layout=useMemo(()=>officeLayout(allAgents),[allAgents]);
  const visibleAgents=layout.agents.filter(a=>agents.some(visible=>visible.id===a.id));
@@ -139,7 +143,7 @@ function Scene({agents,allAgents=agents,onSelect,read,reset,reduced,onReady}){
  return <><color attach="background" args={['#dce6f2']}/><ambientLight intensity={.9}/><hemisphereLight args={['#ffffff','#aebfd5',1.15]}/><directionalLight position={[-3,9,6]} intensity={2.4} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-15} shadow-camera-right={15} shadow-camera-top={15} shadow-camera-bottom={-15} shadow-normalBias={.03}/><directionalLight position={[8,4,-6]} color="#e7f0ff" intensity={1.4}/>
  <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.03,0]} receiveShadow><planeGeometry args={[160,130]}/><meshStandardMaterial color="#cbd9ea" roughness={.8}/></mesh><BlueFloor/>
  <gridHelper args={[140,140,'#ffffff','#ffffff']} scale={[1,1,.81]} position={[0,-.009,0]} material-transparent material-opacity={.22}/>
- {visibleAgents.map((a,i)=><React.Fragment key={a.id}>{a.id!=='nova'&&<Connection to={a.at} index={i} reduced={reduced}/>}<Station agent={a} index={i} onSelect={onSelect} read={read} reduced={reduced}/></React.Fragment>)}
+ {visibleAgents.map((a,i)=><React.Fragment key={a.id}>{a.id!=='nova'&&<Connection to={a.at} index={i} reduced={reduced}/>}<Station agent={a} index={i} onSelect={onSelect} onSettings={onSettings} read={read} reduced={reduced}/></React.Fragment>)}
  <Camera reset={reset} controls={controls} reduced={reduced} intro={intro} radius={layout.radius}/><OrbitControls ref={controls} onStart={()=>{intro.current=false}} enablePan enableZoom screenSpacePanning mouseButtons={{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}} minZoom={3} maxZoom={150} target={[0,.35,0]} enableDamping={!reduced} dampingFactor={.08}/></>
 }
 export default function Office(props){const [visible,setVisible]=useState(true);useEffect(()=>{const fn=()=>setVisible(!document.hidden);document.addEventListener('visibilitychange',fn);return()=>document.removeEventListener('visibilitychange',fn)},[]);return <div className="three-office" aria-label="可水平旋轉與縮放的 3D AI 辦公室"><Canvas orthographic shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[24,38,20],zoom:18,near:.1,far:180}} gl={{antialias:true,powerPreference:'high-performance'}}><Scene {...props}/></Canvas></div>}

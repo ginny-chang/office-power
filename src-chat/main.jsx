@@ -1,3 +1,4 @@
+import AccountMenu from '../src-shared/AccountMenu';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {IconLayoutGrid,IconMessageCircle,IconApps,IconClock,IconCube,IconUsers,IconSearch,IconPlus,IconSend,IconPin,IconPinnedOff,IconChevronLeft,IconChevronRight,IconFolder} from '@tabler/icons-react';
@@ -15,7 +16,7 @@ const seed=[
 ];
 
 const nav=[[IconLayoutGrid,'My Board','dashboard.html'],[IconMessageCircle,'Chat','chat.html'],[IconApps,'NOVA Apps','apps.html']];
-function Sidebar(){return <aside className="rail"><a className="logo" href="./dashboard.html" aria-label="Office Power"><img src="./officepower-app-icon.svg" alt=""/></a><nav aria-label="主要導覽">{nav.map(([Icon,label,url])=><a key={url} className={label==='Chat'?'active':''} href={`./${url}`} aria-label={label} aria-current={label==='Chat'?'page':undefined}><Icon size={20} strokeWidth={1.7}/></a>)}<button disabled aria-label="Automations"><IconClock size={20} strokeWidth={1.7}/></button><span/><button disabled aria-label="AI Studio"><IconCube size={20} strokeWidth={1.7}/></button><button disabled aria-label="Organization"><IconUsers size={20} strokeWidth={1.7}/></button></nav><div className="account">G</div></aside>}
+function Sidebar(){return <aside className="rail"><a className="logo" href="./dashboard.html" aria-label="Office Power"><img src="./officepower-app-icon.svg" alt=""/></a><nav aria-label="主要導覽">{nav.map(([Icon,label,url])=><a key={url} className={label==='Chat'?'active':''} href={`./${url}`} data-label={label} aria-label={label} aria-current={label==='Chat'?'page':undefined}><Icon size={20} strokeWidth={1.7}/></a>)}<span/><a href="./capabilities.html" data-label="能力中心" aria-label="能力中心"><IconCube size={20} strokeWidth={1.7}/></a><a href="./organization.html" data-label="Organization" aria-label="Organization"><IconUsers size={20} strokeWidth={1.7}/></a></nav><AccountMenu/></aside>}
 
 function App(){
  const requested=new URLSearchParams(location.search).get('agent');
