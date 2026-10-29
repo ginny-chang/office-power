@@ -97,13 +97,15 @@ select.op-input{appearance:none!important;-webkit-appearance:none!important;back
 .op-segments.page-segments,.op-segments.sub-segments{display:flex;width:max-content}.op-segments.page-segments{margin-bottom:24px}.op-segments.sub-segments{margin-bottom:20px}
 
 /* My Board: compact toolbar and readable scene overlays. */
-.reference-board .stage-topline{width:max-content;max-width:calc(100% - 280px);min-width:0;height:auto;gap:12px;padding:8px;border-radius:12px}
-.reference-board .stage-filters.op-segments{height:44px;margin:0;padding:4px;gap:4px;border-radius:8px}
-.reference-board .stage-filters.op-segments>.op-button{min-height:34px;padding:8px 12px;font-size:12px}
-.reference-board .office-controls{flex:0 1 auto;gap:12px}
-.reference-board .agent-search.op-search{flex:0 1 180px;width:180px;height:44px;margin:0}
-.reference-board .view-switch{display:flex;gap:4px;height:44px;padding:0;background:transparent;flex:none}
-.reference-board .view-switch>.op-button{display:grid;place-items:center;width:44px;height:44px;min-height:44px;aspect-ratio:1;padding:0;border-radius:8px}
+.reference-board .stage-topline{width:max-content;max-width:calc(100% - 280px);min-width:0;height:auto;gap:8px;padding:6px;border-radius:12px}
+.reference-board .stage-filters.op-segments{height:40px;margin:0;padding:3px;gap:3px;border-radius:8px}
+.reference-board .stage-filters.op-segments>.op-button{min-height:34px;height:34px;padding:0 12px;gap:8px;font-size:12px}
+.reference-board .stage-filters.op-segments>.op-button>span{margin:0;padding:0;border-radius:0;background:transparent;color:inherit}
+.reference-board .stage-filters.op-segments>.op-button>small{display:inline-flex;align-items:center;justify-content:center;min-width:18px;margin:0;padding:0;background:transparent;color:inherit;opacity:.72}
+.reference-board .office-controls{flex:0 1 auto;gap:8px}
+.reference-board .agent-search.op-search{flex:0 1 180px;width:180px;height:40px;min-height:40px;margin:0}
+.reference-board .view-switch{display:flex;gap:4px;height:40px;padding:0;background:transparent;flex:none}
+.reference-board .view-switch>.op-button{display:grid;place-items:center;width:40px;height:40px;min-height:40px;aspect-ratio:1;padding:0;border-radius:8px}
 .reference-board .bot-bubble.op-button{display:flex;flex-direction:column;align-items:stretch;gap:8px;width:220px;min-height:0;padding:14px 20px;text-align:left;white-space:normal;line-height:1.5}
 .reference-board .bot-bubble .bubble-meta{display:flex;align-items:center;gap:6px;width:100%;font-size:11px}
 .reference-board .bot-bubble .bubble-meta>span{margin-left:auto}
