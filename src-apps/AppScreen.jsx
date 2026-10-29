@@ -1,11 +1,11 @@
 import {Input} from '../src-shared/ui/index.jsx';
 import React,{useState} from 'react';
 import {Search,Check,ArrowUpRight} from 'lucide-react';
-import {appIcons} from './app-data.js';
+import {appIcons,FallbackAppIcon} from './app-data.js';
 export default function AppScreen({app,compact=false}){
- const [checked,setChecked]=useState([]),[query,setQuery]=useState('');const Icon=appIcons[app.id]||ArrowUpRight;
+ const [checked,setChecked]=useState([]),[query,setQuery]=useState('');const Icon=appIcons[app.id]||FallbackAppIcon;
  return <div className={`nova-screen ${compact?'compact':''}`} style={{'--app-color':app.color}}>
-  <header><span className="screen-app-icon"><Icon size={compact?20:26}/></span><div><h2>{app.name}</h2><p>{app.description}</p></div></header>
+  <header><span className="screen-app-icon"><Icon size={compact?28:36}/></span><div><h2>{app.name}</h2><p>{app.description}</p></div></header>
   <div className="screen-tabs"><span>總覽</span><span>我的紀錄</span></div>
   <div className="screen-summary"><div><small>所有項目</small><strong>{app.items.length}</strong></div><div><small>已完成</small><strong>{checked.length}</strong></div><div><small>待處理</small><strong>{app.items.length-checked.length}</strong></div></div>
   {!compact&&<label className="screen-search"><Search size={17}/><Input aria-label="搜尋 App 項目" placeholder="搜尋項目…" value={query} onChange={e=>setQuery(e.target.value)}/></label>}

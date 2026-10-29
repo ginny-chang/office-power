@@ -8,6 +8,7 @@ import AgentIcon from '../src-shared/AgentIcon.jsx';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {Settings2} from 'lucide-react';
 import {officeLayout} from './office-layout.js';
+function cssColor(name,fallback){const value=typeof document==='undefined'?'':getComputedStyle(document.documentElement).getPropertyValue(name).trim();return value||fallback}
 // Desk and robot geometry adapted from the landing page's reservation scene.
 const C = { shell: '#e7eefb', metal: '#a6b8d4', ink: '#203c86', floor: '#a8bfe5', wall: '#dce7f8', light: '#ffffff' };
 function Box({ at=[0,0,0], size=[1,1,1], color=C.shell, radius=.035, metal=.15, ...props }) {
@@ -65,21 +66,22 @@ function Agent({at,index=0,reduced,hovered,onHover,onLeave,onSelect}) {
 </group></group>    <group ref={arm} position={[.53,.7,0]}><Sphere at={[0,-.14,0]} size={[.105,.25,.14]} color="#eef0f2"/></group><group ref={leftArm} position={[-.53,.61,0]} rotation={[-.8,0,-.45]}><Sphere at={[0,-.14,0]} size={[.105,.25,.14]} color="#eef0f2"/></group>
   </group>;
 }
-function BaseGlow({color,radius}){
- const texture=useMemo(()=>{const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d'),g=ctx.createRadialGradient(128,128,0,128,128,128);g.addColorStop(0,'#ffffff80');g.addColorStop(.35,'#ffffff60');g.addColorStop(.55,'#ffffff30');g.addColorStop(.8,'#ffffff0a');g.addColorStop(1,'#ffffff00');ctx.fillStyle=g;ctx.fillRect(0,0,256,256);return new THREE.CanvasTexture(c)},[]);
+function BaseGlow({color,radius,strong=false}){
+ const texture=useMemo(()=>{const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d'),g=ctx.createRadialGradient(128,128,0,128,128,128);if(strong){g.addColorStop(0,color+'f2');g.addColorStop(.22,color+'c4');g.addColorStop(.48,color+'73');g.addColorStop(.72,color+'28');g.addColorStop(1,color+'00')}else{g.addColorStop(0,'#ffffff80');g.addColorStop(.35,'#ffffff60');g.addColorStop(.55,'#ffffff30');g.addColorStop(.8,'#ffffff0a');g.addColorStop(1,'#ffffff00')}ctx.fillStyle=g;ctx.fillRect(0,0,256,256);const map=new THREE.CanvasTexture(c);map.colorSpace=THREE.SRGBColorSpace;return map},[color,strong]);
  useEffect(()=>()=>texture.dispose(),[texture]);
- return <mesh raycast={()=>null} rotation={[-Math.PI/2,0,0]} position={[0,.015,0]}><planeGeometry args={[radius*4,radius*4]}/><meshBasicMaterial map={texture} color={color} transparent opacity={.65} depthWrite={false} toneMapped={false}/></mesh>
+ return <mesh raycast={()=>null} rotation={[-Math.PI/2,0,0]} position={[0,.015,0]}><planeGeometry args={[radius*4,radius*4]}/><meshBasicMaterial map={texture} color={strong?'#ffffff':color} transparent opacity={strong?1:.65} depthWrite={false} toneMapped={false}/></mesh>
 }
 function Station({agent,index,onSelect,onSettings,read,reduced}){
  const [hovered,setHovered]=useState(false);const at=agent.at;
  const hoverTimer=useRef();useEffect(()=>()=>clearTimeout(hoverTimer.current),[]);
  const enter=()=>{clearTimeout(hoverTimer.current);setHovered(true)};
  const leave=()=>{clearTimeout(hoverTimer.current);hoverTimer.current=setTimeout(()=>setHovered(false),220)};
- const tint=agent.status==='attention'?'#ffc274':agent.status==='error'?'#ff819d':'#ffffff';
+ const working=agent.status==='working';
+ const tint=agent.status==='attention'?cssColor('--op-color-glow-attention','#ffc274'):agent.status==='error'?cssColor('--op-color-glow-error','#ff819d'):working?cssColor('--op-color-glow-working','#6aa6e8'):'#ffffff';
  const radius=agent.id==='nova'?1.85:1.65;
  const hoverProps={onPointerEnter:enter,onPointerLeave:leave,onFocus:enter,onBlur:leave};
  return <group position={at} onPointerOver={e=>{e.stopPropagation();enter()}} onPointerOut={leave}>
-    <BaseGlow color={tint} radius={radius}/>
+    <BaseGlow color={tint} radius={radius} strong={working}/>
     <mesh position={[0,.15,0]} castShadow receiveShadow><cylinderGeometry args={[radius,radius,.28,96]}/><meshStandardMaterial color="#f5f7fd" roughness={.3}/></mesh>
     <mesh position={[0,.303,0]} rotation={[-Math.PI/2,0,0]} receiveShadow><circleGeometry args={[radius-.13,96]}/><meshStandardMaterial color="#ffffff" roughness={.45}/></mesh>
     <mesh position={[0,.30,0]} rotation={[-Math.PI/2,0,0]}><torusGeometry args={[radius-.07,.065,12,96]}/><meshStandardMaterial color="#fcfdff" roughness={.3}/></mesh>
@@ -134,11 +136,13 @@ function Camera({reset,controls,reduced,intro,radius}){
 }
 function BlueFloor(){
  const texture=useMemo(()=>{
-  const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
-  const ctx=canvas.getContext('2d');ctx.fillStyle='#cbd9ea';ctx.fillRect(0,0,512,512);
-  const wash=ctx.createRadialGradient(260,258,8,260,258,240);
-  wash.addColorStop(0,'#eaf2ff');wash.addColorStop(.34,'#dce8f7');wash.addColorStop(.72,'#cedded');wash.addColorStop(1,'#bdcde0');
-  ctx.fillStyle=wash;ctx.fillRect(0,0,512,512);
+  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=832;
+  const ctx=canvas.getContext('2d'),unit=6.4,cx=512,cy=416,radius=(Number(cssColor('--op-scene-floor-radius','19'))||19)*unit;
+  const scene=cssColor('--op-color-scene','#ffffff');
+  ctx.fillStyle=scene;ctx.fillRect(0,0,1024,832);
+  const wash=ctx.createRadialGradient(cx,cy,0,cx,cy,radius);
+  wash.addColorStop(0,cssColor('--op-color-floor-0','#bcd2f0'));wash.addColorStop(.2,cssColor('--op-color-floor-1','#c9dcf4'));wash.addColorStop(.4,cssColor('--op-color-floor-2','#dce8f7'));wash.addColorStop(.62,cssColor('--op-color-floor-3','#ecf2fb'));wash.addColorStop(.82,cssColor('--op-color-floor-4','#f8fafd'));wash.addColorStop(1,cssColor('--op-color-floor-5','#ffffff'));
+  ctx.fillStyle=wash;ctx.fillRect(0,0,1024,832);
   const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;return map;
  },[]);
  useEffect(()=>()=>texture.dispose(),[texture]);
@@ -149,8 +153,8 @@ function Scene({agents,allAgents=agents,onSelect,onSettings,onCreate,showAdd,rea
  const layout=useMemo(()=>officeLayout(allAgents),[allAgents]);
  const visibleAgents=layout.agents.filter(a=>agents.some(visible=>visible.id===a.id));
  useEffect(()=>{onReady?.()},[onReady]);
- return <><color attach="background" args={['#dce6f2']}/><ambientLight intensity={.9}/><hemisphereLight args={['#ffffff','#aebfd5',1.15]}/><directionalLight position={[-3,9,6]} intensity={2.4} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-15} shadow-camera-right={15} shadow-camera-top={15} shadow-camera-bottom={-15} shadow-normalBias={.03}/><directionalLight position={[8,4,-6]} color="#e7f0ff" intensity={1.4}/>
- <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.03,0]} receiveShadow><planeGeometry args={[160,130]}/><meshStandardMaterial color="#cbd9ea" roughness={.8}/></mesh><BlueFloor/>
+ return <><color attach="background" args={[cssColor('--op-color-scene','#ffffff')]}/><ambientLight intensity={.9}/><hemisphereLight args={['#ffffff','#aebfd5',1.15]}/><directionalLight position={[-3,9,6]} intensity={2.4} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-15} shadow-camera-right={15} shadow-camera-top={15} shadow-camera-bottom={-15} shadow-normalBias={.03}/><directionalLight position={[8,4,-6]} color="#e7f0ff" intensity={1.4}/>
+ <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.03,0]} receiveShadow><planeGeometry args={[160,130]}/><meshStandardMaterial color={cssColor('--op-color-scene','#ffffff')} roughness={.8}/></mesh><BlueFloor/>
  <gridHelper args={[140,140,'#ffffff','#ffffff']} scale={[1,1,.81]} position={[0,-.009,0]} material-transparent material-opacity={.22}/>
  {visibleAgents.map((a,i)=><React.Fragment key={a.id}>{a.id!=='nova'&&<Connection to={a.at} index={i} reduced={reduced}/>}<Station agent={a} index={i} onSelect={onSelect} onSettings={onSettings} read={read} reduced={reduced}/></React.Fragment>)}
  {showAdd&&<AddAgentSpot position={[0,0,layout.radius+2.4]} onCreate={onCreate}/>}

@@ -1,6 +1,7 @@
 import {Button,Input,Card} from '../src-shared/ui/index.jsx';
 import React,{useState} from 'react';
-import {ArrowUpRight,ArrowUp,AppWindow,X,Check,Pin} from 'lucide-react';
+import {ArrowUpRight,ArrowUp,X,Check,Pin} from 'lucide-react';
+import {AppIcon} from '../src-shared/ui/app-icons.jsx';
 import AgentIcon from '../src-shared/AgentIcon.jsx';
 
 const questions={
@@ -16,5 +17,5 @@ export function Welcome({agent,onSend}){const suggestions=questions[agent.agent]
 export function NovaAppCard({app}){
  const [expanded,setExpanded]=useState(false),[pinned,setPinned]=useState(false),[done,setDone]=useState([]);
  const preview=<div className="nova-preview"><span>PROJECT / WORKSPACE</span><h3>{app.title}</h3><p>{app.description}</p>{app.items.map((item,i)=><label key={item}><Input type="checkbox" checked={done.includes(i)} onChange={()=>setDone(v=>v.includes(i)?v.filter(n=>n!==i):[...v,i])}/>{item}</label>)}</div>;
- return <><Card as="article" className="nova-message-card"><header><span><AppWindow size={18}/>NOVA APP</span></header>{preview}<footer><span>由 {app.agent} 建立</span><Button variant="secondary" type="button" onClick={()=>setExpanded(true)}>展開 App<ArrowUpRight size={16}/></Button></footer></Card>{expanded&&<div className="app-preview-overlay" onClick={()=>setExpanded(false)}><section role="dialog" aria-modal="true" aria-label={app.title} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==='Escape')setExpanded(false)}}><header><strong>{app.title}</strong><Button variant="secondary" type="button" autoFocus aria-label="關閉 App 預覽" onClick={()=>setExpanded(false)}><X size={20}/></Button></header>{preview}<footer><Button variant="secondary" type="button" onClick={()=>setPinned(v=>!v)}>{pinned?<Check size={16}/>:<Pin size={16}/>} {pinned?'已收藏預覽':'收藏預覽'}</Button></footer></section></div>}</>
+ return <><Card as="article" className="nova-message-card"><header><span><AppIcon name="notepad" size={18}/>NOVA APP</span></header>{preview}<footer><span>由 {app.agent} 建立</span><Button variant="secondary" type="button" onClick={()=>setExpanded(true)}>展開 App<ArrowUpRight size={16}/></Button></footer></Card>{expanded&&<div className="app-preview-overlay" onClick={()=>setExpanded(false)}><section role="dialog" aria-modal="true" aria-label={app.title} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==='Escape')setExpanded(false)}}><header><strong>{app.title}</strong><Button variant="secondary" type="button" autoFocus aria-label="關閉 App 預覽" onClick={()=>setExpanded(false)}><X size={20}/></Button></header>{preview}<footer><Button variant="secondary" type="button" onClick={()=>setPinned(v=>!v)}>{pinned?<Check size={16}/>:<Pin size={16}/>} {pinned?'已收藏預覽':'收藏預覽'}</Button></footer></section></div>}</>
 }

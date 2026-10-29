@@ -7,7 +7,7 @@ export default {
   layout:'padded',
   controls:{expanded:true},
   options:{storySort:{order:['Start here','Foundations','Components','Patterns','Product']}},
-  backgrounds:{default:'Office canvas',values:[{name:'Office canvas',value:'#eef3f9'},{name:'Surface',value:'#fcfdff'}]},
+  backgrounds:{default:'Office canvas',values:[{name:'Office canvas',value:'#ffffff'},{name:'Subtle',value:'#f2f3f5'}]},
   viewport:{viewports:{
    phone:{name:'Phone · 375px',styles:{width:'375px',height:'812px'}},
    tablet:{name:'Tablet · 768px',styles:{width:'768px',height:'1024px'}},
