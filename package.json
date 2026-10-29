@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "tokens": "node scripts/generate-tokens.mjs",
+    "icons": "node scripts/build-app-icons.mjs",
     "storybook": "storybook dev -p 6006 --host 127.0.0.1 --no-open",
     "build-storybook": "storybook build"
   },
