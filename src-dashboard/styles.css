@@ -73,10 +73,9 @@ main,.office-stage{background:var(--op-color-border)}
 .reference-board .office-section{right:calc(var(--panel) + 18px);background:linear-gradient(145deg,var(--op-color-surface) 0%,#edf5ff 54%,var(--op-color-surface) 100%)}
 .reference-board .office-stage{background:linear-gradient(145deg,var(--op-color-surface) 0%,#edf5ff 54%,var(--op-color-surface) 100%)}
 .reference-board .three-office,.reference-board .has-panel .three-office,.reference-board .intro-pending .three-office{inset:0;width:100%;height:100%}
-.workspace-switcher{position:absolute;z-index:22;top:24px;left:calc(var(--rail) + 24px);height:48px;padding:7px 12px 7px 8px;display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:var(--op-radius-surface);background:#ffffffeb;box-shadow:0 5px 18px #34496b0b;backdrop-filter:blur(16px);font-size:var(--op-text-caption)}
-.workspace-switcher>span{width:30px;height:30px;display:grid;place-items:center;border-radius:var(--op-radius-control);background:#edf1f6;font-weight:700;color:#586274}
+.workspace-switcher{position:absolute;z-index:22;top:24px;left:calc(var(--rail) + 24px);height:48px;margin:0;display:flex;align-items:center;gap:12px;font-size:24px;color:var(--ink)}
 .workspace-switcher strong{font-weight:650;white-space:nowrap}
-.workspace-switcher svg{color:#7f8998;margin-left:4px}
+.workspace-switcher svg{color:var(--op-color-primary)}
 .reference-board .stage-topline{top:24px;right:20px;width:min(640px,calc(100% - 300px));min-width:510px;height:52px;display:flex;align-items:center;gap:8px;padding:7px;background:#ffffffeb;border:1px solid var(--line);border-radius:var(--op-radius-surface);box-shadow:0 7px 24px #34496b0d;backdrop-filter:blur(16px)}
 .reference-board .stage-filters{order:0;display:flex;flex:none;height:38px;margin:0;padding:3px;background:var(--op-color-subtle);border-radius:var(--op-radius-control);gap:2px}
 .reference-board .stage-filters button{min-height:32px;padding:7px 13px;font-size:var(--op-text-caption);color:var(--op-color-muted);border-radius:var(--op-radius-control)}
@@ -174,7 +173,7 @@ main,.office-stage{background:var(--op-color-border)}
  .reference-board .agent-grid{right:18px;left:calc(var(--rail) + 18px)}
 }
 @media(max-width:900px){
- .reference-board{--rail:56px;--panel:300px}.reference-board .office-section{right:calc(var(--panel) + 10px)}.workspace-switcher{left:70px;top:12px;height:43px}.workspace-switcher strong{display:none}
+ .reference-board{--rail:56px;--panel:300px}.reference-board .office-section{right:calc(var(--panel) + 10px)}.workspace-switcher{left:70px;top:12px;height:43px}.workspace-switcher{font-size:20px}
  .reference-board .stage-topline{top:64px;right:calc(var(--panel) + 20px);left:70px;width:auto;height:auto;flex-wrap:wrap}.reference-board .stage-filters{flex:1}.reference-board .office-controls{flex:1;min-width:210px}
  .board-panel{top:10px;right:10px;bottom:10px}
  .reference-board .agent-grid{inset:130px 14px 18px calc(var(--rail) + 14px);grid-template-columns:1fr}

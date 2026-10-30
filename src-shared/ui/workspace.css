@@ -110,7 +110,7 @@ select.op-input{appearance:none!important;-webkit-appearance:none!important;back
 .reference-board .bot-bubble .bubble-meta{display:flex;align-items:center;gap:6px;width:100%;font-size:11px}
 .reference-board .bot-bubble .bubble-meta>span{margin-left:auto}
 .reference-board .bot-bubble strong{display:block;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
-.reference-board .office-add-agent.op-button{display:flex;align-items:center;justify-content:center;gap:8px;min-width:124px;padding:12px 16px;border:1px dashed #829cc6;border-radius:8px;background:#ffffffad;color:var(--op-color-primary);box-shadow:none;white-space:nowrap}
+.reference-board .office-add-agent.op-button{display:flex;align-items:center;justify-content:center;gap:8px;min-width:48px;width:48px;height:48px;padding:12px;border:1px dashed #829cc6;border-radius:8px;background:#ffffffad;color:var(--op-color-primary);box-shadow:none;white-space:nowrap}
 .reference-board .office-add-agent span{font-size:20px;line-height:1}.reference-board .office-add-agent small{font-size:12px;font-weight:600}
 .reference-board .office-add-agent:hover{background:#ffffffe8;border-color:var(--op-color-primary)}
 @media(max-width:1200px){.reference-board .stage-topline{top:84px;right:20px;max-width:calc(100% - 40px)}}

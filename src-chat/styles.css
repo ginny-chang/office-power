@@ -92,3 +92,7 @@
 @media(max-width:680px){.shell>main.chat-main{display:block;padding:8px}.chat-main .thread-panel,.chat-main .conversation{border:1px solid #ffffffa8;border-radius:var(--op-radius-surface)}.chat-resize-handle{display:none}.chat-main .thread-panel:not(.mobile-open),.chat-main .conversation.mobile-hidden{display:none}}
 .agent-start-chat{width:100%;padding:9px 8px;text-align:left;color:#6b86b8;font-size:var(--op-text-caption);border-radius:var(--op-radius-control)}
 .agent-start-chat:hover{background:#e9f0fb}
+/* Shared navigation uses aria-current; keep the Chat rail selection visible. */
+.rail nav a[aria-current="page"]{background:var(--op-color-primary-soft);color:var(--op-color-primary)}
+.rail>.logo{display:block;flex-shrink:0;line-height:0}.rail>.logo img{display:block;object-fit:contain}
+.rail nav hr{width:24px;border:0;border-top:1px solid var(--op-color-border);margin:8px 0}

@@ -4,7 +4,7 @@ import {Search,Check,ArrowUpRight} from 'lucide-react';
 import {appIcons} from './app-data.js';
 export default function AppScreen({app,compact=false}){
  const [checked,setChecked]=useState([]),[query,setQuery]=useState('');const Icon=appIcons[app.id]||ArrowUpRight;
- return <div className={`nova-screen ${compact?'compact':''}`} style={{'--app-color':app.color}}>
+ return <div className={`nova-screen ${compact?'compact':''} ${app.theme==='light'?'light':''}`} style={{'--app-color':app.color}}>
   <header><span className="screen-app-icon"><Icon size={compact?20:26}/></span><div><h2>{app.name}</h2><p>{app.description}</p></div></header>
   <div className="screen-tabs"><span>總覽</span><span>我的紀錄</span></div>
   <div className="screen-summary"><div><small>所有項目</small><strong>{app.items.length}</strong></div><div><small>已完成</small><strong>{checked.length}</strong></div><div><small>待處理</small><strong>{app.items.length-checked.length}</strong></div></div>

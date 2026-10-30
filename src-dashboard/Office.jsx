@@ -111,7 +111,7 @@ function AddAgentSpot({position,onCreate}){
   <mesh position={[0,.07,0]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.86,.94,48]}/><meshBasicMaterial color="#ffffff" transparent opacity={.38} side={THREE.DoubleSide}/></mesh>
   <mesh position={[0,.13,0]}><cylinderGeometry args={[.88,.88,.22,48]}/><meshStandardMaterial color="#ecf3ff" roughness={.5} transparent opacity={.38}/></mesh>
   <mesh position={[0,.25,0]} rotation={[-Math.PI/2,0,0]}><circleGeometry args={[.80,48]}/><meshStandardMaterial color="#f8fbff" transparent opacity={.35} roughness={.6}/></mesh>
-  <Html position={[0,.62,0]} center zIndexRange={[7,4]}><Button variant="plain" className="office-add-agent" type="button" onClick={event=>{event.stopPropagation();onCreate()}} aria-label="新增 Agent"><span>＋</span><small>新增 Agent</small></Button></Html>
+  <Html position={[0,.62,0]} center zIndexRange={[7,4]}><Button variant="plain" className="office-add-agent" type="button" onClick={event=>{event.stopPropagation();onCreate()}} aria-label="新增功能" title="新增功能"><span>＋</span></Button></Html>
  </group>
 }
 function Camera({reset,controls,reduced,intro,radius}){
@@ -153,7 +153,7 @@ function Scene({agents,allAgents=agents,onSelect,onSettings,onCreate,showAdd,rea
  <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.03,0]} receiveShadow><planeGeometry args={[160,130]}/><meshStandardMaterial color="#cbd9ea" roughness={.8}/></mesh><BlueFloor/>
  <gridHelper args={[140,140,'#ffffff','#ffffff']} scale={[1,1,.81]} position={[0,-.009,0]} material-transparent material-opacity={.22}/>
  {visibleAgents.map((a,i)=><React.Fragment key={a.id}>{a.id!=='nova'&&<Connection to={a.at} index={i} reduced={reduced}/>}<Station agent={a} index={i} onSelect={onSelect} onSettings={onSettings} read={read} reduced={reduced}/></React.Fragment>)}
- {showAdd&&<AddAgentSpot position={[0,0,layout.radius+2.4]} onCreate={onCreate}/>}
- <Camera reset={reset} controls={controls} reduced={reduced} intro={intro} radius={layout.radius+(showAdd?1.8:0)}/><OrbitControls ref={controls} onStart={()=>{intro.current=false}} enablePan enableZoom screenSpacePanning mouseButtons={{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}} minZoom={3} maxZoom={150} target={[0,.35,0]} enableDamping={!reduced} dampingFactor={.08}/></>
+ {showAdd&&<AddAgentSpot position={layout.addPosition} onCreate={onCreate}/>}
+ <Camera reset={reset} controls={controls} reduced={reduced} intro={intro} radius={layout.radius}/><OrbitControls ref={controls} onStart={()=>{intro.current=false}} enablePan enableZoom screenSpacePanning mouseButtons={{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}} minZoom={3} maxZoom={150} target={[0,.35,0]} enableDamping={!reduced} dampingFactor={.08}/></>
 }
 export default function Office(props){const [visible,setVisible]=useState(true);useEffect(()=>{const fn=()=>setVisible(!document.hidden);document.addEventListener('visibilitychange',fn);return()=>document.removeEventListener('visibilitychange',fn)},[]);return <div className="three-office" aria-label="可水平旋轉與縮放的 3D AI 辦公室"><Canvas orthographic shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[24,38,20],zoom:18,near:.1,far:180}} gl={{antialias:true,powerPreference:'high-performance'}}><Scene {...props}/></Canvas></div>}

@@ -1,3 +1,4 @@
+import WorkspaceRail from '../src-shared/WorkspaceRail.jsx';
 import {SearchBar,Button,Input} from '../src-shared/ui/index.jsx';
 import AccountMenu from '../src-shared/AccountMenu';
 import {useUserRole} from '../src-shared/UserRole.jsx';
@@ -23,7 +24,7 @@ const seed=[
 
 const nav=[[IconLayoutGrid,'My Board','dashboard.html'],[IconMessageCircle,'Chat','chat.html'],[IconApps,'NOVA Apps','apps.html']];
 const clampListWidth=width=>Math.max(240,Math.min(700,window.innerWidth-440,width));
-function Sidebar(){const isAdmin=useUserRole()==='admin';return <aside className="rail"><a className="logo" href="./dashboard.html" aria-label="Office Power"><img src="./officepower-app-icon.svg" alt=""/></a><nav aria-label="主要導覽">{nav.map(([Icon,label,url])=><a key={url} className={label==='Chat'?'active':''} href={`./${url}`} data-label={label} aria-label={label} aria-current={label==='Chat'?'page':undefined}><Icon size={20} strokeWidth={1.7}/></a>)}{isAdmin&&<><span/><a href="./app-packs.html" data-label="APP Pack" aria-label="APP Pack"><IconApps size={20} strokeWidth={1.7}/></a><a href="./capabilities.html" data-label="能力中心" aria-label="能力中心"><IconCube size={20} strokeWidth={1.7}/></a><a href="./organization.html" data-label="Organization" aria-label="Organization"><IconUsers size={20} strokeWidth={1.7}/></a></>}</nav><AccountMenu/></aside>}
+function Sidebar(){return <WorkspaceRail active="Chat"/>}
 
 function App(){
  const isAdmin=useUserRole()==='admin';
