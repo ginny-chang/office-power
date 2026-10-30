@@ -15,6 +15,7 @@ export default defineConfig({
         dashboard: fileURLToPath(new URL('./dashboard.html', import.meta.url)),
         chat: fileURLToPath(new URL('./chat.html', import.meta.url)),
         apps: fileURLToPath(new URL('./apps.html', import.meta.url)),
+        appPacks: fileURLToPath(new URL('./app-packs.html', import.meta.url)),
         capabilities: fileURLToPath(new URL('./capabilities.html', import.meta.url)),
         account: fileURLToPath(new URL('./account.html', import.meta.url)),
         organization: fileURLToPath(new URL('./organization.html', import.meta.url)),

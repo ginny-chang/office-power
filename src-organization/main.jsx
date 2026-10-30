@@ -1,3 +1,5 @@
+import {SegmentedControl,SearchBar,PageTitle,Input,Button} from '../src-shared/ui/index.jsx';
+import {AdminOnly} from '../src-shared/UserRole.jsx';
 import React,{useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {Search,Plus,Network,List,SlidersHorizontal,Pencil,Users} from 'lucide-react';
@@ -23,4 +25,5 @@ function Organization(){
  <div className="directory-table-scroll"><table className="employee-table"><thead><tr><th>姓名</th><th>Email</th><th>部門</th><th>直屬主管</th><th>角色</th><th>狀態</th><th>操作</th></tr></thead><tbody>{shown.map(e=><tr key={e.id}><td><span className="employee-name"><i>{e.name.slice(0,1)}</i><strong>{e.name}</strong></span></td><td>{e.email}</td><td><span className="department-chip">{e.department}</span></td><td>{employees.find(p=>p.id===e.manager)?.name||'—'}</td><td>{e.role}</td><td><span className={`employee-status ${e.status}`}><i/>{e.status==='active'?'在職':'已停用'}</span></td><td><div className="employee-actions"><button aria-label={`編輯 ${e.name}`} onClick={()=>setForm(e)}><Pencil size={15}/></button><button onClick={()=>{setEmployees(prev=>prev.map(p=>p.id===e.id?{...p,status:p.status==='active'?'inactive':'active'}:p));setMessage(`已${e.status==='active'?'停用':'啟用'} ${e.name}（本機示範）`)}}>{e.status==='active'?'停用':'啟用'}</button></div></td></tr>)}</tbody></table></div>{!shown.length&&<div className="empty"><Search size={27}/><h3>沒有符合條件的員工</h3><button onClick={()=>{setQuery('');setDepartment('all');setStatus('all')}}>清除篩選</button></div>}</section>}
  </main>{form&&<EmployeeDialog employees={employees} employee={form==='new'?null:form} onSave={save} onImport={people=>{setEmployees(prev=>[...prev,...people]);setMessage(`已匯入 ${people.length} 位員工，組織架構已同步更新。`)}} onClose={()=>setForm(null)}/>}</div>
 }
-createRoot(document.getElementById('root')).render(<Organization/>);
+createRoot(document.getElementById('root')).render(<AdminOnly><Organization/></AdminOnly>);
+

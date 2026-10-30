@@ -1,0 +1,117 @@
+@import './components.css';
+/* Workspace adapters: route layouts remain local; visual primitives live here. */
+:root{--ink:var(--op-color-text);--muted:var(--op-color-muted);--border:var(--op-color-border);--line:var(--op-color-border);--paper:var(--op-color-surface);--soft:var(--op-color-subtle);--blue:var(--op-color-primary);font-family:var(--op-font-body);color:var(--op-color-text)}
+body{font-family:var(--op-font-body);color:var(--op-color-text)}
+:where(button,a,input,select,textarea,summary):focus-visible{outline:2px solid var(--op-color-focus);outline-offset:3px}
+:where(button){transition:background var(--op-motion-duration),color var(--op-motion-duration),border-color var(--op-motion-duration);touch-action:manipulation}
+:where(button):disabled{cursor:not-allowed;opacity:.45}
+/* Three surface roles: action card, list/table surface, dialog. */
+:is(.manage-card,.gallery-card,.agent-list-wrap,.pack-snapshot-card,.nova-message-card,.employee-directory,.manage-table,.pack-records,.app-showcase){border:1px solid var(--op-color-border);border-radius:var(--op-radius-surface);background:var(--op-color-surface);box-shadow:var(--op-shadow-surface)}
+:is(.manage-card,.gallery-card):hover{box-shadow:none}
+:is(.management,.market-shell) .page-heading h1{font:600 var(--op-text-display)/1.25 var(--op-font-body);letter-spacing:-.6px}
+:is(.management,.market-shell) .page-heading p{font-size:var(--op-text-label);line-height:1.6;color:var(--op-color-muted)}
+:is(.manage-card,.runtime-worker,.runtime-engine) p{font-size:var(--op-text-label);color:var(--op-color-muted)}
+:is(.manage-note,.manage-meta,.demo-label,.manage-card small,.org-summary small,.pack-stats small){font-size:var(--op-text-caption)!important;color:var(--op-color-muted)!important}
+:is(.manage-card,.manage-modal,.employee-dialog,.agent-settings,.create-agent-dialog,.schedule-dialog,.op-dialog) :is(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea){border:1px solid var(--op-color-border);border-radius:var(--op-radius-control);background:var(--op-color-surface);color:var(--op-color-text);font:400 var(--op-text-label)/1.5 var(--op-font-body);min-height:40px;padding:10px 12px}
+:is(.manage-field,.employee-form label,.agent-fields label,.create-agent-label){font-size:var(--op-text-label);color:var(--op-color-muted)}
+:is(.manage-tag,.department-chip,.demo-label){border-radius:var(--op-radius-pill);background:var(--op-color-subtle);color:var(--op-color-muted);font-size:var(--op-text-caption)}
+:is(.manage-modal,.employee-dialog,.agent-settings,.create-agent-dialog,.delete-app-dialog,dialog.modal){border:1px solid var(--op-color-border);border-radius:var(--op-radius-dialog);background:var(--op-color-surface);color:var(--op-color-text);box-shadow:var(--op-shadow-dialog);padding:0;max-height:calc(100dvh - 48px)}
+:is(.manage-modal,.employee-dialog,.agent-settings,.create-agent-dialog,.delete-app-dialog,dialog.modal)::backdrop{background:rgb(22 36 56 / .48);backdrop-filter:blur(3px)}
+:is(.employee-dialog,.agent-settings,.create-agent-dialog,.delete-app-dialog)>header{padding:var(--op-space-xl);border-bottom:1px solid var(--op-color-border);display:flex;justify-content:space-between;gap:var(--op-space-lg)}
+:is(.employee-dialog,.agent-settings,.create-agent-dialog,.delete-app-dialog) header h2{font-size:var(--op-text-title);line-height:1.4;letter-spacing:0}
+:is(.employee-dialog,.agent-settings,.create-agent-dialog,.delete-app-dialog) header p{font-size:var(--op-text-label);color:var(--op-color-muted)}
+:is(.agent-settings,.create-agent-dialog,.delete-app-dialog)>footer,.create-agent-dialog form>footer{border-top:1px solid var(--op-color-border);padding:16px 24px;gap:var(--op-space-sm);background:var(--op-color-surface)}
+:is(.employee-dialog,.agent-settings,.create-agent-dialog,.delete-app-dialog)>header>button{width:40px;height:40px;display:grid;place-items:center;border-radius:var(--op-radius-control);flex:none}
+:is(.employee-dialog,.agent-settings,.create-agent-dialog,.delete-app-dialog)>header>button:hover{background:var(--op-color-subtle)}
+/* Existing action selectors consume the same button tokens while routes migrate. */
+:is(.manage-actions,.manage-toolbar,.manage-modal footer,.create-agent-dialog footer,.agent-settings>footer,.schedule-form-actions,.delete-app-dialog footer) >button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 16px;border:1px solid var(--op-color-border);border-radius:var(--op-radius-control);background:var(--op-color-surface);color:var(--op-color-text);font:500 var(--op-text-label)/1.4 var(--op-font-body);box-shadow:none}
+:is(.manage-actions,.manage-toolbar,.manage-modal footer,.create-agent-dialog footer,.agent-settings>footer,.schedule-form-actions)>button:is(.primary,[type=submit],.agent-primary,.op-button--primary),.agent-settings>footer>button:first-child{background:var(--op-color-primary);border-color:var(--op-color-primary);color:var(--op-color-on-primary)}
+:is(.manage-actions,.manage-toolbar,.create-agent-dialog footer,.agent-settings>footer)>button:hover:not(:disabled){filter:brightness(.97)}
+/* Agent settings use section dividers; account functions use cards. */
+.account-layout>.manage-card{background:transparent;border:0;border-radius:0;padding:0 0 var(--op-space-2xl);border-bottom:1px solid var(--op-color-border);box-shadow:none}
+.account-layout{gap:var(--op-space-2xl)}
+.account-layout>.manage-card h2{font-size:var(--op-text-title)}
+.agent-settings-content .agent-settings-group{padding:0 0 var(--op-space-xl);border:0;border-bottom:1px solid var(--op-color-border);border-radius:0;background:transparent;box-shadow:none}
+.agent-settings-content .agent-runtime-card{border-radius:0;border:0;background:var(--op-color-subtle);padding:var(--op-space-lg)}
+.chat-welcome{background:transparent;border:0;box-shadow:none;border-radius:0}.welcome-icon{width:56px;height:56px;border-radius:var(--op-radius-surface)}
+.suggestions button{background:transparent;border:0;border-radius:0;border-bottom:1px solid var(--op-color-border);font-size:var(--op-text-label);padding:16px 0}.suggestions button:hover{background:var(--op-color-subtle);border-color:var(--op-color-border)}
+.chat-welcome>p,.suggestion-heading{font-size:var(--op-text-label);color:var(--op-color-muted)}
+/* Compact metrics use a single comparison strip, not separate decorative cards. */
+.pack-stats{gap:0;border-bottom:1px solid var(--op-color-border);margin-bottom:var(--op-space-2xl)}
+.pack-stats article{border:0;border-radius:0;border-right:1px solid var(--op-color-border);box-shadow:none;background:transparent;padding:16px 24px}.pack-stats article:last-child{border-right:0}
+:is(.manage-table,.employee-table,.csv-preview) :is(th,td){font-size:var(--op-text-label);line-height:1.5;padding:16px 24px;border-color:var(--op-color-border)}
+:is(.manage-table,.employee-table,.csv-preview) th{font-size:var(--op-text-caption);background:var(--op-color-subtle);color:var(--op-color-muted)}
+:is(.manage-table,.employee-table) td{color:var(--op-color-text)}
+.model-picker-list{border-radius:var(--op-radius-control);border-color:var(--op-color-border);box-shadow:var(--op-shadow-popover)}
+.schedule-dialog{border-radius:0;background:var(--op-color-canvas)}
+.schedule-form{border:0;border-bottom:1px solid var(--op-color-border);border-radius:0;background:transparent}
+@media(max-width:650px){:is(.manage-card,.manage-modal,.employee-dialog,.agent-settings,.create-agent-dialog,.schedule-dialog,.op-dialog) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){font-size:16px;min-height:44px}:is(.employee-dialog,.agent-settings,.create-agent-dialog,.delete-app-dialog)>header{padding:16px}.pack-stats article{padding:12px}.account-layout{gap:24px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* The gallery is a layout region, not a card around more cards. */
+.market-shell .catalog{background:transparent;border:0;border-radius:0;padding:0}
+
+.compact-apps>button>b{border:1px solid var(--op-color-border);border-radius:var(--op-radius-control);background:var(--op-color-surface);color:var(--op-color-text)}
+.compact-apps>button:first-child>b{background:var(--op-color-primary);border-color:var(--op-color-primary);color:var(--op-color-on-primary)}
+
+/* Shared page surfaces and heading scale. */
+body:has(.market-shell),body:has(.pack-shell),.market-shell,.pack-shell,.pack-main,.pack-workspace,.nova-editor{background:#f2f7fd!important}
+:is(.page-heading,.pack-heading,.pack-workspace-header,.nova-editor-header) h1{font:600 var(--op-text-heading)/1.3 var(--op-font-body)!important;letter-spacing:-.4px}
+.account-layout>.manage-card{background:var(--op-color-surface);border:1px solid var(--op-color-border);border-radius:var(--op-radius-surface);padding:24px;box-shadow:var(--op-shadow-surface)}
+.account-layout>.manage-card h2{font-size:var(--op-text-title)}
+.nova-compact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:24px}
+.nova-compact-card{position:relative;display:flex;align-items:center;min-width:0;padding:20px;gap:8px;overflow:visible}
+.nova-card-open{display:flex!important;align-items:center;gap:14px;flex:1;min-width:0;text-align:left!important;justify-content:flex-start!important}
+.nova-card-open>span:last-child{min-width:0}.nova-card-open strong{display:block;font-size:18px;line-height:1.4;overflow-wrap:anywhere}.nova-card-open small{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--op-color-muted);margin-top:8px}
+.nova-card-icon{display:grid;place-items:center;width:44px;height:44px;border-radius:var(--op-radius-control);background:var(--op-color-primary-soft);color:var(--op-color-primary);flex:none}
+.nova-card-menu{position:relative;align-self:flex-start}.nova-more{opacity:0}.nova-compact-card:hover .nova-more,.nova-compact-card:focus-within .nova-more{opacity:1}
+.nova-more-popover{position:absolute;right:0;top:42px;width:180px;padding:12px;background:var(--op-color-surface);border:1px solid var(--op-color-border);border-radius:var(--op-radius-control);box-shadow:var(--op-shadow-popover);z-index:40}.nova-more-popover label{display:flex;align-items:center;justify-content:space-between;padding:8px 4px 16px}.nova-more-popover button{width:100%}.nova-offline{font-size:11px;color:var(--op-color-muted);position:absolute;right:20px;bottom:8px}
+.nova-floating-preview{position:fixed;width:min(440px,calc(100vw - 32px));height:340px;overflow:hidden;background:var(--op-color-surface);border:1px solid var(--op-color-border);border-radius:var(--op-radius-surface);box-shadow:var(--op-shadow-dialog);z-index:60;pointer-events:none}.nova-floating-preview>header{display:flex;align-items:center;gap:8px;padding:14px;border-bottom:1px solid var(--op-color-border);font-size:14px}.nova-floating-preview>header svg:last-child{margin-left:auto}
+.nova-editor{min-height:100dvh;color:var(--op-color-text);padding-bottom:150px}.nova-editor-header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:20px 32px;background:var(--op-color-surface);border-bottom:1px solid var(--op-color-border)}.nova-editor-header h1{flex:1;min-width:0}.nova-edit-thread{max-width:850px;margin:auto;padding:40px 24px}.nova-edit-thread>p{line-height:1.7;color:var(--op-color-muted)}.nova-edit-fields{margin:32px 0;border-block:1px solid var(--op-color-border);padding:18px 0}.nova-edit-fields summary{cursor:pointer;display:flex;gap:8px;align-items:center;font-weight:600}.nova-edit-fields label{display:block;margin-top:20px;font-size:14px}.nova-edit-fields .op-input{margin-top:8px}.nova-edit-snapshot{overflow:hidden;padding:0}.nova-edit-snapshot>header{display:flex;align-items:center;gap:10px;padding:18px;border-bottom:1px solid var(--op-color-border)}.nova-edit-snapshot>header span{margin-left:auto;color:var(--op-color-muted);font-size:12px}.nova-edit-message{padding:20px 0;line-height:1.7}.nova-edit-message small{color:var(--op-color-muted)}.nova-edit-response{margin-top:24px}.nova-edit-composer{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:min(802px,calc(100% - 48px));display:flex;align-items:flex-end;gap:12px;padding:14px;background:var(--op-color-surface);border:1px solid var(--op-color-border);border-radius:var(--op-radius-surface);box-shadow:var(--op-shadow-popover)}.nova-edit-composer textarea{border:0!important;resize:none;min-height:64px}
+@media(hover:none){.nova-more{opacity:1}.nova-floating-preview{display:none}}
+@media(max-width:600px){.nova-editor-header{padding:16px;flex-wrap:wrap}.nova-editor-header h1{font-size:20px!important}.nova-edit-thread{padding:24px 16px}.nova-edit-snapshot>header{flex-wrap:wrap}.nova-edit-snapshot>header span{margin-left:0}}
+.nova-compact-card .nova-card-open{border:0;background:transparent;box-shadow:none;padding:0;width:100%;border-radius:0}.nova-compact-card .nova-card-open:hover{background:transparent;box-shadow:none}.nova-editor{max-width:none;margin:0;padding:0 0 150px}
+.function-title{display:flex;align-items:center;gap:10px}.function-title svg{color:var(--op-color-primary);flex:none}.schedule-dialog-header h2{font-size:var(--op-text-heading)}
+:is(.manage-toolbar,.search-row,.directory-toolbar,.pack-filterbar) .op-input:not([type=checkbox]):not([type=radio]){border-radius:var(--op-radius-control);border-color:var(--op-color-border);background:var(--op-color-surface);min-height:40px}
+:is(.pack-search,.search-row>label:not(.sort),.search,.directory-search) .op-input{border:0!important;background:transparent!important;box-shadow:none;padding-block:8px}
+.pack-heading-icon{width:auto;height:auto;border:0;background:transparent;box-shadow:none;border-radius:0}.pack-heading-icon svg{width:26px;height:26px}.pack-heading-copy{gap:12px}
+.op-search.op-search{min-height:44px;height:44px;padding:0 12px;gap:8px;background:var(--op-color-surface);border:1px solid var(--op-color-border);border-radius:var(--op-radius-control)}.op-search.op-search .op-input{height:40px;min-height:0;padding:8px 0;border:0;box-shadow:none;background:transparent}.op-search svg{flex:none}
+.composer .op-input{border:0!important;background:transparent!important}.directory-department{padding:0!important;background:transparent!important;border:0!important}.directory-department>svg{display:none}
+
+/* One search boundary: inner input never paints a second control. */
+.op-search.op-search{display:flex;align-items:center;min-width:0;flex:1;box-sizing:border-box}
+.op-search.op-search .op-search-input{appearance:none;-webkit-appearance:none;display:block;width:100%;min-width:0;height:40px;min-height:0;margin:0;padding:8px 0!important;border:0!important;border-radius:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;color:var(--op-color-text);font:400 var(--op-text-label)/1.5 var(--op-font-body)}
+.op-search-input::-webkit-search-cancel-button{-webkit-appearance:none}
+/* Shared segmented navigation: only the selected item receives a surface. */
+.op-segments.op-segments{display:inline-flex;align-items:center;flex:none;gap:4px;padding:4px;border:1px solid var(--op-color-border);border-radius:10px;background:var(--op-color-subtle);max-width:100%;overflow-x:auto}
+.op-segments.op-segments>.op-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:8px 14px;border:0;border-radius:7px;background:transparent;color:var(--op-color-muted);box-shadow:none;font:500 14px/1.4 var(--op-font-body);white-space:nowrap}
+.op-segments.op-segments>.op-button[aria-pressed=true]{background:var(--op-color-surface);color:var(--op-color-primary);box-shadow:0 1px 3px #26375015}
+.op-segments.op-segments>.op-button:hover{color:var(--op-color-primary);background:var(--op-color-primary-soft)}
+.op-segments small{font-size:12px;color:var(--op-color-muted)}.page-segments{margin-bottom:24px}.sub-segments{margin-bottom:20px}
+.pack-list .pack-row-main{display:flex;align-items:center;gap:18px;width:100%;padding:24px;text-align:left;border-radius:0}.pack-row-copy{flex:1;min-width:0}.pack-row-copy small{line-height:1.6}.pack-row-copy>span{flex-wrap:wrap}.pack-filterbar{gap:20px;flex-wrap:wrap}.pack-filterbar>.op-search{flex:1 1 300px}
+/* Native select behavior, with a consistent inset chevron. */
+select.op-input{appearance:none!important;-webkit-appearance:none!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23596b82' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 16px center!important;background-size:18px!important;padding-right:48px!important}
+.directory-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid var(--op-color-border)}.directory-heading .org-summary{margin:0;padding:0;flex-wrap:wrap}.directory-filters{gap:16px}.directory-filters>.op-search{flex:1 1 260px}.directory-filters>.op-segments{flex:0 0 auto}
+.account-layout>.manage-card>h2,.account-layout>.manage-card>header h2{display:flex;align-items:center;gap:10px;font:600 20px/1.4 var(--op-font-body);margin:0 0 16px;letter-spacing:0}.account-layout>.manage-card h2 svg{width:20px;height:20px;color:var(--op-color-primary);flex:none}.account-layout>.manage-card>h2+p{margin:0 0 20px}.account-layout>.manage-card>header h2{margin-bottom:0}
+@media(max-width:650px){.pack-list .pack-row-main{padding:20px 16px;gap:12px}.directory-heading{padding:16px;flex-wrap:wrap}.directory-filters>.op-segments{max-width:100%}.pack-filterbar>.op-segments{width:100%}.op-segments.op-segments>.op-button{min-height:40px;padding-inline:12px}}
+.op-segments.page-segments,.op-segments.sub-segments{display:flex;width:max-content}.op-segments.page-segments{margin-bottom:24px}.op-segments.sub-segments{margin-bottom:20px}
+
+/* My Board: compact toolbar and readable scene overlays. */
+.reference-board .stage-topline{width:max-content;max-width:calc(100% - 280px);min-width:0;height:auto;gap:8px;padding:6px;border-radius:12px}
+.reference-board .stage-filters.op-segments{height:40px;margin:0;padding:3px;gap:3px;border-radius:8px}
+.reference-board .stage-filters.op-segments>.op-button{min-height:34px;height:34px;padding:0 12px;gap:8px;font-size:12px}
+.reference-board .stage-filters.op-segments>.op-button>span{margin:0;padding:0;border-radius:0;background:transparent;color:inherit}
+.reference-board .stage-filters.op-segments>.op-button>small{display:inline-flex;align-items:center;justify-content:center;min-width:18px;margin:0;padding:0;background:transparent;color:inherit;opacity:.72}
+.reference-board .office-controls{flex:0 1 auto;gap:8px}
+.reference-board .agent-search.op-search{flex:0 1 180px;width:180px;height:40px;min-height:40px;margin:0}
+.reference-board .view-switch{display:flex;gap:4px;height:40px;padding:0;background:transparent;flex:none}
+.reference-board .view-switch>.op-button{display:grid;place-items:center;width:40px;height:40px;min-height:40px;aspect-ratio:1;padding:0;border-radius:8px}
+.reference-board .bot-bubble.op-button{display:flex;flex-direction:column;align-items:stretch;gap:8px;width:220px;min-height:0;padding:14px 20px;text-align:left;white-space:normal;line-height:1.5}
+.reference-board .bot-bubble .bubble-meta{display:flex;align-items:center;gap:6px;width:100%;font-size:11px}
+.reference-board .bot-bubble .bubble-meta>span{margin-left:auto}
+.reference-board .bot-bubble strong{display:block;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.reference-board .office-add-agent.op-button{display:flex;align-items:center;justify-content:center;gap:8px;min-width:124px;padding:12px 16px;border:1px dashed #829cc6;border-radius:8px;background:#ffffffad;color:var(--op-color-primary);box-shadow:none;white-space:nowrap}
+.reference-board .office-add-agent span{font-size:20px;line-height:1}.reference-board .office-add-agent small{font-size:12px;font-weight:600}
+.reference-board .office-add-agent:hover{background:#ffffffe8;border-color:var(--op-color-primary)}
+@media(max-width:1200px){.reference-board .stage-topline{top:84px;right:20px;max-width:calc(100% - 40px)}}
+@media(max-width:720px){.reference-board .stage-topline{left:auto;right:12px;max-width:calc(100% - 24px);gap:8px}.reference-board .stage-filters.op-segments>.op-button{padding-inline:8px}.reference-board .office-controls{gap:0}.reference-board .agent-search.op-search{display:none}.reference-board .bot-bubble.op-button{width:190px;padding:12px 16px}}

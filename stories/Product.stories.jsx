@@ -1,0 +1,14 @@
+import React,{useState} from 'react';
+import {Button} from '../src-shared/ui/index.jsx';
+import ModelPicker from '../src-shared/ModelPicker.jsx';
+import AgentSettings from '../src-dashboard/AgentSettings.jsx';
+import CreateAgent from '../src-shared/CreateAgent.jsx';
+import EmployeeDialog from '../src-organization/EmployeeDialog.jsx';
+import '../src-shared/create-agent.css';
+import '../src-organization/styles.css';
+import '../src-shared/ui/workspace.css';
+export default {title:'Product/Workspace components'};
+export const ModelSearch={render:()=>{const[value,setValue]=useState('inherit');return <div style={{maxWidth:520}}><label htmlFor="storybook-model">模型 Model</label><ModelPicker id="storybook-model" value={value} onChange={setValue}/></div>}};
+export const AgentSettingsDialog={render:()=>{const[open,setOpen]=useState(false),[config,setConfig]=useState();return <><Button onClick={()=>setOpen(true)}>Agent 詳細設定</Button>{open&&<AgentSettings agent={{id:'storybook-agent',name:'展示 Agent',role:'團隊協作',emoji:'🧠'}} config={config} onSave={setConfig} onClose={()=>setOpen(false)}/>}</>}};
+export const CreateAgentFlow={render:()=>{const[open,setOpen]=useState(false);return <><Button variant="primary" onClick={()=>setOpen(true)}>新增 Agent</Button>{open&&<CreateAgent onClose={()=>setOpen(false)} onCreate={()=>setOpen(false)}/>}</>}};
+export const EmployeeDialogPreview={render:()=>{const[open,setOpen]=useState(false);return <><Button variant="primary" onClick={()=>setOpen(true)}>新增員工</Button>{open&&<EmployeeDialog employees={[]} onClose={()=>setOpen(false)} onSave={()=>{}} onImport={()=>{}}/>}</>}};

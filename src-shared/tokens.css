@@ -13,6 +13,8 @@
 
   /* Accents */
   --lime:#e5f68c;--lime-ink:#3d4a00;
+  /* Destructive actions only (delete): text and outline in red, a faint red wash on hover */
+  --danger:#d93036;--danger-soft:#fdeeee;
   --mint:#cfe7de;--mint-strong:#7fd0c3;--mint-ink:#1f6b5f;
   --lavender:#e3e6f3;--lavender-strong:#a9b3e0;--lavender-ink:#3e4a86;
   --peach:#f6e3d6;--peach-ink:#8a4b22;
@@ -115,3 +117,181 @@ body .op-rail>a:first-child{align-self:center}
 body .op-rail .account-menu{display:flex;justify-content:center;align-self:stretch}
 /* Selects draw one chevron 16px from the right edge, the same on every page and in every dialog */
 body select{-webkit-appearance:none;appearance:none;padding-right:var(--sp-10)!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236e6e78' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right var(--sp-4) center!important;background-size:16px!important}
+
+/* ───────────── Adapters for the shared UI kit (src-shared/ui) ─────────────
+   Its components read --op-* tokens; pointing them at this system keeps one look across both.
+   html:root outranks the kit's own :root block whatever order the CSS loads in. */
+html:root{
+  --op-color-canvas:var(--canvas);--op-color-surface:var(--surface);--op-color-subtle:var(--surface-2);
+  --op-color-text:var(--ink);--op-color-muted:var(--ink-2);--op-color-border:var(--line);
+  --op-color-primary:var(--ink);--op-color-primary-hover:#2c2c30;--op-color-primary-soft:var(--surface-2);--op-color-on-primary:#fff;
+  --op-color-focus:var(--ink);
+  --op-radius-control:var(--r);--op-radius-surface:var(--r);--op-radius-dialog:var(--r);--op-radius-pill:var(--r);
+  --op-font-body:var(--font);
+  --op-text-caption:12px;--op-text-label:13px;--op-text-body:14px;--op-text-title:17px;--op-text-heading:24px;--op-text-display:40px;
+  --op-shadow-surface:var(--shadow-card);--op-shadow-popover:var(--shadow-float);--op-shadow-dialog:var(--shadow-sheet);
+}
+/* Buttons follow the three tiers: primary black, secondary white with a black border, ghost/plain without chrome */
+html .op-button.op-button--secondary{border-color:var(--ink);background:var(--surface);color:var(--ink)}
+html .op-button.op-button--secondary:hover{background:var(--surface-2);border-color:var(--ink)}
+html .op-button.op-button--danger{border-color:var(--ink);background:var(--ink);color:#fff}
+html .op-button.op-button--danger:hover{background:#2c2c30}
+html .op-button.op-button--ghost{color:var(--ink)}
+html .op-button.op-button--ghost:hover{background:var(--surface-2);color:var(--ink)}
+html .op-button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+/* Fields: borderless grey 40px controls; the search wrapper is the capsule and takes the focus ring */
+html .op-input:not([type=checkbox]):not([type=radio]):not([type=file]){min-height:var(--control);border:0;border-radius:var(--r);background-color:var(--surface-2);padding:0 var(--sp-4);font:var(--t-body);color:var(--ink)}
+html textarea.op-input{padding:var(--sp-2) var(--sp-4)!important}
+html div.op-search{height:var(--control);gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);color:var(--ink-3)}
+html div.op-search:focus-within{outline:0;box-shadow:var(--focus-ring)}
+html div.op-search input{height:100%;border:0;background:none;font:var(--t-label);color:var(--ink)}
+html div.op-search input:focus{box-shadow:none}
+/* Dialogs: one white sheet, no inner rules */
+html .op-dialog{border:0;border-radius:var(--r);box-shadow:var(--shadow-sheet)}
+html .op-dialog::backdrop{background:rgba(18,18,20,.2);backdrop-filter:blur(4px)}
+html .op-dialog-header{padding:var(--sp-8) var(--sp-8) var(--sp-4);border:0}
+html .op-dialog-header h2{font:var(--t-title);color:var(--ink)}
+html .op-dialog-header p{font:var(--t-label);color:var(--ink-2)}
+html .op-dialog-body{padding:0 var(--sp-8) var(--sp-4)}
+html .op-dialog-footer{padding:var(--sp-4) var(--sp-8) var(--sp-8);border:0}
+html .op-dialog-header .op-button--icon{width:36px;height:36px;border-radius:var(--r);background:var(--surface-2)}
+/* Segmented control: the same white strip as My Board's filters */
+html .op-segments{display:inline-flex;gap:4px;padding:0;border-radius:var(--r);background:var(--surface)}
+html .op-segments>.op-button{height:var(--control);gap:var(--sp-2);padding:0 var(--sp-4);border-radius:var(--r);font:var(--t-label);font-weight:500;color:var(--ink)}
+html .op-segments>.op-button:hover{background:var(--surface-2)}
+html .op-segments>.op-button[aria-pressed=true]{background:var(--ink);color:#fff}
+html .op-segments small{font:var(--t-meta);color:var(--ink-3)}
+html .op-segments>.op-button[aria-pressed=true] small{color:rgba(255,255,255,.6)}
+html .op-card{border:0}
+/* This system's count badge (lime) is the untoned one; the kit's toned badges keep their tone */
+html .op-badge:not([class*="op-badge--"]){display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 var(--sp-2);border-radius:var(--r);background:var(--lime);color:var(--lime-ink);font:600 11px/1 var(--font)}
+html .op-card.nova-message-card{padding:0}
+html .nova-message-card footer .op-button,html .app-preview-overlay footer .op-button{min-height:var(--control-sm);padding:0 12px;font:var(--t-meta);font-weight:500}
+/* Account menu role switch: a two-option segmented control, the current role in black */
+html .account-role-switch{grid-template-columns:1fr 1fr;gap:4px;margin:var(--sp-2) 0;padding:var(--sp-2) 0;border-color:var(--line)}
+html .account-role-switch>span{grid-column:1/-1;padding:0 var(--sp-2);font:var(--t-meta);color:var(--ink-3)}
+html .account-role-switch .op-button.op-button--secondary{min-height:var(--control-sm);padding:0 var(--sp-2);border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);font-weight:500;color:var(--ink);text-align:center;justify-content:center}
+html .account-role-switch .op-button.op-button--secondary:hover{background:var(--surface-3)}
+html .account-role-switch .op-button.op-button--secondary[aria-pressed=true]{background:var(--ink);color:#fff}
+
+/* Create Agent dialog (src-shared/CreateAgent.jsx): one step, the site's modal —
+   32px sheet padding, title + label copy, 16px between labelled fields, grey 40px controls, tertiary cancel + black primary */
+html .create-agent-dialog{width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 48px);padding:0;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet);color:var(--ink);overflow:hidden}
+html .create-agent-dialog::backdrop{background:rgba(18,18,20,.2);backdrop-filter:blur(4px)}
+html .create-agent-dialog form{max-height:calc(100dvh - 48px);display:flex;flex-direction:column;gap:0;padding:0;overflow:hidden}
+html .create-agent-dialog form>header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-4);margin:0;padding:var(--sp-8) var(--sp-8) var(--sp-6)}
+html .create-agent-dialog h2{margin:0;font:var(--t-title);color:var(--ink)}
+html .create-agent-progress{display:flex;gap:4px;margin:0 var(--sp-8) var(--sp-6)}
+html .create-agent-progress i{flex:1;height:4px;border-radius:2px;background:var(--surface-3)}
+html .create-agent-progress i.active{background:var(--ink)}
+html .create-agent-dialog form>header p{margin-top:4px;font:var(--t-label);color:var(--ink-2)}
+html .create-agent-dialog .create-agent-close{width:36px;height:36px;flex:none;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:var(--surface-2);color:var(--ink);cursor:pointer}
+html .create-agent-dialog .create-agent-close:hover{background:var(--surface-3)}
+html .create-agent-body{flex:1;min-height:0;overflow:auto;display:grid;gap:var(--sp-6);padding:0 var(--sp-8)}
+html .create-agent-field{display:grid;gap:var(--sp-2);min-width:0;margin:0;padding:0;border:0;font:var(--t-label);color:var(--ink-2)}
+html .create-agent-field>legend{float:left;width:100%;margin-bottom:var(--sp-2);padding:0;font:var(--t-label);color:var(--ink-2)}
+html .create-agent-field>label{font:var(--t-label);color:var(--ink-2)}
+html .create-agent-dialog :is(input:not([type=radio]),textarea){width:100%;min-height:var(--control);height:auto;padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-body);color:var(--ink);outline:0}
+html .create-agent-dialog textarea:not([type=radio]){padding:var(--sp-2) var(--sp-4);min-height:120px;resize:vertical;line-height:22px}
+html .create-agent-dialog :is(input:not([type=radio]),textarea):focus{outline:0;box-shadow:var(--focus-ring)}
+html .create-agent-icons{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;margin:0}
+html .create-agent-icons button{height:var(--control);padding:0;border:0;border-radius:var(--r);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-strong);font-size:20px;line-height:1;cursor:pointer}
+html .create-agent-icons button:hover{background:var(--surface-2)}
+html .create-agent-icons button[aria-pressed=true]{background:var(--surface);box-shadow:inset 0 0 0 1px var(--ink)}
+html .create-agent-access{display:grid;gap:var(--sp-2);padding:0;border:0}
+html .create-agent-access label{display:flex;align-items:center;gap:12px;min-height:56px;padding:var(--sp-2) var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);cursor:pointer}
+html .create-agent-access label.selected{background:var(--surface);box-shadow:inset 0 0 0 1px var(--ink)}
+html .create-agent-access input{width:16px;height:16px;flex:none;margin:0;accent-color:var(--ink)}
+html .create-agent-access span{display:grid;gap:2px}
+html .create-agent-access strong{font:var(--t-body-strong);color:var(--ink)}
+html .create-agent-access small{font:var(--t-meta);color:var(--ink-2)}
+html .create-agent-employees{display:grid;gap:var(--sp-2);margin-top:var(--sp-2);padding:var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2)}
+html .create-agent-employees>header{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2)}
+html .create-agent-employees>header strong{font:var(--t-body-strong);color:var(--ink)}
+html .create-agent-employees>header span{font:var(--t-meta);color:var(--ink-2)}
+html .create-agent-employees label.op-search{background:var(--surface)}
+html .create-agent-employees label.op-search input{min-height:0;height:100%;padding:0 var(--sp-10);background:none}
+html .create-agent-employees>div{max-height:200px;overflow:auto;display:grid;border-radius:var(--r);background:var(--surface)}
+html .create-agent-employees article{display:flex;align-items:center;gap:12px;padding:var(--sp-2) 12px;border-bottom:1px solid var(--line)}
+html .create-agent-employees article:last-child{border-bottom:0}
+html .create-agent-employees article>span{width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);font-weight:600;color:var(--ink)}
+html .create-agent-employees article p{flex:1;min-width:0;display:grid;gap:2px;margin:0}
+html .create-agent-employees article strong{font:var(--t-label);font-weight:500;color:var(--ink)}
+html .create-agent-employees article small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:var(--t-meta);color:var(--ink-2)}
+html .create-agent-employees article em{font:var(--t-meta);font-style:normal;color:var(--ink-2)}
+html .create-agent-employees article.inactive{opacity:.5}
+html .create-agent-dialog form>footer{display:flex;justify-content:flex-end;gap:var(--sp-2);margin:0;padding:var(--sp-6) var(--sp-8) var(--sp-8)}
+html .create-agent-dialog form>footer button{height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);font:var(--t-label);font-weight:500;cursor:pointer}
+html .create-agent-dialog .create-agent-cancel{background:none;color:var(--ink)}
+html .create-agent-dialog .create-agent-cancel:hover{background:var(--surface-2)}
+html .create-agent-dialog .create-agent-submit{background:var(--ink);color:#fff}
+html .create-agent-dialog .create-agent-submit:hover{background:#2c2c30}
+html .create-agent-dialog .create-agent-submit:disabled{background:var(--surface-3);color:var(--ink-3);cursor:not-allowed;opacity:1}
+
+/* Model picker inside Create Agent and Agent settings */
+html .model-options{border:0;border-radius:var(--r);box-shadow:var(--shadow-sheet),0 0 0 1px var(--line)}
+html .model-options section>header{font:500 11px/14px var(--font);color:var(--ink-3)}
+html .model-options section>header span{border-radius:var(--r);background:var(--surface-2)}
+html .model-options button{border:0;border-radius:var(--r)}
+html .model-options button:hover,html .model-options button[aria-selected=true]{background:var(--surface-2);border-color:transparent}
+html .model-options small,html .model-options em,html .model-selected{color:var(--ink-2)}
+html .model-options button>svg{color:var(--ink)}
+html .model-selected span{border-radius:var(--r);background:var(--lime);color:var(--lime-ink)}
+html .model-selected strong{color:var(--ink)}
+/* Account popover rhythm: 8px frame, every row's content starts 16px from the edge, 8px steps between groups */
+html .account-popover{display:grid;gap:0;padding:var(--sp-2)}
+html .account-popover strong,html .account-popover small{display:block;margin:0;padding:0 var(--sp-2)}
+html .account-popover strong{padding-top:var(--sp-2);font:var(--t-body-strong);color:var(--ink)}
+html .account-popover>small{padding-bottom:var(--sp-2);font:var(--t-meta);color:var(--ink-2)}
+html .account-popover .account-role-switch{margin:0;padding:var(--sp-2);border:0;gap:var(--sp-2) 4px}
+html .account-popover .account-role-switch>span{margin:0;padding:0}
+html .account-popover a{display:flex!important;align-items:center;min-height:36px;padding:0 var(--sp-2)!important;border-radius:var(--r);font:var(--t-label);color:var(--ink)}
+/* Admin links sit below a hairline, apart from the identity and role switch */
+html .account-popover .account-role-switch+a{position:relative;margin-top:var(--sp-2)}
+html .account-popover .account-role-switch+a::before{content:'';position:absolute;left:var(--sp-2);right:var(--sp-2);top:calc(-1 * var(--sp-2) / 2 - .5px);height:1px;background:var(--line)}
+/* The avatar stands out from the nav icons: lime fill, the system's accent */
+html .op-rail .account-trigger{background:var(--lime);color:var(--lime-ink)}
+html .op-rail .account-trigger:hover{background:#d9ec72}
+/* Plain buttons in kit dialog footers follow the tiers: cancel is tertiary, .primary is black */
+html .op-dialog-footer>button:not(.op-button){min-height:var(--control);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
+html .op-dialog-footer>button:not(.op-button):hover{background:var(--surface-2)}
+html .op-dialog-footer>button.primary{background:var(--ink);color:#fff}
+html .op-dialog-footer>button.primary:hover{background:#2c2c30}
+/* NOVA App previews keep their own app theme: the system's field and focus styles stay out of them */
+html .screen-search .op-input:not([type=checkbox]):not([type=radio]):not([type=file]){min-height:0;height:auto;padding:0;border:0;background:none;color:#edf3fc;font:inherit;font-size:12px}
+html .screen-search .op-input:focus{box-shadow:none}
+html .op-dialog-footer>button.danger{background:var(--danger);color:#fff}
+html .op-dialog-footer>button.danger:hover{background:#b8262b}
+/* Model picker search: the icons sit absolutely inside the field, so the wrapper adds no padding of its own */
+html .model-picker div.model-search-wrap{padding:0;background:none}
+html .model-picker div.model-search-wrap>svg:first-child{left:var(--sp-4);color:var(--ink-3)}
+html .model-picker div.model-search-wrap>svg:last-child{right:var(--sp-4);color:var(--ink-2)}
+html body .model-picker .model-search-wrap input{width:100%;padding:0 var(--sp-10) 0 40px;border:0;border-radius:var(--r);background-color:var(--surface-2)}
+html .create-agent-dialog .op-search input:focus{box-shadow:none}
+/* Step 1 fits the sheet, so it does not scroll and the model menu can overflow the dialog instead of being clipped */
+html .create-agent-dialog:has(.create-agent-form--open),html .create-agent-dialog .create-agent-form--open,html .create-agent-dialog .create-agent-body--open{overflow:visible}
+html .create-agent-dialog .model-options{top:auto;bottom:calc(100% + 4px);z-index:100;max-height:min(390px,calc(100dvh - 200px))}
+html body .model-options .op-button{min-height:0;justify-content:space-between;border:0;border-radius:var(--r);background:none;box-shadow:none;font:inherit;white-space:normal}
+html body .model-options .op-button:hover,html body .model-options .op-button[aria-selected=true]{background:var(--surface-2)}
+/* Create Agent, step 2: access is a select with its description underneath; the employee list sits directly on the sheet */
+html .create-agent-dialog select{width:100%;height:var(--control);padding:0 var(--sp-4);border:0;border-radius:var(--r);background-color:var(--surface-2);font:var(--t-body);color:var(--ink);cursor:pointer}
+html .create-agent-hint{font:var(--t-meta);color:var(--ink-3)}
+html .create-agent-employees{margin-top:0;padding:0;background:none}
+html .create-agent-employees label.op-search{background:var(--surface-2)}
+html .create-agent-employees>div{border:1px solid var(--line);border-radius:var(--r)}
+/* Model menu lists name and description only; the model id stays out of it */
+html .model-options small{display:none}
+html .model-options button>span{grid-template-columns:1fr}
+
+/* Fields turn white while focused, everywhere: the grey fill is the resting state, white plus the ring is "editing".
+   Wrapped fields (search capsules, composers, sort/filter boxes) whiten the wrapper; App previews keep their theme. */
+body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file]),textarea,select):focus:not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search) *){background-color:var(--surface)!important}
+body :is(label.op-search,div.op-search:not(.model-search-wrap),.sort,.directory-department):focus-within{background-color:var(--surface)!important}
+/* Step 2 with "所有員工": the sheet takes the full available height and the employee list fills whatever is left */
+html .create-agent-dialog:has(.create-agent-form--tall){height:calc(100dvh - 48px)}
+html .create-agent-dialog .create-agent-form--tall{height:100%}
+html .create-agent-dialog .create-agent-form--tall .create-agent-body{display:flex;flex-direction:column;overflow:hidden}
+html .create-agent-dialog .create-agent-form--tall .create-agent-employees{flex:1;min-height:0;grid-template-rows:auto auto minmax(0,1fr)}
+html .create-agent-dialog .create-agent-form--tall .create-agent-employees>div{max-height:none;min-height:0;align-content:start}
+/* Disabled buttons, every tier: a save with nothing to save reads as inactive without disappearing */
+body button:disabled:is(.agent-save,.editor-save,.op-button--primary,.op-button--secondary,.primary,.schedule-add){border-color:var(--line-strong)!important;background:var(--surface-3)!important;color:var(--ink-3)!important;opacity:1;cursor:not-allowed}

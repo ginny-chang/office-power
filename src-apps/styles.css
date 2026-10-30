@@ -110,13 +110,35 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--ink);col
 .page-heading>.op-search{grid-column:2}}
 /* Cards share row tracks (subgrid), so descriptions that wrap keep every card in the row aligned;
    the whole card opens the editor. */
-.app-grid .gallery-card{display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:0;cursor:pointer}
-.app-grid .gallery-card>p{height:auto;margin:var(--sp-4) 0 var(--sp-6)}
-.app-grid .gallery-card footer{margin-top:0;border-top:0}
+.app-grid .gallery-card{display:grid;grid-row:span 4;padding:var(--sp-6);grid-template-rows:subgrid;row-gap:0;cursor:pointer}
+/* One 16px step between every row: head, description, author, App Screen */
+.app-grid .gallery-card>p{height:auto;margin:var(--sp-4) 0 0}
+.app-grid .gallery-card footer{margin:var(--sp-4) 0;padding:0;border-top:0}
 /* The App Screen is the card image itself, always visible */
 .app-grid .app-hover-screen{opacity:1;transform:none}
 .app-grid .app-card footer button{height:var(--control-sm);padding:0 12px;gap:6px;border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);font-weight:500;color:var(--ink)}
 .app-grid .app-card footer button:hover{background:var(--surface-3)}
+/* Card head: app icon on the left, an admin "more" menu on the right; category and name sit below */
+.app-grid .gallery-card-top{display:flex;align-items:center;gap:var(--sp-4)}
+.app-grid .gallery-card-title{flex:1;min-width:0}
+.app-grid .gallery-card-title h3{margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app-grid .gallery-card-top .card-more{align-self:flex-start}
+.app-grid .gallery-card-title .category-tag{display:flex;align-items:center;gap:var(--sp-2)}
+.app-grid .gallery-card-title .category-tag b{height:20px;display:inline-flex;align-items:center;padding:0 6px;border-radius:var(--r);background:var(--surface-2);font:500 11px/1 var(--font);color:var(--ink-2)}
+.card-more{position:relative}
+.card-more-trigger{width:36px;height:36px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);cursor:pointer}
+.card-more-trigger:hover,.card-more-trigger[aria-expanded=true]{background:var(--surface-2);color:var(--ink)}
+.card-more-menu{position:absolute;top:calc(100% + 4px);right:0;z-index:20;width:200px;display:grid;gap:2px;padding:var(--sp-2);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet),0 0 0 1px var(--line)}
+.card-more-menu button{display:flex;align-items:center;gap:var(--sp-2);min-height:36px;padding:0 var(--sp-2);border:0;border-radius:var(--r);background:none;font:var(--t-label);color:var(--ink);text-align:left;cursor:pointer}
+.card-more-menu button:hover{background:var(--surface-2)}
+.card-more-menu button svg{color:var(--ink-2)}
+/* Publish state as a small switch at the end of the row */
+.card-more-menu button i{position:relative;width:28px;height:16px;margin-left:auto;border-radius:8px;background:var(--surface-3);transition:background .2s var(--ease)}
+.card-more-menu button i::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .2s var(--ease)}
+.card-more-menu button[aria-checked=true] i{background:var(--ink)}
+.card-more-menu button[aria-checked=true] i::after{transform:translateX(12px)}
+.card-more-menu .danger{border-top:0}
+.dialog-copy{font:var(--t-label);color:var(--ink-2)}
 @media(max-width:650px){.market-shell{padding-left:56px}
 .rail{width:56px;padding:var(--sp-4) 8px}
 .rail nav a,.rail nav button{width:40px;height:40px}
@@ -131,65 +153,75 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 .categories button{height:var(--control-sm);padding:0 var(--sp-4);font:var(--t-meta)}
 }
 
-/* ───────────── NOVA App detail page: the site design system ─────────────
-   Same frame as the schedule detail page: rail on the left, a back link over a display title, actions on the right,
-   then two white cards (design chat, App Screen) on the canvas. */
-.editor-shell .app-editor{height:100dvh;background:var(--canvas)}
-.app-editor .editor-header{height:auto;display:block;padding:var(--sp-6) var(--sp-6) 0;border:0;background:none}
-.app-editor .editor-back{display:inline-flex;align-items:center;gap:4px;height:var(--control-sm);margin:0 0 var(--sp-4) -4px;padding:0 var(--sp-2) 0 0;border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink-2)}
-.app-editor .editor-back:hover{color:var(--ink)}
+/* ───────────── NOVA App detail page: the Chat frame ─────────────
+   Two cards side by side like Chat: the App's editable content on the left (340px), a conversation with the App's
+   Agent on the right. Both headers are 96px and inset 24px; the App Screen opens from "預覽" in a dialog. */
+.editor-shell .app-editor{height:100dvh;display:grid;grid-template-columns:340px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:var(--sp-8) var(--sp-6);padding:var(--sp-6);background:var(--canvas)}
+/* Sub-page head, same as 排程任務管理: back link, display title with a meta line, actions bottom-right */
+.app-editor .editor-head{grid-column:1/-1;height:auto;display:block;padding:0;border:0;background:none}
+.app-editor .editor-head .editor-back{width:auto;height:var(--control-sm);display:inline-flex;align-items:center;gap:4px;margin:0 0 var(--sp-4) -4px;padding:0 var(--sp-2) 0 0;font:var(--t-label);font-weight:500;color:var(--ink-2)}
+.app-editor .editor-head .editor-back:hover{background:none;color:var(--ink)}
 .app-editor .editor-title{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--sp-6)}
-.app-editor .editor-header h1{margin:0;font:var(--t-display);letter-spacing:-.02em;color:var(--ink)}
-.app-editor .editor-header p{margin-top:var(--sp-4);font:var(--t-body);color:var(--ink-2)}
+.app-editor .editor-head h1{margin:0;font:var(--t-display);letter-spacing:-.02em;color:var(--ink)}
+.app-editor .editor-head p{margin-top:var(--sp-4);font:var(--t-body);color:var(--ink-2)}
 .app-editor .editor-actions{display:flex;align-items:center;gap:var(--sp-2)}
-.app-editor .editor-save-status{margin:0 var(--sp-2) 0 0;font:var(--t-meta);color:var(--ink-3)}
-.app-editor .editor-header :is(.editor-save,.editor-delete){height:var(--control);gap:var(--sp-2);padding:0 var(--sp-4);border-radius:var(--r);font:var(--t-label);font-weight:500}
-.app-editor .editor-header .editor-delete{border:1px solid var(--ink);background:var(--surface);color:var(--ink)}
-.app-editor .editor-header .editor-delete:hover{background:var(--surface-2)}
+.app-editor .editor-actions :is(.editor-delete,.editor-save,.editor-preview-button,.editor-publish){height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);font:var(--t-label);font-weight:500;cursor:pointer}
+.app-editor .editor-actions :is(.editor-save,.editor-preview-button,.editor-publish){background:var(--ink);color:#fff}
+.app-editor .editor-actions :is(.editor-save,.editor-preview-button,.editor-publish):hover{background:#2c2c30}
+.app-editor .editor-actions .editor-delete{border:1px solid var(--danger);background:var(--surface);color:var(--danger)}
+.app-editor .editor-actions .editor-delete:hover{background:var(--danger-soft)}
+.app-editor :is(.editor-panel,.editor-chat){min-height:0;display:flex;flex-direction:column;flex:none;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card);overflow:hidden}
+.app-editor :is(.editor-panel,.editor-chat)>header{height:96px;flex-shrink:0;display:flex;align-items:center;gap:var(--sp-4);padding:0 var(--sp-6);border-bottom:1px solid var(--line)}
 
-.app-editor .editor-split{padding:var(--sp-8) var(--sp-6) var(--sp-6)}
-.app-editor :is(.editor-chat,.editor-preview){border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
-.app-editor .panel-resizer{flex:0 0 var(--sp-6);display:grid;place-items:center;color:var(--ink-3);cursor:col-resize}
-.app-editor .editor-chat>header,.app-editor .editor-preview>header{min-height:64px;gap:var(--sp-2);padding:0 var(--sp-6);border-bottom:1px solid var(--line);font:var(--t-body-strong);color:var(--ink)}
-.app-editor .editor-chat>header>span{font:var(--t-meta);color:var(--ink-3)}
-.app-editor .editor-preview>header button{height:var(--control-sm);gap:6px;padding:0 12px;border:1px solid var(--ink);border-radius:var(--r);background:var(--surface);font:var(--t-meta);font-weight:500;color:var(--ink)}
-.app-editor .editor-preview>header button:hover,.app-editor .editor-preview>header button[aria-expanded=true]{background:var(--surface-2)}
+.app-editor .editor-panel>header{gap:var(--sp-2);padding-left:var(--sp-4)}
+.app-editor .editor-back{width:var(--control);height:var(--control);flex:none;display:grid;place-items:center;margin:0;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink);cursor:pointer}
+.app-editor .editor-back:hover{background:var(--surface-2)}
+.app-editor .editor-panel h1{min-width:0;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:var(--t-display);letter-spacing:-.02em;color:var(--ink)}
+.app-editor .editor-fields{flex:1;min-height:0;overflow:auto;display:grid;align-content:start;gap:var(--sp-6);padding:var(--sp-6)}
+.app-editor .editor-meta{flex:none;display:flex;gap:var(--sp-6);margin:0;text-align:left}
+.app-editor .editor-meta div{display:grid;gap:2px}
+.app-editor .editor-meta dt{font:var(--t-meta);color:var(--ink-2)}
+.app-editor .editor-meta dd{margin:0;font:var(--t-body-strong);color:var(--ink)}
+.app-editor .editor-fields label{display:grid;gap:var(--sp-2);font:var(--t-label);color:var(--ink-2)}
+.app-editor .editor-fields small{margin-top:-4px;font:var(--t-meta);color:var(--ink-3)}
+.app-editor .editor-fields :is(input,textarea){width:100%;border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-body);color:var(--ink)}
+.app-editor .editor-fields input{padding:0 var(--sp-4)}
+.app-editor .editor-fields textarea{padding:var(--sp-2) var(--sp-4);resize:vertical}
+.app-editor .editor-error{font:var(--t-label);color:var(--ink)}
+.app-editor .editor-panel>footer{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-4) var(--sp-6) var(--sp-6)}
+.app-editor .editor-save-status{display:block;margin:0 auto 0 0;font:var(--t-meta);color:var(--ink-3)}
+.app-editor .editor-panel>footer :is(.editor-save,.editor-delete){height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border-radius:var(--r);font:var(--t-label);font-weight:500;cursor:pointer}
+.app-editor .editor-panel>footer .editor-delete{border:1px solid var(--ink);background:var(--surface);color:var(--ink)}
+.app-editor .editor-panel>footer .editor-delete:hover{background:var(--surface-2)}
 
-.app-editor .editor-messages{padding:var(--sp-6)}
-.app-editor .editor-welcome{padding:var(--sp-8) 0}
-.app-editor .editor-spark{width:56px;height:56px;margin:0 auto var(--sp-6);border-radius:var(--r);background:var(--lime);color:var(--lime-ink)}
-.app-editor .editor-welcome h2{font:var(--t-title);color:var(--ink)}
-.app-editor .editor-welcome p{margin:var(--sp-2) 0 0;font:var(--t-label);color:var(--ink-2)}
-.app-editor .editor-message{margin-bottom:var(--sp-4);padding:var(--sp-2) var(--sp-4);border-radius:var(--r);background:var(--surface-2)}
-.app-editor .editor-message.you{margin-left:var(--sp-8);background:var(--ink);color:#fff}
+.app-editor .editor-agent-mark{width:var(--control);height:var(--control);flex:none;display:grid;place-items:center;border-radius:var(--r);background:var(--surface-2);color:var(--app-color,var(--ink))}
+.app-editor .editor-chat>header>div{flex:1;min-width:0}
+.app-editor .editor-chat h2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:var(--t-title);color:var(--ink)}
+.app-editor .editor-chat header p{font:var(--t-meta);color:var(--ink-2)}
+.app-editor .editor-preview-button{height:var(--control);flex:none;display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:1px solid var(--ink);border-radius:var(--r);background:var(--surface);font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
+.app-editor .editor-preview-button:hover{background:var(--surface-2)}
+.app-editor .editor-messages{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;padding:var(--sp-6) var(--sp-12)}
+.app-editor .editor-welcome{max-width:420px;margin:auto;padding:0;text-align:center}
+.app-editor .editor-spark{width:56px;height:56px;margin:0 auto var(--sp-6);border-radius:var(--r);background:var(--lime);color:var(--lime-ink);display:grid}
+.app-editor .editor-welcome h2{font:400 24px/32px var(--font);letter-spacing:-.01em;color:var(--ink)}
+.app-editor .editor-welcome p{margin-top:var(--sp-2);font:var(--t-label);color:var(--ink-2)}
+.app-editor .editor-message{display:grid;gap:var(--sp-2);max-width:min(560px,78%);margin:0 0 var(--sp-6);padding:0;background:none}
+.app-editor .editor-message p{margin:0;padding:var(--sp-2) var(--sp-4);border-radius:var(--r);background:var(--surface-2);font:var(--t-body);color:var(--ink);white-space:pre-wrap}
+.app-editor .editor-message.you{margin-left:auto;justify-items:end}
+.app-editor .editor-message.you p{background:var(--ink);color:#fff}
 .app-editor .editor-message small{font:var(--t-meta);color:var(--ink-3)}
-.app-editor .editor-message.you small{color:rgba(255,255,255,.6)}
-.app-editor .editor-message p{margin-top:4px;font:var(--t-body);color:inherit}
-
-.app-editor .editor-composer{margin:0 var(--sp-6) var(--sp-6);padding:8px 8px 8px var(--sp-4);align-items:center;gap:var(--sp-2);border:0;border-radius:var(--r);background:var(--surface-2)}
+.app-editor .editor-composer{flex-shrink:0;display:grid;grid-template-columns:1fr auto;align-items:center;gap:var(--sp-2);margin:0 var(--sp-6) var(--sp-6);padding:8px 8px 8px var(--sp-6);border:0;border-radius:var(--r);background:var(--surface-2)}
 .app-editor .editor-composer:focus-within{background:var(--surface);box-shadow:var(--focus-ring)}
-.app-editor .editor-composer textarea{height:auto;min-height:24px;max-height:120px;padding:8px 0;font:var(--t-body);color:var(--ink)}
+.app-editor .editor-composer textarea{height:auto;min-height:24px;max-height:120px;padding:8px 0;border:0;background:none;resize:none;font:var(--t-body);color:var(--ink)}
 .app-editor .editor-composer textarea:focus{box-shadow:none}
-.app-editor .editor-composer button{align-self:end;width:var(--control);height:var(--control);border-radius:var(--r);background:var(--ink);color:#fff}
+.app-editor .editor-composer button{width:var(--control);height:var(--control);align-self:end;display:grid;place-items:center;border:0;border-radius:var(--r);background:var(--ink);color:#fff}
 .app-editor .editor-composer button:disabled{background:var(--surface-3);color:var(--ink-3)}
+.editor-preview-screen{border-radius:var(--r);overflow:hidden}
 
-.app-editor .app-content-fields{display:grid;gap:var(--sp-4);padding:var(--sp-6);border-bottom:1px solid var(--line)}
-.app-editor .app-content-fields label{display:grid;gap:var(--sp-2);font:var(--t-label);color:var(--ink-2)}
-.app-editor .app-content-fields :is(input,textarea){padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-body);color:var(--ink)}
-.app-editor .app-content-fields textarea{padding:var(--sp-2) var(--sp-4)}
-
-.delete-app-dialog{width:min(480px,calc(100vw - 32px));padding:0;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet);color:var(--ink)}
-.delete-app-dialog::backdrop{background:rgba(18,18,20,.2);backdrop-filter:blur(4px)}
-dialog.delete-app-dialog>header{margin:0;border:0;display:flex;align-items:center;justify-content:space-between;padding:var(--sp-8) var(--sp-8) var(--sp-2)}
-.delete-app-dialog h2{font:var(--t-title);color:var(--ink)}
-.delete-app-dialog header button{width:36px;height:36px;display:grid;place-items:center;border-radius:var(--r);background:var(--surface-2);color:var(--ink)}
-dialog.delete-app-dialog>p{margin:0;padding:0 var(--sp-8);font:var(--t-label);color:var(--ink-2)}
-dialog.delete-app-dialog>footer{display:flex;justify-content:flex-end;gap:var(--sp-2);margin:0;padding:var(--sp-6) var(--sp-8) var(--sp-8);border:0;background:none}
-.delete-app-dialog footer button{height:var(--control);padding:0 var(--sp-4);border-radius:var(--r);font:var(--t-label);font-weight:500}
-.delete-app-dialog footer .primary{background:var(--ink);color:#fff}
-
+@media(max-width:900px){.editor-shell .app-editor{grid-template-columns:290px minmax(0,1fr);gap:var(--sp-4);padding:var(--sp-4)}}
 @media(max-width:800px){
-.app-editor .editor-title{flex-direction:column;align-items:flex-start}
-.app-editor .editor-header h1{font:400 30px/36px var(--font)}
-.app-editor .editor-split{padding:var(--sp-6) var(--sp-4) var(--sp-4)}
+.editor-shell .app-editor{height:auto;min-height:100dvh;grid-template-columns:1fr}
+.app-editor .editor-chat{height:560px}
+.app-editor .editor-messages{padding:var(--sp-6)}
 }
+@media(max-width:800px){.app-editor .editor-title{flex-direction:column;align-items:flex-start}.app-editor .editor-head h1{font:400 30px/36px var(--font)}}
