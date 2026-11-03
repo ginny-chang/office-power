@@ -2,7 +2,7 @@ import AccountMenu from '../src-shared/AccountMenu';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 // Thin line glyphs shared with My Board and NOVA Apps.
-import {LayoutGrid as IconLayoutGrid,MessageCircle as IconMessageCircle,Blocks as IconApps,Clock as IconClock,Box as IconCube,Users as IconUsers,Search as IconSearch,Plus as IconPlus,ArrowUp as IconSend,Pin as IconPin,PinOff as IconPinnedOff,ChevronLeft as IconChevronLeft,ChevronRight as IconChevronRight,Folder as IconFolder,Sparkles as IconSparkles,Package as IconPackage,X as IconX} from 'lucide-react';
+import {LayoutGrid as IconLayoutGrid,MessageCircle as IconMessageCircle,Blocks as IconApps,Clock as IconClock,Box as IconCube,Users as IconUsers,Search as IconSearch,Plus as IconPlus,ArrowUp as IconSend,Pin as IconPin,PinOff as IconPinnedOff,ChevronLeft as IconChevronLeft,ChevronRight as IconChevronRight,Folder as IconFolder,Sparkles as IconSparkles,Wallet as IconWallet,X as IconX} from 'lucide-react';
 import AgentIcon from '../src-shared/AgentIcon.jsx';
 import {showAdmin} from '../src-shared/features.js';
 import {useUserRole} from '../src-shared/UserRole.jsx';
@@ -79,7 +79,7 @@ const byId=id=>roster.find(a=>a.agentId===id);
 
 const nav=[[IconLayoutGrid,'My Board','dashboard.html'],[IconMessageCircle,'Chat','chat.html'],[IconApps,'NOVA Apps','apps.html']];
 const clampListWidth=width=>Math.max(240,Math.min(700,window.innerWidth-440,width));
-function Sidebar(){const role=useUserRole(),admin=showAdmin&&role==='admin';return <aside className="rail op-rail"><a className="logo" href="./dashboard.html" aria-label="Office Power"><img src="./officepower-app-icon.svg" alt=""/></a><nav aria-label="主要導覽">{nav.map(([Icon,label,url])=><a key={url} className={label==='Chat'?'op-rail-item active':'op-rail-item'} href={`./${url}`} data-label={label} aria-label={label} aria-current={label==='Chat'?'page':undefined}><Icon size={20}/></a>)}{admin&&<><span/><a className="op-rail-item" href="./app-packs.html" data-label="APP Pack" aria-label="APP Pack"><IconPackage size={20}/></a><a className="op-rail-item" href="./capabilities.html" data-label="能力中心" aria-label="能力中心"><IconCube size={20}/></a><a className="op-rail-item" href="./organization.html" data-label="Organization" aria-label="Organization"><IconUsers size={20}/></a></>}</nav><AccountMenu/></aside>}
+function Sidebar(){const role=useUserRole(),admin=showAdmin&&role==='admin';return <aside className="rail op-rail"><a className="logo" href="./dashboard.html" aria-label="Office Power"><img src="./officepower-app-icon.svg" alt=""/></a><nav aria-label="主要導覽">{nav.map(([Icon,label,url])=><a key={url} className={label==='Chat'?'op-rail-item active':'op-rail-item'} href={`./${url}`} data-label={label} aria-label={label} aria-current={label==='Chat'?'page':undefined}><Icon size={20}/></a>)}{admin&&<><span/><a className="op-rail-item" href="./capabilities.html" data-label="能力中心" aria-label="能力中心"><IconCube size={20}/></a><a className="op-rail-item" href="./organization.html" data-label="Organization" aria-label="Organization"><IconUsers size={20}/></a><a className="op-rail-item" href="./account.html?tab=usage" data-label="用量與費用" aria-label="用量與費用"><IconWallet size={20}/></a></>}</nav><AccountMenu/></aside>}
 
 function App(){
  const requested=new URLSearchParams(location.search).get('agent');

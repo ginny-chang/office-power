@@ -1,2 +1,2 @@
-// Admin pages (能力中心, Organization) stay built but leave the rail while the general-user UI is being refined.
-export const showAdmin=false;
+// Admin surfaces (能力中心, Organization, 用量與費用) appear in the rail when the role is Admin.
+export const showAdmin=true;
