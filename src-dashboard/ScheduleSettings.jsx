@@ -1,6 +1,6 @@
 import {SegmentedControl,SearchBar,Input,Button} from '../src-shared/ui/index.jsx';
 import React, {useEffect, useRef, useState} from 'react';
-import {CalendarDays, Clock, Search, Plus, X, ChevronRight} from 'lucide-react';
+import {Clock, Search, Plus, ChevronLeft, ChevronRight} from 'lucide-react';
 import './schedule-settings.css';
 import useLocalData from '../src-shared/useLocalData.js';
 import {initialEmployees} from '../src-organization/data.js';
@@ -48,25 +48,30 @@ function ScheduleForm({value,agents,onCancel,onSave}){
  {draft.delivery==='slack'&&<label>Slack 頻道<Input required value={draft.channel} onChange={e=>update('channel',e.target.value)} placeholder="#team-updates"/></label>}</fieldset>
  <label className="schedule-enable-row"><span><strong>啟用此排程任務</strong><small>依設定週期執行</small></span><Input role="switch" type="checkbox" checked={draft.enabled} onChange={e=>update('enabled',e.target.checked)}/><span>{draft.enabled?'啟用':'停用'}</span></label>
 
- </div><footer className="schedule-editor-footer"><Button onClick={onCancel}>取消</Button><Button variant="primary" type="submit">{value.id?'儲存':'新增'}</Button></footer></form>
+ </div><footer className="schedule-editor-footer"><Button onClick={onCancel}>取消</Button><Button variant="primary" type="submit" disabled={!!value.id&&JSON.stringify(draft)===JSON.stringify({...newSchedule(),...value})}>{value.id?'儲存':'新增'}</Button></footer></form>
 }
 const dateLabel=s=>nextRun(s).toLocaleString('zh-TW',{timeZone:s.timezone||'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
-export default function ScheduleSettings({schedules,setSchedules,onClose,startNew=false,agents=[]}) {
- const dialog=useRef();
- const [tab,setTab]=useState('latest'),[status,setStatus]=useState('all'),[query,setQuery]=useState(''),[agent,setAgent]=useState('all'),[sort,setSort]=useState('next'),[editing,setEditing]=useState(()=>startNew?newSchedule():null),[expanded,setExpanded]=useState(null);
- useEffect(()=>{const before=document.activeElement;dialog.current.showModal();return()=>before?.focus()},[]);
+export default function ScheduleSettings({schedules,setSchedules,onClose,startNew=false,startId=null,agents=[]}) {
+ const back=useRef();
+ const [tab,setTab]=useState('latest'),[status,setStatus]=useState('all'),[query,setQuery]=useState(''),[agent,setAgent]=useState('all'),[sort,setSort]=useState('next'),[editing,setEditing]=useState(()=>startNew?newSchedule():startId?schedules.find(s=>s.id===startId)||null:null),[expanded,setExpanded]=useState(null);
+ // A detail page over the board: it takes a history entry so the browser's back button returns to My Board.
+ useEffect(()=>{const before=document.activeElement;window.history.pushState({schedules:true},'');back.current.focus();const pop=()=>onClose();addEventListener('popstate',pop);return()=>{removeEventListener('popstate',pop);before?.focus()}},[]);
  const isHistory=tab==='history';
  const rows=(isHistory?history:schedules).filter(s=>(agent==='all'||s.agent===agent)&&`${s.name} ${s.agent} ${s.prompt||s.detail}`.toLowerCase().includes(query.toLowerCase())&&(status==='all'||(isHistory?s.status===status:String(s.enabled)===status))).sort((a,b)=>isHistory?b.date.localeCompare(a.date):sort==='name'?a.name.localeCompare(b.name,'zh-Hant'):Number(b.enabled)-Number(a.enabled)||nextRun(a)-nextRun(b));
  const changeTab=value=>{setTab(value);setStatus('all');setExpanded(null);setEditing(null)};
  const availableAgents=[...new Set([...agents.map(a=>a.name),...agentNames,...schedules.map(s=>s.agent)])];
- const save=item=>{setSchedules(prev=>item.id?prev.map(s=>s.id===item.id?item:s):[...prev,{...item,id:crypto.randomUUID()}]);setEditing(null);setTab('latest');setQuery('');setStatus('all');setAgent('all')};
- return <dialog className="schedule-dialog" ref={dialog} onCancel={onClose} onClick={e=>e.target===dialog.current&&onClose()} aria-labelledby="schedule-title">
-  <header className="schedule-dialog-header"><span className="schedule-emblem"><CalendarDays size={24}/></span><div><h2 id="schedule-title">{editing?(editing.id?'編輯排程任務':'新增排程任務'):'排程任務管理'}</h2><p>安排 Agent 的工作，查看每一次執行結果。</p></div><Button variant="plain" type="button" className="schedule-close" onClick={onClose} aria-label="關閉排程設定"><X size={21}/></Button></header>
-  {!editing&&<div className="schedule-toolbar"><SegmentedControl label="排程檢視" value={tab} onChange={changeTab} items={[{value:'latest',label:'最新排程',count:schedules.length},{value:'history',label:'歷史排程',count:history.length}]}/><Button variant="primary" className="schedule-add" onClick={()=>{setTab('latest');setEditing(newSchedule())}}><Plus size={17}/>新增</Button></div>}
-  {editing?<ScheduleForm key={editing.id||'new'} value={editing} agents={availableAgents} onCancel={()=>startNew?onClose():setEditing(null)} onSave={save}/>:<section className="schedule-list" aria-label={isHistory?'歷史排程':'最新排程'}>
-   <div className="schedule-filters"><div className="schedule-status-filters"><SegmentedControl label="排程狀態" value={status} onChange={setStatus} items={(isHistory?[['all','所有結果'],['success','已完成'],['failed','執行失敗']]:[['all','所有狀態'],['true','已啟用'],['false','已停用']]).map(([value,label])=>({value,label}))}/><span>{rows.length}/{isHistory?history.length:schedules.length}</span></div><SearchBar className="schedule-search" aria-label="搜尋排程" placeholder="搜尋任務名稱、指令或 Agent…" value={query} onChange={e=>setQuery(e.target.value)}/><div className="schedule-selects"><Input as="select" aria-label="篩選 Agent" value={agent} onChange={e=>setAgent(e.target.value)}><option value="all">所有 Agent</option>{agentNames.map(a=><option key={a}>{a}</option>)}</Input>{!isHistory?<Input as="select" aria-label="排程排序" value={sort} onChange={e=>setSort(e.target.value)}><option value="next">下次執行時間</option><option value="name">任務名稱</option></Input>:<span>依執行時間由新到舊</span>}</div></div>
-   <div className="schedule-rows">{rows.map(s=><article key={s.id} className="schedule-row"><Button variant="plain" type="button" className="schedule-row-main" aria-expanded={isHistory?expanded===s.id:undefined} onClick={()=>isHistory?setExpanded(expanded===s.id?null:s.id):setEditing(s)}><i className={`schedule-dot ${isHistory?s.status:s.enabled?'success':'disabled'}`}/><div><h3>{s.name}</h3><p>{s.agent}{!isHistory&&` · ${scheduleLabel(s)}`}</p><small><Clock size={13}/>{isHistory?`${s.date} · ${s.duration}`:s.enabled?`下次執行：${dateLabel(s)} · ${s.timezone||'Asia/Taipei'}`:'已停用'}</small></div><span className="schedule-row-status">{isHistory?(s.status==='success'?'已完成':'執行失敗'):s.enabled?'已啟用':'已停用'}<ChevronRight size={15}/></span></Button>{isHistory&&expanded===s.id&&<p className="schedule-result">{s.detail}</p>}</article>)}{!rows.length&&<div className="schedule-empty"><Search size={26}/><h3>沒有符合條件的排程</h3><Button variant="secondary" type="button" onClick={()=>{setQuery('');setStatus('all');setAgent('all')}}>清除篩選</Button></div>}</div>
+ const save=item=>{setSchedules(prev=>item.id?prev.map(s=>s.id===item.id?item:s):[...prev,{...item,id:crypto.randomUUID()}]);if(startNew||startId){window.history.back();return}setEditing(null);setTab('latest');setQuery('');setStatus('all');setAgent('all')};
+ const search=<label className="schedule-search op-search"><Search size={17}/><input aria-label="搜尋排程" placeholder="搜尋任務名稱、指令或 Agent…" value={query} onChange={e=>setQuery(e.target.value)}/></label>;
+ // Opened straight into one form (new, or a schedule from My Board): back and cancel return to My Board.
+ const direct=startNew||!!startId;
+ const inForm=editing&&!direct;
+ return <main className="schedule-dialog schedule-page" aria-labelledby="schedule-title">
+  <button className="schedule-back" ref={back} onClick={()=>inForm?setEditing(null):window.history.back()}><ChevronLeft size={16}/>{inForm?'排程任務管理':'My Board'}</button>
+  <header className="schedule-dialog-header"><div><h2 id="schedule-title">{editing?(editing.id?'編輯排程任務':'新增排程任務'):'排程任務管理'}</h2><p>安排 Agent 的工作，查看每一次執行結果。</p></div>{!editing&&search}</header>
+  {!editing&&<div className="schedule-toolbar"><div className="schedule-tabs seg op-segmented" role="group" aria-label="排程檢視">{[['latest','最新排程',schedules.length],['history','歷史排程',history.length]].map(([id,label,count])=><button key={id} aria-pressed={tab===id} onClick={()=>changeTab(id)}>{label}<span>{count}</span></button>)}</div><button className="schedule-add" onClick={()=>{setTab('latest');setEditing(newSchedule())}}><Plus size={16}/>新增任務</button></div>}
+  {editing?<ScheduleForm key={editing.id||'new'} value={editing} agents={availableAgents} onCancel={()=>direct?window.history.back():setEditing(null)} onSave={save}/>:<section className="schedule-list" aria-label={isHistory?'歷史排程':'最新排程'}>
+   <div className="schedule-filters"><div className="schedule-status-filters">{(isHistory?[['all','所有結果'],['success','已完成'],['failed','執行失敗']]:[['all','所有狀態'],['true','已啟用'],['false','已停用']]).map(([id,label])=><button key={id} aria-pressed={status===id} onClick={()=>setStatus(id)}>{label}</button>)}</div><div className="schedule-search-row"><div className="schedule-selects"><select aria-label="篩選 Agent" value={agent} onChange={e=>setAgent(e.target.value)}><option value="all">所有 Agent</option>{availableAgents.map(a=><option key={a}>{a}</option>)}</select>{!isHistory?<select aria-label="排程排序" value={sort} onChange={e=>setSort(e.target.value)}><option value="next">下次執行時間</option><option value="name">任務名稱</option></select>:<span>依執行時間由新到舊</span>}</div></div></div>
+   <div className="schedule-rows">{rows.map(s=><article key={s.id} className="schedule-row"><button className="schedule-row-main" aria-expanded={isHistory?expanded===s.id:undefined} onClick={()=>isHistory?setExpanded(expanded===s.id?null:s.id):setEditing(s)}><i className={`schedule-dot ${isHistory?s.status:s.enabled?'success':'disabled'}`}/><div><h3>{s.name}</h3><p>{s.agent}{!isHistory&&` · ${scheduleLabel(s)}`}</p><small><Clock size={13}/>{isHistory?`${s.date} · ${s.duration}`:s.enabled?`下次執行：${dateLabel(s)} · ${s.timezone||'Asia/Taipei'}`:'已停用'}</small></div><span className="schedule-row-status">{isHistory?(s.status==='success'?'已完成':'執行失敗'):s.enabled?'已啟用':'已停用'}<ChevronRight size={15}/></span></button>{isHistory&&expanded===s.id&&<p className="schedule-result">{s.detail}</p>}</article>)}{!rows.length&&<div className="schedule-empty"><Search size={26}/><h3>沒有符合條件的排程</h3><button onClick={()=>{setQuery('');setStatus('all');setAgent('all')}}>清除篩選</button></div>}</div>
   </section>}
-
- </dialog>;
+ </main>;
 }

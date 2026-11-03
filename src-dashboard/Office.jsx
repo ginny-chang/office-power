@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import {createRobotShell} from '../src/components/robot-shell.js';
 import AgentIcon from '../src-shared/AgentIcon.jsx';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {Settings2} from 'lucide-react';
+import {Settings} from 'lucide-react';
 import {officeLayout} from './office-layout.js';
 // Desk and robot geometry adapted from the landing page's reservation scene.
 const C = { shell: '#e7eefb', metal: '#a6b8d4', ink: '#203c86', floor: '#a8bfe5', wall: '#dce7f8', light: '#ffffff' };
@@ -75,7 +75,8 @@ function Station({agent,index,onSelect,onSettings,read,reduced}){
  const hoverTimer=useRef();useEffect(()=>()=>clearTimeout(hoverTimer.current),[]);
  const enter=()=>{clearTimeout(hoverTimer.current);setHovered(true)};
  const leave=()=>{clearTimeout(hoverTimer.current);hoverTimer.current=setTimeout(()=>setHovered(false),220)};
- const tint=agent.status==='attention'?'#ffc274':agent.status==='error'?'#ff819d':'#ffffff';
+ // Every station sits on the same neutral glow; status shows in the label and bubble instead.
+ const tint='#ffffff';
  const radius=agent.id==='nova'?1.85:1.65;
  const hoverProps={onPointerEnter:enter,onPointerLeave:leave,onFocus:enter,onBlur:leave};
  return <group position={at} onPointerOver={e=>{e.stopPropagation();enter()}} onPointerOut={leave}>
@@ -97,7 +98,7 @@ function Station({agent,index,onSelect,onSettings,read,reduced}){
       <Sphere at={[.57,.79,-.09]} size={[.07,.026,.10]} color="#c4cddb"/>
     </group>
  <Agent at={[-.22,.31,-.38]} index={index} reduced={reduced} hovered={hovered} onHover={e=>{e.stopPropagation();setHovered(true)}} onLeave={()=>setHovered(false)} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
- <Html position={[.18,.47,1.24]} center zIndexRange={[5,1]}><div className="bot-name-actions" {...hoverProps} data-hovered={hovered}><Button variant="plain" type="button" data-agent={agent.id} data-hovered={hovered} className="bot-label" style={{padding:'7px 11px',borderRadius:12,fontSize:12,color:agent.color,background:'#fcfdff',boxShadow:'0 3px 10px #66779920'}} onClick={()=>onSelect(agent.id)}><AgentIcon agent={agent.id} emoji={agent.emoji} size={21}/>{agent.name}</Button>{onSettings&&<Button variant="plain" type="button" className="bot-settings-button" aria-label={`設定 ${agent.name}`} onClick={e=>{e.stopPropagation();onSettings(agent.id)}}><Settings2 size={14}/>設定</Button>}</div></Html>
+ <Html position={[.18,.47,1.24]} center zIndexRange={[5,1]}><div className="bot-name-actions" {...hoverProps} data-hovered={hovered}><Button variant="plain" type="button" data-agent={agent.id} data-hovered={hovered} className="bot-label" style={{padding:'7px 11px',borderRadius:12,fontSize:12,color:agent.color,background:'#fcfdff',boxShadow:'0 3px 10px #66779920'}} onClick={()=>onSelect(agent.id)}><AgentIcon agent={agent.id} emoji={agent.emoji} size={21}/>{agent.name}</Button>{onSettings&&<Button variant="plain" type="button" className="bot-settings-button" aria-label={`設定 ${agent.name}`} onClick={e=>{e.stopPropagation();onSettings(agent.id)}}><Settings size={14}/>設定</Button>}</div></Html>
  {agent.event&&!read.includes(agent.id)&&<Html position={[0,3.15,.1]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" {...hoverProps} className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
  </group>
 }
@@ -111,13 +112,15 @@ function AddAgentSpot({position,onCreate}){
   <mesh position={[0,.07,0]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.86,.94,48]}/><meshBasicMaterial color="#ffffff" transparent opacity={.38} side={THREE.DoubleSide}/></mesh>
   <mesh position={[0,.13,0]}><cylinderGeometry args={[.88,.88,.22,48]}/><meshStandardMaterial color="#ecf3ff" roughness={.5} transparent opacity={.38}/></mesh>
   <mesh position={[0,.25,0]} rotation={[-Math.PI/2,0,0]}><circleGeometry args={[.80,48]}/><meshStandardMaterial color="#f8fbff" transparent opacity={.35} roughness={.6}/></mesh>
-  <Html position={[0,.62,0]} center zIndexRange={[7,4]}><Button variant="plain" className="office-add-agent" type="button" onClick={event=>{event.stopPropagation();onCreate()}} aria-label="新增功能" title="新增功能"><span>＋</span></Button></Html>
+  <Html position={[0,.62,0]} center zIndexRange={[7,4]}><Button variant="plain" className="office-add-agent" type="button" onClick={event=>{event.stopPropagation();onCreate()}} aria-label="新增 Agent"><span>＋</span><small>新增 Agent</small></Button></Html>
  </group>
 }
-function Camera({reset,controls,reduced,intro,radius}){
+function Camera({reset,controls,reduced,intro,radius,frame}){
  const {camera,size,invalidate}=useThree();const elapsed=useRef(0),initial=useRef(true);
- const fit=Math.max(3,Math.min((size.width-72)/(radius*2+4.2),size.height/(radius*1.5+5.4)));
- useEffect(()=>{camera.clearViewOffset();camera.updateProjectionMatrix()},[camera,size.width,size.height]);
+ // Centre the office in the area the floating UI leaves free, not the whole canvas.
+ const {left=0,right=0,top=0,bottom=0}=frame?.(size.width,size.height)||{};
+ const fit=Math.max(3,Math.min((size.width-left-right-(size.width>720?72:8))/(radius*2+4.2),(size.height-top-bottom)/(radius*1.5+5.4)));
+ useEffect(()=>{const dx=(right-left)/2,dy=(bottom-top)/2;if(dx||dy)camera.setViewOffset(size.width,size.height,dx,dy,size.width,size.height);else camera.clearViewOffset();camera.updateProjectionMatrix();invalidate()},[camera,size.width,size.height,left,right,top,bottom]);
  const lockTilt=()=>{if(controls.current){const angle=Math.atan2(Math.hypot(camera.position.x,camera.position.z),camera.position.y-.35);controls.current.minPolarAngle=controls.current.maxPolarAngle=angle}};
  const settle=()=>{camera.position.set(10,12,18);camera.zoom=fit;camera.updateProjectionMatrix();controls.current?.target.set(0,.35,0);lockTilt();controls.current?.update()};
  useEffect(()=>{if(!initial.current){intro.current=false;settle()}initial.current=false},[reset]);
@@ -135,25 +138,25 @@ function Camera({reset,controls,reduced,intro,radius}){
 function BlueFloor(){
  const texture=useMemo(()=>{
   const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
-  const ctx=canvas.getContext('2d');ctx.fillStyle='#cbd9ea';ctx.fillRect(0,0,512,512);
+  const ctx=canvas.getContext('2d');ctx.fillStyle='#e8e8ec';ctx.fillRect(0,0,512,512);
   const wash=ctx.createRadialGradient(260,258,8,260,258,240);
-  wash.addColorStop(0,'#eaf2ff');wash.addColorStop(.34,'#dce8f7');wash.addColorStop(.72,'#cedded');wash.addColorStop(1,'#bdcde0');
+  wash.addColorStop(0,'#f8f8fa');wash.addColorStop(.34,'#f2f2f5');wash.addColorStop(.72,'#eaeaee');wash.addColorStop(1,'#e1e1e6');
   ctx.fillStyle=wash;ctx.fillRect(0,0,512,512);
   const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;return map;
  },[]);
  useEffect(()=>()=>texture.dispose(),[texture]);
  return <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.025,0]}><planeGeometry args={[160,130]}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh>
 }
-function Scene({agents,allAgents=agents,onSelect,onSettings,onCreate,showAdd,read,reset,reduced,onReady}){
+function Scene({agents,allAgents=agents,onSelect,onSettings,onCreate,showAdd,read,reset,reduced,onReady,frame}){
  const controls=useRef(),intro=useRef(!reduced);
  const layout=useMemo(()=>officeLayout(allAgents),[allAgents]);
  const visibleAgents=layout.agents.filter(a=>agents.some(visible=>visible.id===a.id));
  useEffect(()=>{onReady?.()},[onReady]);
- return <><color attach="background" args={['#dce6f2']}/><ambientLight intensity={.9}/><hemisphereLight args={['#ffffff','#aebfd5',1.15]}/><directionalLight position={[-3,9,6]} intensity={2.4} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-15} shadow-camera-right={15} shadow-camera-top={15} shadow-camera-bottom={-15} shadow-normalBias={.03}/><directionalLight position={[8,4,-6]} color="#e7f0ff" intensity={1.4}/>
- <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.03,0]} receiveShadow><planeGeometry args={[160,130]}/><meshStandardMaterial color="#cbd9ea" roughness={.8}/></mesh><BlueFloor/>
+ return <><color attach="background" args={['#eeeef2']}/><ambientLight intensity={.9}/><hemisphereLight args={['#ffffff','#c7c7cc',1.15]}/><directionalLight position={[-3,9,6]} intensity={2.4} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-15} shadow-camera-right={15} shadow-camera-top={15} shadow-camera-bottom={-15} shadow-normalBias={.03}/><directionalLight position={[8,4,-6]} color="#e7f0ff" intensity={1.4}/>
+ <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.03,0]} receiveShadow><planeGeometry args={[160,130]}/><meshStandardMaterial color="#e8e8ec" roughness={.8}/></mesh><BlueFloor/>
  <gridHelper args={[140,140,'#ffffff','#ffffff']} scale={[1,1,.81]} position={[0,-.009,0]} material-transparent material-opacity={.22}/>
  {visibleAgents.map((a,i)=><React.Fragment key={a.id}>{a.id!=='nova'&&<Connection to={a.at} index={i} reduced={reduced}/>}<Station agent={a} index={i} onSelect={onSelect} onSettings={onSettings} read={read} reduced={reduced}/></React.Fragment>)}
- {showAdd&&<AddAgentSpot position={layout.addPosition} onCreate={onCreate}/>}
- <Camera reset={reset} controls={controls} reduced={reduced} intro={intro} radius={layout.radius}/><OrbitControls ref={controls} onStart={()=>{intro.current=false}} enablePan enableZoom screenSpacePanning mouseButtons={{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}} minZoom={3} maxZoom={150} target={[0,.35,0]} enableDamping={!reduced} dampingFactor={.08}/></>
+ {showAdd&&<AddAgentSpot position={[0,0,layout.radius+2.4]} onCreate={onCreate}/>}
+ <Camera reset={reset} controls={controls} reduced={reduced} intro={intro} radius={layout.radius+(showAdd?1.8:0)} frame={frame}/><OrbitControls ref={controls} onStart={()=>{intro.current=false}} enablePan enableZoom screenSpacePanning mouseButtons={{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}} minZoom={3} maxZoom={150} target={[0,.35,0]} enableDamping={!reduced} dampingFactor={.08}/></>
 }
 export default function Office(props){const [visible,setVisible]=useState(true);useEffect(()=>{const fn=()=>setVisible(!document.hidden);document.addEventListener('visibilitychange',fn);return()=>document.removeEventListener('visibilitychange',fn)},[]);return <div className="three-office" aria-label="可水平旋轉與縮放的 3D AI 辦公室"><Canvas orthographic shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[24,38,20],zoom:18,near:.1,far:180}} gl={{antialias:true,powerPreference:'high-performance'}}><Scene {...props}/></Canvas></div>}

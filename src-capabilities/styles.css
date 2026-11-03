@@ -1,0 +1,82 @@
+/* ───────────── Soft card layer (tokens in src-shared/tokens.css) ─────────────
+   Loaded after src-apps/styles.css and management.css, so equal selectors win here. */
+.management main{max-width:1420px;padding:var(--sp-6)}
+.management .page-heading h1{font:var(--t-display);letter-spacing:-.02em;color:var(--ink)}
+.management .page-heading p{font:var(--t-body);color:var(--ink-2)}
+
+/* Layout follows NOVA Apps: search in the heading over the third column (rules come from src-apps/styles.css),
+   then one bar with the segmented tabs on the left and the primary action on the right. */
+.catalog-bar .bar-group{display:flex;gap:var(--sp-2);min-width:0}
+.catalog-bar .manage-tabs{flex:0 1 auto;min-width:0;display:inline-flex;gap:4px;margin:0;padding:0;border:0;border-radius:var(--r);background:var(--surface);overflow-x:auto;scrollbar-width:none}
+.catalog-bar .manage-tabs button{flex:none;height:var(--control);gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);white-space:nowrap}
+.catalog-bar .manage-tabs button:hover{background:var(--surface-2)}
+.catalog-bar .manage-tabs button.active{background:var(--ink);color:#fff}
+/* Second level: text tabs under the bar, the active one underlined */
+.management .manage-subnav{display:flex;gap:var(--sp-6);margin:0 0 var(--sp-6);padding:0;border-bottom:1px solid var(--line-strong)}
+.management .manage-subnav button{height:var(--control);margin-bottom:-1px;padding:0;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;font:var(--t-label);font-weight:500;color:var(--ink-2)}
+.management .manage-subnav button:hover{background:none;color:var(--ink)}
+.management .manage-subnav button.active{background:none;border-bottom-color:var(--ink);color:var(--ink)}
+.catalog-bar>.primary{flex:none;height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--ink);font:var(--t-label);font-weight:500;color:#fff}
+.catalog-bar>.primary:hover{background:#2c2c30}
+.management .manage-grid{gap:var(--sp-6)}
+@media(max-width:1100px){.management .manage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.management .manage-grid{grid-template-columns:1fr}.catalog-bar{flex-wrap:wrap}}
+
+/* Toolbar: search capsule plus a black primary pill */
+.manage-toolbar{gap:var(--sp-2);margin:0 0 var(--sp-6)}
+.management .manage-toolbar input{height:var(--control);padding:0 var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);font:var(--t-label);color:var(--ink)}
+.management .manage-toolbar input::placeholder{color:var(--ink-3)}
+.manage-toolbar button,.manage-actions button,.management .action,.manage-modal footer button{height:var(--control);padding:0 var(--sp-4);gap:var(--sp-2);border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-label);font-weight:500;color:var(--ink)}
+.manage-actions button:hover,.manage-modal footer button:hover{background:var(--surface-3)}
+.management .primary,.manage-modal .primary{background:var(--ink);color:#fff;border:0}
+.management .primary:hover,.manage-modal .primary:hover{background:#2c2c30}
+
+/* Cards */
+.manage-grid{gap:var(--sp-6)}
+.manage-list{gap:var(--sp-4)}
+.manage-card{padding:var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
+.manage-card header{gap:var(--sp-4);margin-bottom:var(--sp-4)}
+.manage-card.clickable{cursor:pointer;transition:box-shadow .25s var(--ease),transform .25s var(--ease)}
+.manage-card.clickable:hover{transform:translateY(-2px);box-shadow:var(--shadow-float)}
+/* Enable toggle: a regular button led by a status light */
+.manage-actions .manage-switch i{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+.manage-actions .manage-switch[aria-pressed=true] i{background:#34c759;box-shadow:0 0 0 3px rgba(52,199,89,.18)}
+.manage-modal .manage-alert{margin:var(--sp-4) 0 0}
+.manage-section-title{display:flex;align-items:center;gap:var(--sp-2);margin:var(--sp-6) 0 0;padding-top:var(--sp-6);border-top:1px solid var(--line);font:var(--t-body-strong);color:var(--ink)}
+.manage-section-title span{font:var(--t-meta);color:var(--ink-3)}
+.manage-card h3{font:var(--t-title);color:var(--ink)}
+.manage-card p{margin:var(--sp-2) 0;font:var(--t-label);color:var(--ink-2)}
+.manage-card small,.manage-meta{font:var(--t-meta);color:var(--ink-2)}
+.manage-meta{gap:var(--sp-2);margin-top:var(--sp-4)}
+.manage-card .tile{width:48px;height:48px;border-radius:var(--r);background:var(--lavender);color:var(--lavender-ink)}
+.manage-card .tile svg{width:20px;height:20px}
+.manage-grid .manage-card:first-child .tile{background:var(--mint);color:var(--mint-ink)}
+.manage-actions{gap:var(--sp-2);margin-top:var(--sp-6)}
+.manage-tag{height:24px;padding:0 var(--sp-2);border-radius:var(--r);background:var(--surface-2);font:500 11px/1 var(--font);color:var(--ink-2)}
+.manage-tag.good{background:var(--lime);color:var(--lime-ink)}
+
+/* Data tables */
+.manage-table{border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
+.manage-table table{font:var(--t-label)}
+.manage-table th,.manage-table td{padding:var(--sp-4) var(--sp-6);border-bottom:1px solid var(--line)}
+.manage-table th{background:none;font:var(--t-meta);color:var(--ink-2)}
+.manage-table td{color:var(--ink)}
+.manage-table td button{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+
+.manage-note{font:var(--t-meta)!important;color:var(--ink-3)!important;margin:var(--sp-6) 0!important}
+.manage-empty{font:var(--t-body);color:var(--ink-2)}
+.manage-alert{margin:0 0 var(--sp-6);padding:var(--sp-2) var(--sp-4);border-radius:var(--r);background:var(--lime);font:var(--t-label);color:var(--lime-ink)}
+
+/* Modal */
+.manage-modal{width:min(560px,calc(100vw - 32px))}
+.manage-modal header{padding:var(--sp-8) var(--sp-8) var(--sp-4);border:0}
+.manage-modal header h2{font:var(--t-title)}
+.manage-modal .form-body{padding:0 var(--sp-8) var(--sp-4)}
+.manage-modal footer{gap:var(--sp-2);padding:var(--sp-4) var(--sp-8) var(--sp-8);border:0}
+.manage-field{gap:var(--sp-2);margin:var(--sp-4) 0;font:var(--t-label);color:var(--ink-2)}
+.manage-modal input,.manage-modal textarea,.manage-modal select{padding:var(--sp-2) var(--sp-4);min-height:var(--control);border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-body);color:var(--ink)}
+.manage-modal pre{padding:var(--sp-4);border-radius:var(--r);background:var(--surface-2);font:var(--t-label)}
+
+@media(max-width:650px){.management main{padding:var(--sp-6) var(--sp-4)}
+.manage-card{padding:var(--sp-6)}
+.manage-toolbar input{flex-basis:100%}}
