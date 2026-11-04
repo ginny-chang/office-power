@@ -3,15 +3,15 @@ import {appTypes} from './app-data.js';
 // One icon per App 類型 in a soft glossy style: a pale squircle tile in a light tint of the hue,
 // a small rounded glyph filled with a vertical gradient (light top → deeper bottom), a soft
 // coloured drop shadow under it, and a few white knockout details. No outlines.
-// The previous line-style set is in commit f964c29.
+// Colours are the lime-family tokens in src-shared/tokens.css.
 // tile: squircle + chip background; top/bottom: glyph gradient; deep: chip text (AA on tile).
 export const typePalette={
- '營運與資產':{tile:'#e8f3fe',top:'#8cc8fb',bottom:'#4a9cf0',deep:'#1d64b0'},
- '人資與出勤':{tile:'#efedfd',top:'#bcb2fd',bottom:'#8a78f0',deep:'#5b47c4'},
- '專案協作':{tile:'#fdebf2',top:'#ffa3c8',bottom:'#f5679f',deep:'#b02560'},
- '財務管理':{tile:'#fff8db',top:'#ffe36e',bottom:'#f7bf16',deep:'#805b00'},
- '業務管理':{tile:'#ffefe6',top:'#ffbf94',bottom:'#fb8a52',deep:'#a54616'},
- '生活助理':{tile:'#e3f6ef',top:'#67e3b5',bottom:'#22b58a',deep:'#127156'},
+ '營運與資產':{tile:'var(--type-aqua-tile)',top:'var(--type-aqua-top)',bottom:'var(--type-aqua-bottom)',deep:'var(--type-aqua-ink)'},
+ '人資與出勤':{tile:'var(--type-lavender-tile)',top:'var(--type-lavender-top)',bottom:'var(--type-lavender-bottom)',deep:'var(--type-lavender-ink)'},
+ '專案協作':{tile:'var(--type-mint-tile)',top:'var(--type-mint-top)',bottom:'var(--type-mint-bottom)',deep:'var(--type-mint-ink)'},
+ '財務管理':{tile:'var(--type-butter-tile)',top:'var(--type-butter-top)',bottom:'var(--type-butter-bottom)',deep:'var(--type-butter-ink)'},
+ '業務管理':{tile:'var(--type-peach-tile)',top:'var(--type-peach-top)',bottom:'var(--type-peach-bottom)',deep:'var(--type-peach-ink)'},
+ '生活助理':{tile:'var(--type-lime-tile)',top:'var(--type-lime-top)',bottom:'var(--type-lime-bottom)',deep:'var(--type-lime-ink)'},
 };
 // Unknown or custom categories fall back to the first type.
 export const fallbackType=appTypes[0];

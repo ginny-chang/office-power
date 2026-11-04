@@ -13,6 +13,14 @@
 
   /* Accents */
   --lime:#e5f68c;--lime-ink:#3d4a00;
+  /* NOVA App types: six soft hues around the lime primary.
+     tile = squircle and type chip, top/bottom = glyph gradient, ink = chip text (AA on the tile). */
+  --type-butter-tile:#fcf9f3;--type-butter-top:#f1dfab;--type-butter-bottom:#ba9838;--type-butter-ink:#504524;
+  --type-lime-tile:#f7fbe8;--type-lime-top:#ceeb81;--type-lime-bottom:#7d9a28;--type-lime-ink:var(--lime-ink);
+  --type-mint-tile:#f3fcf7;--type-mint-top:#a1f0c8;--type-mint-bottom:#2f9e66;--type-mint-ink:#234e38;
+  --type-aqua-tile:#f5f9fc;--type-aqua-top:#c5e4f5;--type-aqua-bottom:#4e97c2;--type-aqua-ink:#29495b;
+  --type-lavender-tile:#faf9fd;--type-lavender-top:#e8daf9;--type-lavender-bottom:#a07fd4;--type-lavender-ink:#54377a;
+  --type-peach-tile:#fcf9f6;--type-peach-top:#f6dac6;--type-peach-bottom:#c48456;--type-peach-ink:#5c3f29;
   /* Destructive actions only (delete): text and outline in red, a faint red wash on hover */
   --danger:#d93036;--danger-soft:#fdeeee;
   --mint:#cfe7de;--mint-strong:#7fd0c3;--mint-ink:#1f6b5f;
