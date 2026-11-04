@@ -114,12 +114,11 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--ink);col
 .app-grid .gallery-card-title{flex:1;min-width:0}
 .app-grid .gallery-card-title h3{margin-top:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .app-grid .gallery-card-top .card-more{align-self:flex-start}
-/* Type icon (squircle tile drawn in the SVG), then type + author as chips; the type chip takes the type's hue */
+/* Type icon (squircle tile drawn in the SVG), then type + author as the same gray chips */
 .app-grid .type-icon{width:44px;height:44px;flex:none;display:grid;place-items:center}
 .app-grid .card-tags{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);margin-top:12px}
 .app-grid .card-tag{height:24px;display:inline-flex;align-items:center;gap:4px;padding:0 10px;border-radius:999px;background:var(--surface-2);font:500 12px/1 var(--font);color:var(--card-text)}
 .app-grid .card-tag svg{flex:none;color:var(--ink-2)}
-.app-grid .card-tag-type{background:var(--type-tint,#e8f3fe);color:var(--type-deep,#1d64b0)}
 .app-grid .card-tag-offline{background:none;box-shadow:inset 0 0 0 1px var(--line-strong)}
 .card-more{position:relative}
 .card-more-trigger{width:36px;height:36px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);cursor:pointer}
