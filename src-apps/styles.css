@@ -37,26 +37,25 @@ h1 span{margin-left:var(--sp-4);font:300 24px/32px var(--font);color:var(--ink-3
 .stats strong{margin:var(--sp-6) 0 var(--sp-2);font:300 40px/46px var(--font);letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--ink)}
 .stats small{font:var(--t-meta);color:var(--ink-2)}
 
-/* Catalog: no frame; search sits in the heading over the third card column, sort is an icon beside the categories */
-.page-heading{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-6);align-items:end}
-.page-heading>div{grid-column:1/3}
-.page-heading>.op-search{grid-column:3;background:var(--surface)}
-.page-heading>.op-search input{font:var(--t-body);color:var(--ink)}
+/* Catalog: no frame; the bar holds the search with the App 類型 filter right beside it */
 .pin-filter{height:var(--control);padding:0 var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);font:var(--t-label);font-weight:500;color:var(--ink)}
 .pin-filter.active{background:var(--ink);color:#fff}
 .pin-filter b{font-weight:600}
-.catalog-bar{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);margin-bottom:var(--sp-6)}
-/* Categories use the My Board segmented control: one white strip, transparent options, black active */
-.catalog-bar .categories{flex:0 1 auto;min-width:0;display:inline-flex;flex-wrap:nowrap;gap:4px;padding:0;overflow-x:auto;scrollbar-width:none;border-radius:var(--r);background:var(--surface)}
-.catalog-bar .categories::-webkit-scrollbar{display:none}
-.catalog-bar .categories button{flex:none;height:var(--control);gap:var(--sp-2);padding:0 var(--sp-4);background:none;font:var(--t-label);font-weight:500;color:var(--ink)}
-.catalog-bar .categories button:hover{background:var(--surface-2)}
-.catalog-bar .categories button.active{background:var(--ink);color:#fff}
-.catalog-bar .categories span{font:var(--t-meta);color:var(--ink-3);opacity:1}
-.catalog-bar .categories button.active span{color:rgba(255,255,255,.6)}
-.catalog-bar .sort{position:relative;flex:none;width:var(--control);height:var(--control);display:grid;place-items:center;padding:0;border-radius:var(--r);background:var(--surface);color:var(--ink);cursor:pointer}
-.catalog-bar .sort:hover{background:var(--surface-2)}
-.catalog-bar .sort select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.catalog-bar{display:flex;align-items:center;gap:var(--sp-4);margin-bottom:var(--sp-6)}
+.catalog-bar>.op-search{flex:0 1 320px;min-width:160px;background:var(--surface)}
+.catalog-bar>.op-search input{font:var(--t-label);color:var(--ink)}
+.type-filter{position:relative;flex:none}
+.type-filter-trigger{min-width:160px;height:var(--control);display:inline-flex;align-items:center;justify-content:space-between;gap:var(--sp-2);padding:0 12px 0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface);font:var(--t-label);color:var(--ink-2);cursor:pointer}
+.type-filter-trigger.picked{font-weight:500;color:var(--ink)}
+.type-filter-trigger:hover{background:var(--surface-2)}
+.type-filter-trigger[aria-expanded=true]{box-shadow:var(--focus-ring)}
+.type-filter-trigger svg{flex:none;color:var(--ink-2);transition:transform .2s var(--ease)}
+.type-filter-trigger[aria-expanded=true] svg{transform:rotate(180deg)}
+.card-more-menu.type-filter-menu{left:0;right:auto;width:220px}
+.type-filter-menu button[aria-checked=true]{font-weight:500}
+.type-filter-menu .type-check{width:16px;flex:none;display:grid;place-items:center}
+.type-filter-menu .type-check svg{color:var(--ink)}
+.type-filter-menu small{margin-left:auto;font:var(--t-meta);color:var(--ink-2)}
 .categories{gap:var(--sp-2);padding:var(--sp-6) 0 var(--sp-6)}
 .categories button{height:var(--control);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-label);font-weight:500;color:var(--ink)}
 .categories button:hover{background:var(--surface-3)}
@@ -74,7 +73,6 @@ h1 span{margin-left:var(--sp-4);font:300 24px/32px var(--font);color:var(--ink-3
 .pin.pinned{background:var(--ink);color:#fff}
 .app-open h3{font:var(--t-title);letter-spacing:0;color:var(--ink)}
 .app-open h3 svg{color:var(--ink-3)}
-.category-tag{margin-top:var(--sp-2);font:var(--t-meta);color:var(--ink-2)}
 .app-open p{min-height:44px;margin-top:var(--sp-4);font:var(--t-label);color:var(--ink-2)}
 .app-card footer{margin-top:var(--sp-6);padding-top:var(--sp-4);gap:var(--sp-4);border-top:1px solid var(--line);font:var(--t-meta);color:var(--ink-2)}
 .empty{color:var(--ink-2)}
@@ -104,27 +102,25 @@ dialog footer button,dialog footer a{height:var(--control);padding:0 var(--sp-4)
 dialog footer button{background:var(--surface-2);color:var(--ink)}
 dialog footer a{display:inline-flex;align-items:center;background:var(--ink);color:#fff}
 
-@media(max-width:1100px){
-.page-heading{grid-template-columns:repeat(2,minmax(0,1fr))}
-.page-heading>div{grid-column:1}
-.page-heading>.op-search{grid-column:2}}
 /* Compact soft cards: content ends at the footer (no empty stage). App window floats below on hover. */
-.app-grid .gallery-card{position:relative;display:flex;flex-direction:column;height:100%;padding:var(--sp-6);cursor:pointer;z-index:0;overflow:visible}
+.app-grid .gallery-card{position:relative;display:flex;flex-direction:column;height:100%;padding:var(--sp-4) var(--sp-6);cursor:pointer;z-index:0;overflow:visible}
 .app-grid .gallery-card:hover,.app-grid .gallery-card:focus-within{z-index:5}
-.app-grid .gallery-card>p{flex:1;height:auto;min-height:44px;margin:var(--sp-4) 0 0}
-.app-grid .gallery-card footer{margin:var(--sp-4) 0 0;padding:0;border-top:0}
-.app-grid .app-card footer button{height:var(--control-sm);padding:0 12px;gap:6px;border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);font-weight:500;color:var(--ink)}
-.app-grid .app-card footer button:hover{background:var(--surface-3)}
+.app-grid .gallery-card>p{flex:1;height:auto;min-height:44px;margin:12px 0 0}
 .app-grid .app-hover-stage{position:absolute;left:0;right:0;top:calc(100% + 8px);height:196px;margin:0;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-float);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(6px);transition:opacity .2s var(--ease),transform .2s var(--ease),visibility .2s;overflow:hidden;z-index:6}
 .app-grid .gallery-card:hover .app-hover-stage,.app-grid .gallery-card:focus-within .app-hover-stage{opacity:1;visibility:visible;transform:none}
 .app-grid .app-hover-screen{position:relative;inset:auto;height:100%;opacity:1;transform:none;pointer-events:none;border-radius:var(--r);overflow:hidden}
 /* Card head: app icon on the left, an admin "more" menu on the right; category and name sit below */
 .app-grid .gallery-card-top{display:flex;align-items:center;gap:var(--sp-4)}
 .app-grid .gallery-card-title{flex:1;min-width:0}
-.app-grid .gallery-card-title h3{margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.app-grid .gallery-card-title h3{margin-top:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .app-grid .gallery-card-top .card-more{align-self:flex-start}
-.app-grid .gallery-card-title .category-tag{display:flex;align-items:center;gap:var(--sp-2)}
-.app-grid .gallery-card-title .category-tag b{height:20px;display:inline-flex;align-items:center;padding:0 6px;border-radius:var(--r);background:var(--surface-2);font:500 11px/1 var(--font);color:var(--ink-2)}
+/* Type icon tile, then type + author as chips under the description; tile and type chip take the type's hue */
+.app-grid .type-icon{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:var(--r);background:var(--type-tint,#eef4fb)}
+.app-grid .card-tags{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);margin-top:12px}
+.app-grid .card-tag{height:24px;display:inline-flex;align-items:center;gap:4px;padding:0 10px;border-radius:999px;background:var(--surface-2);font:500 12px/1 var(--font);color:var(--card-text)}
+.app-grid .card-tag svg{flex:none;color:var(--ink-2)}
+.app-grid .card-tag-type{background:var(--type-tint,#eef4fb);color:var(--type-deep,#2f5a86)}
+.app-grid .card-tag-offline{background:none;box-shadow:inset 0 0 0 1px var(--line-strong)}
 .card-more{position:relative}
 .card-more-trigger{width:36px;height:36px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);cursor:pointer}
 .card-more-trigger:hover,.card-more-trigger[aria-expanded=true]{background:var(--surface-2);color:var(--ink)}
@@ -148,8 +144,8 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 .stats{gap:var(--sp-4)}
 .stats article{padding:var(--sp-6)}
 .stats strong{font:300 30px/36px var(--font)}
-.page-heading{grid-template-columns:1fr}
-.page-heading>div,.page-heading>.op-search{grid-column:1}
+.catalog-bar{flex-wrap:wrap;gap:var(--sp-2)}
+.catalog-bar>.op-search{order:3;flex:1 1 100%;min-width:0}
 .categories button{height:var(--control-sm);padding:0 var(--sp-4);font:var(--t-meta)}
 }
 
