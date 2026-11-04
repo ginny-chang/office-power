@@ -193,6 +193,7 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 .app-editor .message.me{margin-left:auto;flex-direction:row-reverse}
 .app-editor .message.me p{background:var(--ink);color:#fff}
 .app-editor .message small{padding:0 var(--sp-2);font:var(--t-meta);color:var(--ink-3)}
+.app-editor .date-rule{display:flex;justify-content:center;margin-bottom:var(--sp-8);font:var(--t-meta);color:var(--ink-3)}
 .app-editor .editor-chat>footer{flex-shrink:0;padding:var(--sp-4) var(--sp-6) var(--sp-6);border-top:0;background:none}
 .app-editor .composer{display:flex;align-items:center;gap:var(--sp-2);padding:8px 8px 8px var(--sp-6);border:0;border-radius:var(--r);background:var(--surface-2)}
 .app-editor .composer:focus-within{background:var(--surface);box-shadow:var(--focus-ring)}
@@ -201,21 +202,10 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 .app-editor .composer button{width:var(--control);height:var(--control);flex:none;display:grid;place-items:center;border:0;border-radius:var(--r);background:var(--ink);color:#fff}
 .app-editor .composer button:disabled{background:var(--surface-3);color:var(--ink-3)}
 
-/* Right App window: chrome + edit fields + live screen */
-.app-editor .editor-app-window>header{height:64px;flex-shrink:0;display:flex;align-items:center;gap:var(--sp-4);padding:0 var(--sp-6);border-bottom:1px solid var(--line);font:var(--t-label);font-weight:500;color:var(--ink-2)}
-.app-editor .editor-window-dots{display:flex;gap:6px}
-.app-editor .editor-window-dots i{width:10px;height:10px;border-radius:50%;background:var(--surface-3)}
-.app-editor .editor-window-dots i:nth-child(1){background:#e89f9f}
-.app-editor .editor-window-dots i:nth-child(2){background:#d9bc85}
-.app-editor .editor-window-dots i:nth-child(3){background:#93b6a7}
-.app-editor .editor-window-meta{margin-left:auto;font:var(--t-meta);color:var(--ink-3)}
-.app-editor .editor-fields{flex:none;display:grid;gap:var(--sp-4);padding:var(--sp-4) var(--sp-6);border-bottom:1px solid var(--line);max-height:200px;overflow:auto}
-.app-editor .editor-fields label{display:grid;gap:var(--sp-2);font:var(--t-label);color:var(--ink-2)}
-.app-editor .editor-fields :is(input,textarea){width:100%;border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-body);color:var(--ink)}
-.app-editor .editor-fields input{height:var(--control);padding:0 var(--sp-4)}
-.app-editor .editor-fields textarea{padding:var(--sp-2) var(--sp-4);resize:vertical}
-.app-editor .editor-screen-scroll{flex:1;min-height:0;overflow:auto;background:var(--surface-2)}
-.app-editor .editor-screen-scroll .nova-screen{min-height:100%}
+/* Right: full-bleed App screen — no window chrome / dots */
+.app-editor .editor-app-window{background:#202631}
+.app-editor .editor-screen-scroll{flex:1;min-height:0;overflow:auto;background:#202631}
+.app-editor .editor-screen-scroll .nova-screen{min-height:100%;height:100%}
 
 @media(max-width:900px){.editor-shell .app-editor{gap:var(--sp-4);padding:var(--sp-4)}.app-editor .message-space{padding:var(--sp-6)}}
 @media(max-width:800px){
