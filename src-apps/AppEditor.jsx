@@ -1,5 +1,5 @@
 import React,{useRef,useState,useEffect} from 'react';
-import {ChevronLeft,Trash2,ArrowUp,AppWindow,Globe,Maximize2,X} from 'lucide-react';
+import {ChevronLeft,Trash2,ArrowRight,AppWindow,Globe,Maximize2,X} from 'lucide-react';
 import {Dialog,Button} from '../src-shared/ui/index.jsx';
 import {appIcons} from './app-data.js';
 import AppScreen from './AppScreen.jsx';
@@ -26,16 +26,16 @@ export default function AppEditor({app,onSave,onDelete,onBack}){
  const moveResize=e=>{if(!resize.current)return;setChatWidth(clampChatWidth(resize.current.width+e.clientX-resize.current.x))};
  const endResize=e=>{resize.current=null;if(e.currentTarget.hasPointerCapture?.(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId)};
  return <main className="app-editor" style={{'--editor-chat-width':`${chatWidth}px`}}>
-  <header className="editor-head"><button className="editor-back" onClick={onBack}><ChevronLeft size={16}/>NOVA Apps</button><div className="editor-actions"><span className="editor-save-status" role="status">{error||''}</span><button className="editor-delete" onClick={()=>setConfirm(true)}><Trash2 size={16}/>刪除</button><button className="editor-publish" onClick={publish}><Globe size={16}/>發佈</button></div></header>
+  <header className="editor-head"><button className="editor-back" onClick={onBack}><ChevronLeft size={16}/>NOVA Apps</button><div className="editor-title"><h1>{draft.name||'未命名 App'}</h1><div className="editor-actions"><span className="editor-save-status" role="status">{error||''}</span><button className="editor-delete" onClick={()=>setConfirm(true)}><Trash2 size={16}/>刪除</button><button className="editor-publish" onClick={publish}><Globe size={16}/>發佈</button></div></div></header>
   <section className="editor-chat conversation" aria-label="App Agent 對話">
    <header><span className="agent-mark" style={{'--agent':app.color,color:app.color}}><Icon size={20}/></span><div><h2>{draft.name||'未命名 App'} Agent</h2><p>App 調整 · 已就緒</p></div></header>
    <div className="message-space">
-    {!messages.length&&<div className="chat-welcome"><span className="welcome-icon" style={{color:app.color}}><Icon size={24}/></span><h2>告訴我你需要做什麼調整</h2><p>描述想改的地方，右側會即時顯示完整的 App 畫面。</p><div className="suggestions">{suggestions.map(q=><Button variant="secondary" type="button" key={q} onClick={()=>send(q)}><span>{q}</span><ArrowUp size={16}/></Button>)}</div></div>}
+    {!messages.length&&<div className="chat-welcome"><span className="welcome-icon" style={{color:app.color}}><Icon size={24}/></span><h2>告訴我你需要做什麼調整</h2><p>描述想改的地方，右側會即時顯示完整的 App 畫面。</p><div className="suggestions">{suggestions.map(q=><Button variant="secondary" type="button" key={q} onClick={()=>send(q)}><span>{q}</span><ArrowRight size={16}/></Button>)}</div></div>}
     {!!messages.length&&<div className="date-rule"><span>新對話</span></div>}
     {messages.map((m,i)=><div className={`message ${m.role}`} key={i}><span>{m.role==='agent'&&<Icon size={16}/>}</span><div><p>{m.text}</p><small>{m.role==='me'?'你':'Agent'} · 剛剛</small></div></div>)}
     <div ref={bottom}/>
    </div>
-   <footer><form className="composer" onSubmit={e=>{e.preventDefault();send()}}><textarea rows={1} aria-label="App 修改需求" placeholder={`傳訊息給 ${draft.name||'App'} Agent…`} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}/><button type="submit" disabled={!input.trim()} aria-label="送出修改需求"><ArrowUp size={18}/></button></form></footer>
+   <footer><form className="composer" onSubmit={e=>{e.preventDefault();send()}}><textarea rows={1} aria-label="App 修改需求" placeholder={`傳訊息給 ${draft.name||'App'} Agent…`} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}/><button type="submit" disabled={!input.trim()} aria-label="送出修改需求"><ArrowRight size={16}/></button></form></footer>
   </section>
   <div className="chat-resize-handle" role="separator" aria-label="調整 Chat 與 App 寬度" aria-orientation="vertical" aria-valuemin={280} aria-valuemax={Math.max(280,Math.min(720,window.innerWidth-520))} aria-valuenow={chatWidth} tabIndex={0} onPointerDown={beginResize} onPointerMove={moveResize} onPointerUp={endResize} onPointerCancel={endResize} onKeyDown={e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();setChatWidth(width=>clampChatWidth(width+(e.key==='ArrowRight'?28:-28)))}}}><span/></div>
   <section className="editor-app-window" aria-label="App">

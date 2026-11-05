@@ -52,7 +52,7 @@
 .manage-card .tile svg{width:20px;height:20px}
 .manage-grid .manage-card:first-child .tile{background:var(--mint);color:var(--mint-ink)}
 .manage-actions{gap:var(--sp-2);margin-top:var(--sp-6)}
-.manage-tag{height:24px;padding:0 var(--sp-2);border-radius:var(--r);background:var(--surface-2);font:500 11px/1 var(--font);color:var(--ink-2)}
+.manage-tag{height:24px;padding:0 var(--sp-2);border-radius:var(--r);background:var(--surface-2);font:500 12px/1 var(--font);color:var(--ink-2)}
 .manage-tag.good{background:var(--lime);color:var(--lime-ink)}
 
 /* Data tables */

@@ -89,7 +89,7 @@ dialog>header .app-icon{width:48px;height:48px;border-radius:var(--r);background
 dialog h2{font:var(--t-title)}
 dialog header p{margin-top:0;font:var(--t-meta);color:var(--ink-2)}
 dialog header>button{width:36px;height:36px;padding:0;display:grid;place-items:center;border-radius:var(--r);background:var(--surface-2);color:var(--ink)}
-dialog header>button svg{width:18px;height:18px}
+dialog header>button svg{width:16px;height:16px}
 .preview{margin:0 var(--sp-8);padding:var(--sp-8);border-radius:var(--r);background:color-mix(in srgb,var(--app-color) 14%,#fff)}
 .preview .eyebrow{color:var(--ink-2)}
 .preview h3{margin:var(--sp-2) 0 var(--sp-2);font:400 24px/32px var(--font);letter-spacing:-.01em}
@@ -117,12 +117,12 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--ink);col
 /* Type icon (squircle tile drawn in the SVG). The type chip uses that hue; the author chip stays gray. */
 .app-grid .type-icon{width:44px;height:44px;flex:none;display:grid;place-items:center}
 .app-grid .card-tags{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);margin-top:12px}
-.app-grid .card-tag{height:24px;display:inline-flex;align-items:center;gap:4px;padding:0 10px;border-radius:999px;background:var(--surface-2);font:500 12px/1 var(--font);color:var(--card-text)}
+.app-grid .card-tag{height:24px;display:inline-flex;align-items:center;gap:4px;padding:0 var(--sp-2);border-radius:var(--r);background:var(--surface-2);font:500 12px/1 var(--font);color:var(--card-text)}
 .app-grid .card-tag svg{flex:none;color:var(--ink-2)}
 .app-grid .card-tag-type{background:var(--type-tint);color:var(--type-deep);font-size:12px}
 .app-grid .card-tag-offline{background:none;box-shadow:inset 0 0 0 1px var(--line-strong)}
 .card-more{position:relative}
-.card-more-trigger{width:36px;height:36px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);cursor:pointer}
+.card-more-trigger{width:var(--control-md);height:var(--control-md);display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);cursor:pointer}
 .card-more-trigger:hover,.card-more-trigger[aria-expanded=true]{background:var(--surface-2);color:var(--ink)}
 .card-more-menu{position:absolute;top:calc(100% + 4px);right:0;z-index:20;width:200px;display:grid;gap:2px;padding:var(--sp-2);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet),0 0 0 1px var(--line)}
 .card-more-menu button{display:flex;align-items:center;gap:var(--sp-2);min-height:36px;padding:0 var(--sp-2);border:0;border-radius:var(--r);background:none;font:var(--t-label);color:var(--ink);text-align:left;cursor:pointer}
@@ -146,21 +146,23 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 .stats strong{font:300 30px/36px var(--font)}
 .catalog-bar{flex-wrap:wrap;gap:var(--sp-2)}
 .catalog-bar>.op-search{order:3;flex:1 1 100%;min-width:0}
-.categories button{height:var(--control-sm);padding:0 var(--sp-4);font:var(--t-meta)}
+.categories button{height:var(--control-md);padding:0 var(--sp-4);font:var(--t-meta)}
 }
 
 /* ───────────── NOVA App detail: Chat left + resize handle + App right (Chat layout) ───────────── */
 .editor-shell .app-editor{height:100dvh;display:grid;grid-template-columns:var(--editor-chat-width,420px) var(--sp-6) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0;padding:var(--sp-6);background:var(--canvas);column-gap:0}
-.app-editor .editor-head{grid-column:1/-1;grid-row:1;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);margin-bottom:var(--sp-6);padding:0;border:0;background:none}
+.app-editor .editor-head{grid-column:1/-1;grid-row:1;display:block;height:auto;margin-bottom:var(--sp-8);padding:0;border:0;background:none}
+.app-editor .editor-title{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--sp-6);margin-top:var(--sp-4)}
+.app-editor .editor-title h1{min-width:0;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:var(--t-display);letter-spacing:-.02em;color:var(--ink)}
 .app-editor .editor-chat{grid-row:2;grid-column:1}
 .app-editor .editor-app-window{grid-row:2;grid-column:3}
-.app-editor .editor-head .editor-back{width:auto;height:var(--control-sm);display:inline-flex;align-items:center;gap:4px;margin:0 0 0 -4px;padding:0 var(--sp-2) 0 0;font:var(--t-label);font-weight:500;color:var(--ink-2)}
+.app-editor .editor-head .editor-back{border:0;width:auto;height:var(--control-sm);display:inline-flex;align-items:center;gap:4px;margin:0 0 0 -4px;padding:0 var(--sp-2) 0 0;font:var(--t-label);font-weight:500;color:var(--ink-2)}
 .app-editor .editor-head .editor-back:hover{background:none;color:var(--ink)}
 .app-editor .editor-actions{display:flex;align-items:center;gap:var(--sp-2)}
 .app-editor .editor-actions :is(.editor-delete,.editor-publish){height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);font:var(--t-label);font-weight:500;cursor:pointer}
 .app-editor .editor-actions .editor-publish{background:var(--ink);color:#fff}
 .app-editor .editor-actions .editor-publish:hover{background:#2c2c30}
-.app-editor .editor-actions .editor-delete{border:1px solid var(--danger);background:var(--surface);color:var(--danger)}
+.app-editor .editor-actions .editor-delete{border:1px solid var(--line-strong);background:var(--surface);color:var(--danger)}
 .app-editor .editor-actions .editor-delete:hover{background:var(--danger-soft)}
 .app-editor .editor-save-status{display:block;margin:0 auto 0 0;font:var(--t-meta);color:var(--danger)}
 .app-editor :is(.editor-chat,.editor-app-window){min-height:0;display:flex;flex-direction:column;flex:none;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card);overflow:hidden}
@@ -179,7 +181,7 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 .app-editor .message-space:has(.chat-welcome){display:flex;flex-direction:column}
 .app-editor .chat-welcome{width:100%;max-width:420px;margin:auto;padding:0;border:0;background:none;box-shadow:none;text-align:center}
 .app-editor .chat-welcome .welcome-icon{width:56px;height:56px;margin:0 auto var(--sp-6);display:grid;place-items:center;border-radius:var(--r);background:var(--surface-2)}
-.app-editor .chat-welcome h2{font:400 24px/32px var(--font);letter-spacing:-.01em;color:var(--ink)}
+.app-editor .chat-welcome h2{font:var(--t-title);color:var(--ink)}
 .app-editor .chat-welcome>p{margin-top:var(--sp-2);font:var(--t-label);color:var(--ink-2)}
 .app-editor .suggestions{display:grid;gap:var(--sp-2);margin-top:var(--sp-8)}
 .app-editor .suggestions .op-button{width:100%;min-height:var(--control);justify-content:space-between;gap:var(--sp-2);padding:0 12px 0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);box-shadow:none;font:var(--t-label);color:var(--ink);text-align:left;white-space:normal}
@@ -203,7 +205,7 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 
 /* Right: full-bleed App screen + Expand */
 .app-editor .editor-app-window{position:relative;background:#202631}
-.app-editor .editor-expand{position:absolute;top:var(--sp-4);right:var(--sp-4);z-index:3;width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:var(--r);background:rgba(255,255,255,.12);color:#edf3fc;cursor:pointer;backdrop-filter:blur(8px)}
+.app-editor .editor-expand{position:absolute;top:var(--sp-4);right:var(--sp-4);z-index:3;width:var(--control-md);height:var(--control-md);display:grid;place-items:center;border:0;border-radius:var(--r);background:rgba(255,255,255,.12);color:#edf3fc;cursor:pointer;backdrop-filter:blur(8px)}
 .app-editor .editor-expand:hover{background:rgba(255,255,255,.2)}
 .app-editor .editor-screen-scroll{flex:1;min-height:0;overflow:auto;background:#202631}
 .app-editor .editor-screen-scroll .nova-screen{min-height:100%;height:100%}
