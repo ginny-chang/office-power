@@ -2,14 +2,14 @@ import AccountMenu from '../src-shared/AccountMenu';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 // Thin line glyphs shared with My Board and NOVA Apps.
-import {LayoutGrid as IconLayoutGrid,MessageCircle as IconMessageCircle,Blocks as IconApps,Clock as IconClock,Box as IconCube,Users as IconUsers,Search as IconSearch,Plus as IconPlus,ArrowUp as IconSend,Pin as IconPin,PinOff as IconPinnedOff,ChevronLeft as IconChevronLeft,ChevronRight as IconChevronRight,Folder as IconFolder,Sparkles as IconSparkles,Wallet as IconWallet,X as IconX} from 'lucide-react';
+import {LayoutGrid as IconLayoutGrid,MessageCircle as IconMessageCircle,Blocks as IconApps,Clock as IconClock,Box as IconCube,Users as IconUsers,Search as IconSearch,Plus as IconPlus,ArrowUp as IconSend,Pin as IconPin,PinOff as IconPinnedOff,ChevronLeft as IconChevronLeft,ChevronRight as IconChevronRight,Folder as IconFolder,Sparkles as IconSparkles,Wallet as IconWallet,X as IconX,Wrench as IconWrench,Receipt as IconReceipt,BarChart3 as IconBars,ClipboardList as IconList} from 'lucide-react';
 import AgentIcon from '../src-shared/AgentIcon.jsx';
 import {showAdmin} from '../src-shared/features.js';
 import {useUserRole} from '../src-shared/UserRole.jsx';
 import CreateAgent from '../src-shared/CreateAgent.jsx';
 import AgentSettings from '../src-dashboard/AgentSettings.jsx';
 import useLocalData from '../src-shared/useLocalData.js';
-import {Welcome,NovaAppCard} from './ConversationContent.jsx';
+import {Welcome,NovaAppCard,RichReply} from './ConversationContent.jsx';
 // Tokens load first in dev and build alike (Vite emits shared CSS ahead of page CSS); page layers override them.
 import '../src-shared/tokens.css';
 import './styles.css';
@@ -22,6 +22,8 @@ const seed=[
   ['agent','好的，需要你決策的有三項：\n1. HR：兩筆請假申請（王小明 10/31、陳怡君 11/3–11/4）\n2. 財務：九月差旅費有一筆超出部門預算 8%\n3. PM：Dashboard 改版是否延後一週上線'],
   ['me','請假的部分有沒有衝突？'],
   ['agent','我查過部門行事曆，10/31 當天只有王小明請假，沒有衝突。陳怡君 11/3 有一場客戶簡報，她已經指定林佳穎代理，簡報資料也交接完成了。'],
+  ['me','九月的部門費用實際跟預算比起來怎麼樣？'],
+  ['agent','九月只有差旅費超出預算，其他類別都在預算內：',{kind:'table',columns:['類別','預算','實際','狀態'],rows:[['差旅','NT$60,000','NT$64,860',{label:'超出 8%',warn:true}],['交通','NT$12,000','NT$10,350',{label:'預算內'}],['餐費','NT$8,000','NT$7,420',{label:'預算內'}],['辦公用品','NT$5,000','NT$3,980',{label:'預算內'}]],note:'差旅超出的部分主要是 9/18 臨時加開的台中客戶拜訪，高鐵和住宿多出 NT$4,860，已有 Sales 主管的事前核可。'}],
   ['me','那兩筆都可以核准。差旅費超出的原因是什麼？'],
   ['agent','主要是 9/18 臨時加開的台中客戶拜訪，高鐵和住宿多出 NT$4,860。這筆有 Sales 主管的事前核可，我建議核准，並在十月預算中調整。'],
   ['me','好，照你的建議處理。Dashboard 延後的事等 PM 整理完再說。'],
@@ -37,11 +39,13 @@ const seed=[
   ['agent','已排定週五 15:00 寄出，寄出後我會在這裡回報。']]},
  {id:'t2',agentId:'hr',agent:'HR 小幫手',role:'人力資源',time:'今天 11:06',stamp:11,title:'請假規定與待審核項目',preview:'兩筆申請已完成資料檢查。',unread:1,color:'#af52de',used:true,messages:[
   ['me','請幫我整理這週的請假申請。'],
-  ['agent','這週共有兩筆請假申請等你確認：\n・王小明｜特休｜10/31（一天）\n・陳怡君｜特休｜11/3–11/4（兩天），代理人：林佳穎'],
+  ['agent','這週有兩筆請假申請等你核准：',{kind:'approvals',rows:[{tag:'特休',name:'王小明',when:'10/31（一天）',actions:['核准','退回','查看']},{tag:'特休',name:'陳怡君',when:'11/3–11/4（兩天），代理人：林佳穎',actions:['核准','退回','查看']}],note:['兩筆都已確認部門行事曆，','沒有衝突','。核准後我會通知兩位同仁並更新出勤紀錄。']}],
   ['me','陳怡君今年的特休還剩多少？'],
   ['agent','陳怡君今年共有 14 天特休，已使用 9 天，這次請 2 天後還會剩 3 天。依公司規定，未休完的特休可以遞延到明年 3 月底。'],
   ['me','了解，兩筆都先幫我標成待核准。'],
-  ['agent','已標記完成。你核准後我會自動通知兩位同仁並更新出勤紀錄。']]},
+  ['agent','已標記完成。你核准後我會自動通知兩位同仁並更新出勤紀錄。'],
+  ['me','陳怡君想把特休延長到 11/3–11/10，幫我改一下申請。'],
+  ['agent','',{kind:'alert',title:'特休不足',detail:'無法送出這次修改。',points:['陳怡君今年共有 14 天特休，已使用 9 天，剩 5 天','11/3–11/10 共 6 個工作天，超出 1 天'],suggest:'建議改為 11/3–11/9（5 個工作天），或第 6 天改用事假。',options:['改為 5 天','第 6 天改用事假']}]]},
  {id:'t8',agentId:'hr',agent:'HR 小幫手',role:'人力資源',time:'10 月 10 日',stamp:6,title:'11 月新人報到清單',preview:'三位新人的報到事項已建立。',unread:0,color:'#af52de',used:true,messages:[
   ['me','11 月有三位新人報到，幫我建立報到清單。'],
   ['agent','已建立報到清單，包含帳號開通、設備領取、勞健保加保、新人訓練和導師配對五個階段。'],
@@ -65,7 +69,9 @@ const seed=[
   ['me','好，幫我整理成待辦。'],
   ['agent','已建立 Dashboard 改版待辦 App，可直接在下方更新任務進度，或展開操作。',{title:'Dashboard 改版待辦',description:'集中管理這週的設計與開發任務。',agent:'Nova PM',items:['確認 My Board 資訊架構','完成 Office 互動設計','檢視 Chat 對話流程']}],
   ['me','Office 互動設計需要誰一起看？'],
-  ['agent','建議找前端的志豪和設計的若涵，他們這週三下午都有空，要我幫你約 30 分鐘嗎？']]},
+  ['agent','建議找前端的志豪和設計的若涵，他們這週三下午都有空，要我幫你約 30 分鐘嗎？'],
+  ['me','幫我約志豪和若涵看 Office 互動設計。'],
+  ['agent','要約哪個時段？',{kind:'choices',detail:'志豪和若涵這週三下午都有空，會議預設 30 分鐘。',options:['週三 14:00','週三 14:30','週三 15:30','其他時間']}]]},
  {id:'t10',agentId:'pm',agent:'Nova PM',role:'專案管理',time:'10 月 2 日',stamp:2,title:'Q4 Roadmap 排序',preview:'已依影響範圍排出優先順序。',unread:0,color:'#34c759',used:true,messages:[
   ['me','幫我把 Q4 的需求依影響範圍排序。'],
   ['agent','已依影響使用者數與開發成本排序，前三名是：排程失敗通知、Agent 選擇器、看板推薦釘選。']]},
@@ -78,6 +84,11 @@ const blurbs={nova:'不確定找誰時交給我，我會自動調度專責 Agent
 const areas=[['行政支援',['hr','it','finance']],['業務與專案',['sales','pm']]];
 const roster=[...new Map(seed.map(({agentId,agent,role,color})=>[agentId,{agentId,agent,role,color}])).values()];
 const byId=id=>roster.find(a=>a.agentId===id);
+function renderMessage(m){if(m[2]&&m[2].kind)return <RichReply lead={m[1]} data={m[2]}/>;return <>{m[1]&&<p>{m[1]}</p>}{m[2]&&m[2].title&&<NovaAppCard app={m[2]}/>}</>}
+const agentHue={nova:'lime',hr:'lavender',it:'aqua',finance:'butter',sales:'peach',pm:'mint'};
+const agentGlyphs={nova:IconSparkles,hr:IconUsers,it:IconWrench,finance:IconReceipt,sales:IconBars,pm:IconList};
+function AgentGlyph({id,size=18}){const Icon=agentGlyphs[id]||IconSparkles;return <Icon size={size} strokeWidth={1.75}/>}
+function agentTileStyle(id){const hue=agentHue[id]||'lime';return {'--agent-tile':`var(--type-${hue}-tile)`,'--agent-ink':`var(--type-${hue}-bottom)`}}
 
 const nav=[[IconLayoutGrid,'My Board','dashboard.html'],[IconMessageCircle,'Chat','chat.html'],[IconApps,'NOVA Apps','apps.html']];
 const clampListWidth=width=>Math.max(240,Math.min(700,window.innerWidth-440,width));
@@ -89,7 +100,7 @@ function App(){
  const isAdmin=useUserRole()==='admin';
  const [customAgents,setCustomAgents]=useLocalData('office-custom-agents-v1',[]);
  const [agentConfigs,setAgentConfigs]=useLocalData('office-agent-settings-v1',{});
- const [threads,setThreads]=useLocalData('office-chat-threads-v3',seed);
+ const [threads,setThreads]=useLocalData('office-chat-threads-v4',seed);
  const [selected,setSelected]=useState(seed.some(t=>t.agentId===requested)||!requested?initial.id:null),[query,setQuery]=useState(''),[draft,setDraft]=useState(''),[newAgent,setNewAgent]=useState(()=>{const agent=customAgents.find(a=>a.id===requested);return agent?{...agent,agentId:agent.id,agent:agent.name,messages:[]}:null}),[mobileList,setMobileList]=useState(true),[pins,setPins]=useState(()=>{try{return JSON.parse(localStorage.getItem('chat-pins'))||['t1','t4']}catch{return ['t1','t4']}}),[collapsed,setCollapsed]=useState(new Set()),[picking,setPicking]=useState(false),[searching,setSearching]=useState(false),[activeSection,setActiveSection]=useState(null),[createOpen,setCreateOpen]=useState(false),[settingsAgent,setSettingsAgent]=useState(null),[listWidth,setListWidth]=useState(()=>{const saved=Number(localStorage.getItem('office-chat-list-width'));return clampListWidth(Number.isFinite(saved)&&saved>=240&&saved<=700?saved:340)});const input=useRef(),resize=useRef(null);
  useEffect(()=>{localStorage.setItem('chat-pins',JSON.stringify(pins))},[pins]);
  useEffect(()=>{localStorage.setItem('office-chat-list-width',String(listWidth))},[listWidth]);
@@ -117,22 +128,22 @@ function App(){
  return <div className="shell"><Sidebar/><main className="chat-main" style={{'--chat-list-width':`${listWidth}px`}}>
   <section className={`thread-panel ${mobileList?'mobile-open':''}`} aria-label="對話列表"><header><h1>Chat</h1><div className="thread-actions"><button className="thread-icon" onClick={()=>{setSearching(v=>!v);setTimeout(()=>input.current?.focus())}} aria-label="搜尋 Agent 或對話" aria-pressed={searching}><IconSearch size={18}/></button><button className="thread-icon new-chat" onClick={()=>{setPicking(true);setNewAgent(null);setSelected(null);setDraft('');setMobileList(false)}} aria-label="開啟新對話" aria-haspopup="dialog" aria-expanded={picking}><IconPlus size={18}/></button></div></header>{searching&&<label className="search op-search"><IconSearch size={17}/><input ref={input} value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==='Escape')closeSearch()}} placeholder="搜尋 Agent 或對話"/><button aria-label="關閉搜尋" onClick={closeSearch}><IconX size={16}/></button></label>}<div className="thread-scroll">{pinnedItems.length>0&&<section className="chat-section"><h2>釘選</h2>{pinnedItems.map(item=><ConversationRow key={item.id} item={item} selected={shownSection==='pinned'?selected:null} choose={id=>choose(id,'pinned')} pinned={pins.includes(item.id)} togglePin={togglePin}/>)}</section>}{groups.length>0&&<section className="chat-section"><h2>Agents</h2>{groups.map(group=><AgentFolder key={group.id} group={group} collapsed={collapsed.has(group.id)} toggle={()=>toggleGroup(group.id)} selected={shownSection==='agents'?selected:null} choose={id=>choose(id,'agents')} pins={pins} togglePin={togglePin} onNew={()=>startNew({agentId:group.id,agent:group.agent,role:group.role,color:group.color,emoji:group.emoji})}/>)}</section>}{visible.length>0&&<section className="chat-section"><h2>最近項目</h2>{visible.map(item=><ConversationRow key={item.id} item={item} selected={shownSection==='recent'?selected:null} choose={id=>choose(id,'recent')} pinned={pins.includes(item.id)} togglePin={togglePin}/>)}</section>}{!groups.length&&<div className="empty"><IconFolder size={25}/><strong>沒有符合的對話</strong><span>試試其他關鍵字，或從右上角開始新對話。</span></div>}</div></section>
   <div className="chat-resize-handle" role="separator" aria-label="調整對話列表與聊天區寬度" aria-orientation="vertical" aria-valuemin={240} aria-valuemax={Math.max(240,Math.min(700,window.innerWidth-440))} aria-valuenow={listWidth} tabIndex={0} onPointerDown={beginResize} onPointerMove={moveResize} onPointerUp={endResize} onPointerCancel={endResize} onKeyDown={e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();setListWidth(width=>clampListWidth(width+(e.key==='ArrowRight'?28:-28)))}}}><span/></div>
-  <section className={`conversation ${mobileList?'mobile-hidden':''}`} aria-label="目前對話">{picking?<><header><div><h2>新對話</h2><p>選擇要使用的 Agent</p></div></header><div className="message-space"><AgentPicker inline custom={custom} onPick={pick} onCreate={()=>{setPicking(false);setCreateOpen(true)}} onClose={()=>setPicking(false)}/></div></>:current&&<><header><button className="back" onClick={()=>setMobileList(true)} aria-label="返回對話列表"><IconChevronLeft size={20}/></button><span className="agent-mark" style={{'--agent':current.color}}><AgentIcon agent={current.agent} emoji={current.emoji} size={20}/></span><div><h2>{current.agent}</h2><p>{current.role} · 已就緒</p></div>{!newAgent&&<button className="details" aria-label={pins.includes(current.id)?'取消釘選對話':'釘選對話'} aria-pressed={pins.includes(current.id)} onClick={()=>togglePin(current.id)}><IconPin size={18}/></button>}</header><div className="message-space"><div className="date-rule"><span>{newAgent?'新對話':current.time}</span></div>{newAgent&&<Welcome agent={current} onSend={send}/>} {current.messages.map((m,i)=><div key={i} className={`message ${m[0]}`}><span>{m[0]==='agent'&&<AgentIcon agent={current.agent} emoji={current.emoji} size={16}/>}</span><div><p>{m[1]}</p>{m[2]&&<NovaAppCard app={m[2]}/>}<small>{m[0]==='me'?'你':'Agent'} · {i===current.messages.length-1?'剛剛':'稍早'}</small></div></div>)}</div><footer><div className="composer"><textarea rows="1" value={draft} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}else if(e.key==='Escape')setDraft('')}} placeholder={`傳訊息給 ${current.agent}…`}/><button onClick={send} disabled={!draft.trim()}><IconSend size={18}/><span>送出</span></button></div></footer></>}</section>
+  <section className={`conversation ${mobileList?'mobile-hidden':''}`} aria-label="目前對話">{picking?<><header><div><h2>新對話</h2><p>選擇要使用的 Agent</p></div></header><div className="message-space"><AgentPicker inline custom={custom} onPick={pick} onClose={()=>setPicking(false)}/></div></>:current&&<><header><button className="back" onClick={()=>setMobileList(true)} aria-label="返回對話列表"><IconChevronLeft size={20}/></button><span className="agent-mark agent-app-icon" style={agentTileStyle(current.agentId)}><AgentGlyph id={current.agentId} size={20}/></span><div><h2>{current.agent}</h2><p>{current.role} · 已就緒</p></div>{!newAgent&&<button className="details" aria-label={pins.includes(current.id)?'取消釘選對話':'釘選對話'} aria-pressed={pins.includes(current.id)} onClick={()=>togglePin(current.id)}><IconPin size={18}/></button>}</header><div className="message-space"><div className="date-rule"><span>{newAgent?'新對話':current.time}</span></div>{newAgent&&<Welcome agent={current} onSend={send}/>} {current.messages.map((m,i)=><div key={i} className={`message ${m[0]}`}><span>{m[0]==='agent'&&<AgentIcon agent={current.agent} emoji={current.emoji} size={16}/>}</span><div>{renderMessage(m)}<small>{m[0]==='me'?'你':'Agent'} · {i===current.messages.length-1?'剛剛':'稍早'}</small></div></div>)}</div><footer><div className="composer"><textarea rows="1" value={draft} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}else if(e.key==='Escape')setDraft('')}} placeholder={`傳訊息給 ${current.agent}…`}/><button onClick={send} disabled={!draft.trim()}><IconSend size={18}/><span>送出</span></button></div></footer></>}</section>
  </main>{createOpen&&<CreateAgent onClose={()=>setCreateOpen(false)} onCreate={createAgent}/>}{settingsAgent&&<AgentSettings agent={customAgents.find(agent=>agent.id===settingsAgent)} config={agentConfigs[settingsAgent]} onSave={saveAgentConfig} onClose={()=>setSettingsAgent(null)}/>}</div>
 }
 function AgentPicker({custom,onPick,onCreate,onClose,inline=false}){
  const box=useRef();
  useEffect(()=>{box.current.querySelector('button').focus();const away=e=>{if(!box.current.contains(e.target)&&!e.target.closest('.new-chat'))onClose()};document.addEventListener('mousedown',away);return()=>document.removeEventListener('mousedown',away)},[]);
- const row=a=><button key={a.agentId} className="picker-agent" onClick={()=>onPick(a)}><span className="agent-mark" style={{'--agent':a.color}}><AgentIcon agent={a.agent} emoji={a.emoji} size={16}/></span><span><strong>{a.agent}</strong><small>{[a.role,blurbs[a.agentId]].filter(Boolean).join(' · ')}</small></span></button>;
+ const row=a=><button key={a.agentId} className="picker-agent" onClick={()=>onPick(a)}><span className="agent-mark agent-app-icon" style={agentTileStyle(a.agentId)}><AgentGlyph id={a.agentId} size={18}/></span><span><strong>{a.agent}</strong><small>{[a.role,blurbs[a.agentId]].filter(Boolean).join(' · ')}</small></span></button>;
  const nova=byId('nova');
  return <div className={inline?'agent-picker inline':'agent-picker'} role="dialog" aria-label="選擇對話的 Agent" ref={box} onKeyDown={e=>{if(e.key==='Escape')onClose()}}>
   <header><strong>新對話</strong><small>選擇要對話的 Agent</small></header>
-  <button className="picker-agent featured" onClick={()=>onPick(nova)}><span className="agent-mark"><AgentIcon agent={nova.agent} size={18}/></span><span><strong>{nova.agent}<em><IconSparkles size={12}/>推薦</em></strong><small>{blurbs.nova}</small></span></button>
+  <button className="picker-agent featured" onClick={()=>onPick(nova)}><span className="agent-mark agent-app-icon" style={agentTileStyle('nova')}><AgentGlyph id="nova" size={18}/></span><span><strong>{nova.agent}<em><IconSparkles size={12}/>推薦</em></strong><small>{blurbs.nova}</small></span></button>
   {areas.map(([title,ids])=><section key={title}><h3>{title}</h3>{ids.map(id=>row(byId(id)))}</section>)}
   {custom.length>0&&<section><h3>自訂 Agent</h3>{custom.map(row)}</section>}
   {onCreate&&<button className="picker-create" onClick={onCreate}><IconPlus size={16}/>新增 Agent</button>}
  </div>
 }
 function ConversationRow({item,selected,choose,pinned,togglePin}){return <div className={`conversation-row ${selected===item.id?'active':''}`}><button className="conversation-main" onClick={()=>choose(item.id)}><strong>{item.title}</strong></button><button className={pinned?'row-pin pinned':'row-pin'} aria-label={pinned?`取消釘選${item.title}`:`釘選${item.title}`} onClick={()=>togglePin(item.id)}><IconPin className="pin-idle" size={14}/><IconPinnedOff className="pin-hover" size={14}/></button></div>}
-function AgentFolder({group,collapsed,toggle,selected,choose,pins,togglePin,onNew}){const unread=group.items.reduce((sum,item)=>sum+item.unread,0);return <section className={`agent-folder-group ${collapsed?'collapsed':''}`}><div className="agent-folder-row"><button className="agent-folder-toggle" onClick={toggle} aria-expanded={!collapsed} aria-label={collapsed?`展開 ${group.agent}`:`收合 ${group.agent}`}><IconChevronRight className="folder-chevron" size={12}/><span className="agent-folder-icon" style={{'--agent':group.color}}><AgentIcon className="agent-symbol" agent={group.agent} emoji={group.emoji} size={14}/></span><span className="agent-folder-copy"><strong>{group.agent}</strong><small className="agent-folder-expand">{collapsed?'展開':'收合'}</small></span>{unread>0&&<em>{unread}</em>}</button><button className="agent-folder-new" onClick={onNew} aria-label={`和 ${group.agent} 開始新對話`}><IconPlus size={14}/></button></div>{!collapsed&&group.items.length>0&&<div className="agent-threads">{group.items.map(item=><ConversationRow key={item.id} item={item} selected={selected} choose={choose} pinned={pins.includes(item.id)} togglePin={togglePin}/>)}</div>}</section>}
+function AgentFolder({group,collapsed,toggle,selected,choose,pins,togglePin,onNew}){const unread=group.items.reduce((sum,item)=>sum+item.unread,0);return <section className={`agent-folder-group ${collapsed?'collapsed':''}`}><div className="agent-folder-row"><button className="agent-folder-toggle" onClick={toggle} aria-expanded={!collapsed} aria-label={collapsed?`展開 ${group.agent}`:`收合 ${group.agent}`}><IconChevronRight className="folder-chevron" size={12}/><span className="agent-folder-icon agent-app-icon" style={{'--agent-tile':`var(--type-${agentHue[group.id]||'lime'}-tile)`,'--agent-ink':`var(--type-${agentHue[group.id]||'lime'}-bottom)`}}><AgentGlyph id={group.id} size={16}/></span><span className="agent-folder-copy"><strong>{group.agent}</strong></span>{unread>0&&<em>{unread}</em>}</button><button type="button" className="agent-folder-expand" aria-expanded={!collapsed} onClick={e=>{e.stopPropagation();toggle()}}>{collapsed?'展開':'收合'}</button><button className="agent-folder-new" onClick={onNew} aria-label={`和 ${group.agent} 開始新對話`}><IconPlus size={14}/></button></div>{!collapsed&&group.items.length>0&&<div className="agent-threads">{group.items.map(item=><ConversationRow key={item.id} item={item} selected={selected} choose={choose} pinned={pins.includes(item.id)} togglePin={togglePin}/>)}</div>}</section>}
 createRoot(document.getElementById('root')).render(<App/>);
