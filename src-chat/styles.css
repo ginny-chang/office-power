@@ -249,6 +249,9 @@ html body .conversation .suggestions .op-button span{min-width:0}
 /* New-chat agent picker */
 .thread-panel>header{position:relative}
 .agent-picker{position:absolute;top:calc(100% - var(--sp-4));right:var(--sp-4);z-index:20;width:min(340px,calc(100vw - 96px));max-height:min(560px,calc(100vh - 160px));overflow:auto;padding:var(--sp-4) var(--sp-2) var(--sp-2);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet),0 0 0 1px var(--line)}
+.agent-picker.inline{position:static;z-index:auto;width:min(520px,100%);max-height:none;margin:0 auto;padding:0;border-radius:0;background:none;box-shadow:none}
+.agent-folder-copy .agent-folder-expand{font:var(--t-meta);font-weight:500;color:var(--ink-3)}
+.agent-folder-toggle[aria-expanded=true] .agent-folder-expand{color:var(--ink-2)}
 .agent-picker>header{display:grid;gap:2px;padding:0 var(--sp-2) var(--sp-4)}
 .agent-picker>header strong{font:var(--t-title);color:var(--ink)}
 .agent-picker>header small{font:var(--t-meta);color:var(--ink-2)}
