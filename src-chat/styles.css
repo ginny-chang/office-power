@@ -340,14 +340,17 @@ html body .conversation .suggestions .op-button span{min-width:0}
 /* Hover and the selected row share one light fill */
 .thread-panel .conversation-row:hover,.thread-panel .agent-folder-row:hover,.thread-panel .conversation-row.active{background:var(--surface-2)}
 .agent-folder-row{padding-right:32px}
-.agent-folder-row .agent-folder-toggle{grid-template-columns:12px 32px minmax(0,1fr) auto}
-.agent-app-icon{display:grid;place-items:center;border-radius:10px;background:var(--agent-tile,#f7fbe8);color:var(--agent-ink,#7d9a28);box-shadow:0 5px 12px color-mix(in srgb,var(--agent-ink,#7d9a28) 30%,transparent)}
+.agent-folder-row .agent-folder-toggle{display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:40px}
+.agent-app-icon{display:grid;place-items:center;border-radius:10px;background:var(--agent-tile,#f7fbe8);color:var(--agent-ink,#7d9a28);box-shadow:none}
 .agent-folder-icon.agent-app-icon{width:32px;height:32px}
 .agent-folder-icon.agent-app-icon:before,.agent-mark.agent-app-icon:before{display:none}
 .conversation>header .agent-mark.agent-app-icon,.agent-picker .agent-mark.agent-app-icon{width:36px;height:36px;background:var(--agent-tile,#f7fbe8)}
-.agent-folder-expand{flex:none;height:24px;padding:0 8px;border:0;border-radius:999px;background:var(--surface);font:500 11px/1 var(--font);color:var(--ink-2);cursor:pointer}
-.agent-folder-row:hover .agent-folder-expand{background:var(--surface)}
-.agent-folder-expand:hover{color:var(--ink)}
+.chat-section>h2{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.section-toggle{height:24px;padding:0 8px;border:0;border-radius:999px;background:var(--surface-2);font:500 11px/1 var(--font);color:var(--ink-2);cursor:pointer}
+.section-toggle:hover{color:var(--ink)}
+.message.agent{max-width:100%}
+.message.agent p{padding:0;border-radius:0;background:none;color:var(--ink);font:var(--t-body)}
+.message.agent small{display:none}
 .message:has(.rich-reply){max-width:min(640px,94%)}
 .message .rich-reply{display:grid;gap:10px;width:100%}
 .message .rich-reply>strong{font:600 14px/1.6 var(--font);color:var(--ink)}
