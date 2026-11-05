@@ -346,7 +346,7 @@ html body .conversation .suggestions .op-button span{min-width:0}
 .agent-folder-icon.agent-app-icon:before,.agent-mark.agent-app-icon:before{display:none}
 .conversation>header .agent-mark.agent-app-icon,.agent-picker .agent-mark.agent-app-icon{width:36px;height:36px;background:var(--agent-tile,#f7fbe8)}
 .chat-section>h2{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.section-toggle{width:28px;height:28px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:var(--surface-2);color:var(--ink-2);cursor:pointer}
+.section-toggle{width:28px;height:28px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);cursor:pointer}
 .section-toggle svg{transition:transform .2s var(--ease)}
 .section-toggle[aria-expanded=true] svg{transform:rotate(90deg)}
 .section-toggle:hover{color:var(--ink)}
