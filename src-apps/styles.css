@@ -44,7 +44,7 @@ h1 span{margin-left:var(--sp-4);font:300 24px/32px var(--font);color:var(--ink-3
 .catalog-bar{display:flex;align-items:center;gap:var(--sp-4);margin-bottom:var(--sp-6)}
 .catalog-bar>.op-search{flex:0 1 320px;min-width:160px;background:var(--surface)}
 .catalog-bar>.op-search input{font:var(--t-label);color:var(--ink)}
-.type-filter{position:relative;flex:none}
+.type-filter{position:relative;flex:none;margin-left:auto}
 .type-filter-trigger{min-width:160px;height:var(--control);display:inline-flex;align-items:center;justify-content:space-between;gap:var(--sp-2);padding:0 12px 0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface);font:var(--t-label);color:var(--ink-2);cursor:pointer}
 .type-filter-trigger.picked{font-weight:500;color:var(--ink)}
 .type-filter-trigger:hover{background:var(--surface-2)}
@@ -148,7 +148,14 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--ink);col
 .market-card .app-hover-stage{position:absolute;left:0;right:0;top:calc(100% + 8px);height:196px;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-float);opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;z-index:6;transition:opacity .2s var(--ease),visibility .2s}
 .market-card:hover .app-hover-stage,.market-card:focus-within .app-hover-stage{opacity:1;visibility:visible}
 .market-card .app-hover-screen{height:100%}
-.app-editor .page-record{flex:none;display:grid;gap:12px;padding:var(--sp-4) var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
+.app-editor .page-record{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-4);padding:var(--sp-4) var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
+.app-editor .app-settings-copy{min-width:0;flex:1;display:grid;gap:4px}
+.app-editor .app-settings-title,.app-editor .app-settings-desc{width:100%;border:0;background:none;padding:0;color:var(--ink);resize:none}
+.app-editor .app-settings-title{height:auto;font:var(--t-title)}
+.app-editor .app-settings-desc{height:auto;min-height:44px;font:var(--t-label);color:var(--ink-2)}
+.app-editor .app-settings-side{display:flex;align-items:center;gap:8px;flex:none}
+.app-editor .app-settings-category{display:grid;gap:4px;font:var(--t-meta);color:var(--ink-2)}
+.app-editor .app-settings-category select{height:32px;padding:0 8px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font:var(--t-label);color:var(--ink)}
 .app-editor .page-record h3{font:var(--t-label);font-weight:600;color:var(--ink)}
 .app-editor .page-record-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .app-editor .record-author{display:flex;align-items:center;gap:8px;margin:0;font:var(--t-meta);color:var(--ink-2)}
@@ -157,6 +164,10 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--ink);col
 .app-editor .page-record .type-icon{width:44px;height:44px}
 .app-editor .page-record label{display:grid;gap:6px;min-width:0;font:var(--t-meta);color:var(--ink-2)}
 .app-editor .page-record :is(input,select,textarea){width:100%;height:var(--control);padding:0 12px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font:var(--t-label);color:var(--ink)}
+.app-editor .page-record :is(.app-settings-title,.app-settings-desc){height:auto;min-height:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+.app-editor .page-record .app-settings-title{font:var(--t-title);color:var(--ink)}
+.app-editor .page-record .app-settings-desc{font:var(--t-label);color:var(--ink-2)}
+.app-editor .app-settings-side .record-delete{margin-left:0}
 .app-editor .page-record textarea{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 .app-editor .page-record-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .app-editor .page-record-actions button{height:var(--control);display:inline-flex;align-items:center;gap:6px;padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
