@@ -1,5 +1,5 @@
 import React,{useRef,useState,useEffect} from 'react';
-import {ChevronLeft,Trash2,ArrowUp,AppWindow,Maximize2,X} from 'lucide-react';
+import {ChevronLeft,Trash2,ArrowUp,AppWindow,Maximize2,X,User} from 'lucide-react';
 import {Dialog,Button} from '../src-shared/ui/index.jsx';
 import {appIcons,appTypes} from './app-data.js';
 import {TypeIcon} from './type-icons.jsx';
@@ -41,10 +41,10 @@ export default function AppEditor({app,onSave,onDelete,onBack}){
     </div>
     <input className="app-settings-title" aria-label="App name" value={record.name} onChange={e=>updateRecord({name:e.target.value})}/>
     <textarea className="app-settings-desc" aria-label="App 說明" rows={2} value={record.description} onChange={e=>updateRecord({description:e.target.value})}/>
-    <p className="record-author">負責作者<span>{app.author||'未指定'}</span></p>
    </div>
    <div className="app-settings-side">
-    <label className="app-settings-category">分類<select aria-label="分類" value={record.category} onChange={e=>updateRecord({category:e.target.value})}>{categories.map(name=><option key={name}>{name}</option>)}</select></label>
+    <span className="record-author"><User size={14}/>{app.author||'未指定'}</span>
+    <select className="app-settings-category" aria-label="分類" value={record.category} onChange={e=>updateRecord({category:e.target.value})}>{categories.map(name=><option key={name}>{name}</option>)}</select>
     <button type="button" className="record-delete" onClick={()=>setConfirm(true)}><Trash2 size={15}/>刪除</button>
    </div>
   </div>
