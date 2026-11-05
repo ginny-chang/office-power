@@ -21,28 +21,34 @@ export default function AppEditor({app,onSave,onDelete,onBack}){
  useEffect(()=>{localStorage.setItem('office-nova-app-chat-width',String(chatWidth))},[chatWidth]);
  useEffect(()=>{const fit=()=>setChatWidth(width=>clampChatWidth(width));window.addEventListener('resize',fit);return()=>window.removeEventListener('resize',fit)},[]);
  const Icon=appIcons[app.id]||AppWindow;
- const [record,setRecord]=useState({name:app.name||'',category:app.category||appTypes[0],description:app.description||''});
+ const [record,setRecord]=useState({name:app.name||'',category:app.category||appTypes[0],description:app.description||'',icon:app.icon||app.category||appTypes[0]});
+ const [iconOpen,setIconOpen]=useState(false);
+ const iconPicker=useRef(null);
  const categories=[...new Set([record.category,...appTypes].filter(Boolean))];
- const updateRecord=patch=>{const nextRecord={...record,...patch};setRecord(nextRecord);const name=nextRecord.name.trim();if(!name){setError('請填寫 App 名稱。');return}const next={...draft,name,category:nextRecord.category,description:nextRecord.description.trim()};setDraft(next);onSave(next);setError('')};
+ const updateRecord=patch=>{const nextRecord={...record,...patch};setRecord(nextRecord);const name=nextRecord.name.trim();if(!name){setError('請填寫 App 名稱。');return}const next={...draft,name,category:nextRecord.category,description:nextRecord.description.trim(),icon:nextRecord.icon};setDraft(next);onSave(next);setError('')};
+ useEffect(()=>{if(!iconOpen)return;const close=e=>{if(!iconPicker.current?.contains(e.target))setIconOpen(false)};const onKey=e=>{if(e.key==='Escape')setIconOpen(false)};document.addEventListener('pointerdown',close);document.addEventListener('keydown',onKey);return()=>{document.removeEventListener('pointerdown',close);document.removeEventListener('keydown',onKey)}},[iconOpen]);
  const send=text=>{const value=(typeof text==='string'?text:input).trim();if(!value)return;setMessages(v=>[...v,{role:'me',text:value},{role:'agent',text:'已記下你的調整需求。目前尚未連接 AI；請繼續描述想改的地方，右側畫面會是你調整後的 App。'}]);setInput('')};
  const beginResize=e=>{if(e.button!==0)return;e.preventDefault();resize.current={x:e.clientX,width:chatWidth};e.currentTarget.setPointerCapture(e.pointerId)};
  const moveResize=e=>{if(!resize.current)return;setChatWidth(clampChatWidth(resize.current.width+e.clientX-resize.current.x))};
  const endResize=e=>{resize.current=null;if(e.currentTarget.hasPointerCapture?.(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId)};
  return <main className="app-editor" style={{'--editor-chat-width':`${chatWidth}px`}}>
   <header className="editor-head"><button className="editor-back" onClick={onBack}><ChevronLeft size={16}/>NOVA Apps</button><span className="editor-save-status" role="status">{error||''}</span></header>
-  <div className="editor-side">
-   <div className="page-record">
-    <div className="app-settings-copy">
-     <input className="app-settings-title" aria-label="App name" value={record.name} onChange={e=>updateRecord({name:e.target.value})}/>
-     <textarea className="app-settings-desc" aria-label="App 說明" rows={2} value={record.description} onChange={e=>updateRecord({description:e.target.value})}/>
-     <p className="record-author">負責作者<span>{app.author||'未指定'}</span></p>
+  <div className="page-record">
+   <div className="app-settings-copy">
+    <div className="app-icon-picker" ref={iconPicker}>
+     <button type="button" aria-label="更換 App icon" aria-haspopup="listbox" aria-expanded={iconOpen} onClick={()=>setIconOpen(v=>!v)}><TypeIcon type={record.icon} size={44}/></button>
+     {iconOpen&&<div className="app-icon-menu" role="listbox" aria-label="App icon">{appTypes.map(type=><button type="button" key={type} role="option" aria-label={type} aria-selected={record.icon===type} onClick={()=>{updateRecord({icon:type});setIconOpen(false)}}><TypeIcon type={type} size={40}/></button>)}</div>}
     </div>
-    <div className="app-settings-side">
-     <span className="type-icon" aria-hidden="true"><TypeIcon type={record.category} size={44}/></span>
-     <label className="app-settings-category">分類<select aria-label="分類" value={record.category} onChange={e=>updateRecord({category:e.target.value})}>{categories.map(name=><option key={name}>{name}</option>)}</select></label>
-     <button type="button" className="record-delete" onClick={()=>setConfirm(true)}><Trash2 size={15}/>刪除</button>
-    </div>
+    <input className="app-settings-title" aria-label="App name" value={record.name} onChange={e=>updateRecord({name:e.target.value})}/>
+    <textarea className="app-settings-desc" aria-label="App 說明" rows={2} value={record.description} onChange={e=>updateRecord({description:e.target.value})}/>
+    <p className="record-author">負責作者<span>{app.author||'未指定'}</span></p>
    </div>
+   <div className="app-settings-side">
+    <label className="app-settings-category">分類<select aria-label="分類" value={record.category} onChange={e=>updateRecord({category:e.target.value})}>{categories.map(name=><option key={name}>{name}</option>)}</select></label>
+    <button type="button" className="record-delete" onClick={()=>setConfirm(true)}><Trash2 size={15}/>刪除</button>
+   </div>
+  </div>
+  <div className="editor-side">
   <section className="editor-chat conversation" aria-label="App Agent 對話">
    <header><span className="agent-mark" style={{'--agent':app.color,color:app.color}}><Icon size={20}/></span><div><h2>{draft.name||'未命名 App'} Agent</h2><p>App 調整 · 已就緒</p></div></header>
    <div className="message-space">
