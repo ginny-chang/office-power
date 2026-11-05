@@ -121,6 +121,47 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--ink);col
 .app-grid .card-tag svg{flex:none;color:var(--ink-2)}
 .app-grid .card-tag-type{background:var(--type-tint);color:var(--type-deep);font-size:12px}
 .app-grid .card-tag-offline{background:none;box-shadow:inset 0 0 0 1px var(--line-strong)}
+/* Same sub-tab as My Board and 能力中心: text over a hairline, the active one underlined */
+.catalog-tabs.panel-tabs{display:flex;height:auto;gap:var(--sp-6);margin:0 0 var(--sp-6);padding:var(--sp-4) 0 0;border-bottom:1px solid var(--line)}
+.catalog-tabs.panel-tabs button{height:var(--control);margin-bottom:-1px;padding:0;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;font:var(--t-label);font-weight:500;color:var(--ink-2);cursor:pointer}
+.catalog-tabs.panel-tabs button:hover{background:none;color:var(--ink)}
+.catalog-tabs.panel-tabs button.active{background:none;border-bottom-color:var(--ink);color:var(--ink);font-weight:500}
+.app-grid .card-expand,.market-card .card-expand{position:absolute;top:12px;right:12px;z-index:4;width:36px;height:36px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-float);opacity:0;pointer-events:none;cursor:pointer}
+.app-grid .gallery-card:hover .card-expand,.app-grid .gallery-card:focus-within .card-expand,.market-card:hover .card-expand,.market-card:focus-within .card-expand{opacity:1;pointer-events:auto}
+.market-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4)}
+.market-card{position:relative;display:flex;flex-direction:column;min-height:100%;padding:var(--sp-6);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card);overflow:visible}
+.market-card:hover,.market-card:focus-within{z-index:5}
+.market-card-top{display:flex;align-items:center;gap:var(--sp-4);min-width:0;padding-right:40px}
+.market-card-top>div{min-width:0}
+.market-card .type-icon{width:44px;height:44px;flex:none;display:grid;place-items:center}
+.market-card h3{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:var(--t-title);color:var(--ink)}
+.market-card small{display:block;margin-top:2px;font:var(--t-meta);color:var(--ink-2)}
+.market-card>p{margin-top:12px;font:var(--t-label);color:var(--card-text);line-height:1.7}
+.market-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.market-pills span{height:24px;display:inline-flex;align-items:center;padding:0 var(--sp-2);border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);color:var(--ink-2)}
+.market-foot{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);margin-top:auto;padding-top:16px;font:var(--t-meta);color:var(--ink-2)}
+.market-actions{display:flex;gap:8px}
+.market-actions button,.market-check{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);color:var(--ink)}
+.market-actions .market-add{border-color:var(--ink);background:var(--ink);color:#fff}
+.market-actions .market-add:disabled{border-color:var(--line-strong);background:var(--surface-3);color:var(--ink-3);cursor:not-allowed}
+.market-card .app-hover-stage{position:absolute;left:0;right:0;top:calc(100% + 8px);height:196px;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-float);opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;z-index:6;transition:opacity .2s var(--ease),visibility .2s}
+.market-card:hover .app-hover-stage,.market-card:focus-within .app-hover-stage{opacity:1;visibility:visible}
+.market-card .app-hover-screen{height:100%}
+.app-editor .page-record{flex:none;display:grid;gap:12px;max-height:45%;overflow:auto;padding:var(--sp-4) var(--sp-6) var(--sp-6);border-bottom:1px solid var(--line)}
+.app-editor .page-record h3{font:var(--t-body-strong);color:var(--ink)}
+.app-editor .page-record-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.app-editor .page-record label{display:grid;gap:var(--sp-2);min-width:0;font:var(--t-label);color:var(--ink-2)}
+.app-editor .page-record :is(input,select,textarea){width:100%;height:var(--control);padding:0 12px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font:var(--t-label);color:var(--ink)}
+.app-editor .page-record textarea{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
+.app-editor .page-record-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.app-editor .page-record-actions button{height:var(--control-md);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 12px;border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
+.app-editor .page-record-actions .record-save{background:var(--ink);color:#fff}
+.app-editor .page-record-actions .record-delete{margin-left:auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--danger)}
+.app-editor .page-record-actions .record-delete:hover{background:var(--danger-soft)}
+.app-standalone{min-height:100dvh;background:#202631}
+.app-standalone .nova-screen{min-height:100dvh}
+.app-missing{min-height:100dvh;display:grid;place-content:center;gap:var(--sp-4);padding:var(--sp-6);background:var(--canvas);text-align:center}
+.app-missing a{font:var(--t-label);font-weight:500;color:var(--ink)}
 .card-more{position:relative}
 .card-more-trigger{width:var(--control-md);height:var(--control-md);display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);cursor:pointer}
 .card-more-trigger:hover,.card-more-trigger[aria-expanded=true]{background:var(--surface-2);color:var(--ink)}
@@ -221,7 +262,8 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 .app-fullscreen-screen .nova-screen{min-height:100%}
 
 @media(max-width:900px){.editor-shell .app-editor{padding:var(--sp-4)}.app-editor .message-space{padding:var(--sp-6)}}
-@media(max-width:800px){
+@media(max-width:1100px){.market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){.market-grid{grid-template-columns:1fr}.app-editor .page-record-grid{grid-template-columns:1fr}
 .editor-shell .app-editor{height:auto;min-height:100dvh;grid-template-columns:1fr;grid-template-rows:auto auto auto}
 .app-editor .chat-resize-handle{display:none}
 .app-editor .editor-chat{height:560px}
