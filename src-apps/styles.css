@@ -121,11 +121,12 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--ink);col
 .app-grid .card-tag svg{flex:none;color:var(--ink-2)}
 .app-grid .card-tag-type{background:var(--type-tint);color:var(--type-deep);font-size:12px}
 .app-grid .card-tag-offline{background:none;box-shadow:inset 0 0 0 1px var(--line-strong)}
-/* Same sub-tab as My Board and 能力中心: text over a hairline, the active one underlined */
-.catalog-tabs.panel-tabs{height:auto;gap:var(--sp-6);margin:0 0 var(--sp-6);padding:var(--sp-4) 0 0;border-bottom:1px solid var(--line)}
-.catalog-tabs.panel-tabs button{height:var(--control);margin-bottom:-1px;padding:0;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;font:var(--t-label);font-weight:500;color:var(--ink-2);cursor:pointer}
-.catalog-tabs.panel-tabs button:hover{background:none;color:var(--ink)}
-.catalog-tabs.panel-tabs button.active{background:none;border-bottom-color:var(--ink);color:var(--ink);font-weight:500}
+/* Same segmented tabs as 能力中心: white bar, the selected tab is a black pill */
+.catalog-tabs.manage-tabs{display:inline-flex;gap:4px;margin:0 0 var(--sp-6);padding:4px;border:0;border-radius:var(--r);background:var(--surface)}
+.catalog-tabs.manage-tabs button{height:var(--control);display:inline-flex;align-items:center;gap:8px;padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
+.catalog-tabs.manage-tabs button:hover{background:var(--surface-2)}
+.catalog-tabs.manage-tabs button.active{background:var(--ink);color:#fff}
+.catalog-tabs.manage-tabs button.active:hover{background:var(--ink);color:#fff}
 .app-grid .card-expand,.market-card .card-expand{position:absolute;top:12px;right:12px;z-index:4;width:36px;height:36px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-float);opacity:0;pointer-events:none;cursor:pointer}
 .app-grid .gallery-card:hover .card-expand,.app-grid .gallery-card:focus-within .card-expand,.market-card:hover .card-expand,.market-card:focus-within .card-expand{opacity:1;pointer-events:auto}
 .market-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-6)}
@@ -147,9 +148,13 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--ink);col
 .market-card .app-hover-stage{position:absolute;left:0;right:0;top:calc(100% + 8px);height:196px;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-float);opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;z-index:6;transition:opacity .2s var(--ease),visibility .2s}
 .market-card:hover .app-hover-stage,.market-card:focus-within .app-hover-stage{opacity:1;visibility:visible}
 .market-card .app-hover-screen{height:100%}
-.app-editor .page-record{flex:none;display:grid;gap:12px;padding:var(--sp-4) var(--sp-6) var(--sp-6);border-bottom:1px solid var(--line)}
+.app-editor .page-record{flex:none;display:grid;gap:12px;padding:var(--sp-4) var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
 .app-editor .page-record h3{font:var(--t-label);font-weight:600;color:var(--ink)}
 .app-editor .page-record-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.app-editor .record-author{display:flex;align-items:center;gap:8px;margin:0;font:var(--t-meta);color:var(--ink-2)}
+.app-editor .record-author span{font:var(--t-label);font-weight:500;color:var(--ink)}
+.app-editor .record-wide{grid-column:1/-1}
+.app-editor .page-record .type-icon{width:44px;height:44px}
 .app-editor .page-record label{display:grid;gap:6px;min-width:0;font:var(--t-meta);color:var(--ink-2)}
 .app-editor .page-record :is(input,select,textarea){width:100%;height:var(--control);padding:0 12px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font:var(--t-label);color:var(--ink)}
 .app-editor .page-record textarea{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
@@ -193,7 +198,8 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 /* ───────────── NOVA App detail: Chat left + resize handle + App right (Chat layout) ───────────── */
 .editor-shell .app-editor{height:100dvh;display:grid;grid-template-columns:var(--editor-chat-width,420px) var(--sp-6) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0;padding:var(--sp-6);background:var(--canvas);column-gap:0}
 .app-editor .editor-head{grid-column:1/-1;grid-row:1;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);margin-bottom:var(--sp-6);padding:0;border:0;background:none}
-.app-editor .editor-chat{grid-row:2;grid-column:1}
+.app-editor .editor-side{grid-row:2;grid-column:1;min-height:0;display:flex;flex-direction:column;gap:var(--sp-4)}
+.app-editor .editor-side .editor-chat{flex:1 1 auto;width:auto;min-height:0}
 .app-editor .editor-app-window{grid-row:2;grid-column:3}
 .app-editor .editor-head .editor-back{width:auto;height:var(--control-sm);display:inline-flex;align-items:center;gap:4px;margin:0 0 0 -4px;padding:0 var(--sp-2) 0 0;font:var(--t-label);font-weight:500;color:var(--ink-2)}
 .app-editor .editor-head .editor-back:hover{background:none;color:var(--ink)}
