@@ -44,7 +44,7 @@ h1 span{margin-left:var(--sp-4);font:300 24px/32px var(--font);color:var(--ink-3
 .catalog-bar{display:flex;align-items:center;gap:var(--sp-4);margin-bottom:var(--sp-6)}
 .catalog-bar>.op-search{flex:0 1 320px;min-width:160px;background:var(--surface)}
 .catalog-bar>.op-search input{font:var(--t-label);color:var(--ink)}
-.type-filter{position:relative;flex:none}
+.type-filter{position:relative;flex:none;margin-left:auto}
 .type-filter-trigger{min-width:160px;height:var(--control);display:inline-flex;align-items:center;justify-content:space-between;gap:var(--sp-2);padding:0 12px 0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface);font:var(--t-label);color:var(--ink-2);cursor:pointer}
 .type-filter-trigger.picked{font-weight:500;color:var(--ink)}
 .type-filter-trigger:hover{background:var(--surface-2)}
@@ -121,11 +121,12 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--ink);col
 .app-grid .card-tag svg{flex:none;color:var(--ink-2)}
 .app-grid .card-tag-type{background:var(--type-tint);color:var(--type-deep);font-size:12px}
 .app-grid .card-tag-offline{background:none;box-shadow:inset 0 0 0 1px var(--line-strong)}
-/* Same sub-tab as My Board and 能力中心: text over a hairline, the active one underlined */
-.catalog-tabs.panel-tabs{display:flex;height:auto;gap:var(--sp-6);margin:0 0 var(--sp-6);padding:var(--sp-4) 0 0;border-bottom:1px solid var(--line)}
-.catalog-tabs.panel-tabs button{height:var(--control);margin-bottom:-1px;padding:0;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;font:var(--t-label);font-weight:500;color:var(--ink-2);cursor:pointer}
-.catalog-tabs.panel-tabs button:hover{background:none;color:var(--ink)}
-.catalog-tabs.panel-tabs button.active{background:none;border-bottom-color:var(--ink);color:var(--ink);font-weight:500}
+/* Same segmented tabs as 能力中心: white bar, the selected tab is a black pill */
+.catalog-tabs.manage-tabs{display:inline-flex;gap:4px;margin:0 0 var(--sp-6);padding:0;border:0;border-radius:var(--r);background:var(--surface)}
+.catalog-tabs.manage-tabs button{height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
+.catalog-tabs.manage-tabs button:hover{background:var(--surface-2)}
+.catalog-tabs.manage-tabs button.active{background:var(--ink);color:#fff}
+.catalog-tabs.manage-tabs button.active:hover{background:var(--ink);color:#fff}
 .app-grid .card-expand,.market-card .card-expand{position:absolute;top:12px;right:12px;z-index:4;width:36px;height:36px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-float);opacity:0;pointer-events:none;cursor:pointer}
 .app-grid .gallery-card:hover .card-expand,.app-grid .gallery-card:focus-within .card-expand,.market-card:hover .card-expand,.market-card:focus-within .card-expand{opacity:1;pointer-events:auto}
 .market-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4)}
@@ -147,17 +148,33 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--ink);col
 .market-card .app-hover-stage{position:absolute;left:0;right:0;top:calc(100% + 8px);height:196px;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-float);opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;z-index:6;transition:opacity .2s var(--ease),visibility .2s}
 .market-card:hover .app-hover-stage,.market-card:focus-within .app-hover-stage{opacity:1;visibility:visible}
 .market-card .app-hover-screen{height:100%}
-.app-editor .page-record{flex:none;display:grid;gap:12px;max-height:45%;overflow:auto;padding:var(--sp-4) var(--sp-6) var(--sp-6);border-bottom:1px solid var(--line)}
-.app-editor .page-record h3{font:var(--t-body-strong);color:var(--ink)}
-.app-editor .page-record-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.app-editor .page-record label{display:grid;gap:var(--sp-2);min-width:0;font:var(--t-label);color:var(--ink-2)}
+.app-editor .page-record{grid-column:1/-1;grid-row:2;flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-6);margin:0 0 var(--sp-6);padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+.app-editor .app-settings-copy{min-width:0;flex:1;display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:12px;row-gap:4px;align-items:center}
+.app-editor .app-icon-picker{position:relative;grid-row:1;grid-column:1}
+.app-editor .app-icon-picker>button{display:grid;place-items:center;width:var(--control);height:var(--control);padding:0;border:0;border-radius:var(--r);background:none;cursor:pointer}
+.app-editor .app-icon-picker>button:hover,.app-editor .app-icon-picker>button[aria-expanded=true]{box-shadow:var(--focus-ring)}
+.app-editor .app-icon-menu{position:absolute;top:calc(100% + var(--sp-2));left:0;z-index:8;display:grid;grid-template-columns:repeat(3,40px);gap:var(--sp-2);padding:var(--sp-2);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet),0 0 0 1px var(--line)}
+.app-editor .app-icon-menu button{display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;cursor:pointer}
+.app-editor .app-icon-menu button[aria-selected=true]{outline:2px solid var(--ink);outline-offset:2px}
+/* The title and description read as text on the canvas until focused, so the shared field fill stays out */
+html body main.app-editor .page-record.page-record.page-record :is(input.app-settings-title,textarea.app-settings-desc):not(:focus){background-color:transparent!important}
+html body main.app-editor .page-record.page-record.page-record :is(input.app-settings-title,textarea.app-settings-desc){width:100%;padding:4px var(--sp-2)!important;resize:none}
+html body main.app-editor .page-record.page-record.page-record input.app-settings-title{grid-row:1;grid-column:2;height:auto;font:var(--t-title);color:var(--ink)}
+html body main.app-editor .page-record.page-record.page-record textarea.app-settings-desc{grid-column:2;height:auto;min-height:0;font:var(--t-label);line-height:18px!important;color:var(--ink-2)}
+.app-editor .app-settings-side{display:flex;align-items:center;gap:var(--sp-2);flex:none}
+html body main.app-editor .page-record.page-record.page-record select.app-settings-category{width:auto;height:var(--control);border-radius:var(--r);background-color:var(--surface)!important;font:var(--t-label);font-weight:500;color:var(--ink)}
+.app-editor .record-author{height:24px;display:inline-flex;align-items:center;gap:4px;margin:0;padding:0 var(--sp-2);border-radius:var(--r);background:var(--surface);font:var(--t-meta);font-weight:500;color:var(--ink);white-space:nowrap}
+.app-editor .record-author svg{flex:none;color:var(--ink-2)}
+.app-editor .page-record .type-icon{width:44px;height:44px}
 .app-editor .page-record :is(input,select,textarea){width:100%;height:var(--control);padding:0 12px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font:var(--t-label);color:var(--ink)}
+.app-editor .page-record :is(.app-settings-title,.app-settings-desc){height:auto;min-height:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+.app-editor .page-record .app-settings-title{font:var(--t-title);color:var(--ink)}
+.app-editor .page-record .app-settings-desc{font:var(--t-label);color:var(--ink-2)}
+.app-editor .app-settings-side .record-delete{margin-left:0}
 .app-editor .page-record textarea{height:auto;min-height:72px;padding:10px 12px;resize:vertical}
 .app-editor .page-record-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.app-editor .page-record-actions button{height:var(--control-md);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 12px;border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
-.app-editor .page-record-actions .record-save{background:var(--ink);color:#fff}
-.app-editor .page-record-actions .record-delete{margin-left:auto;border:1px solid var(--line-strong);background:var(--surface);color:var(--danger)}
-.app-editor .page-record-actions .record-delete:hover{background:var(--danger-soft)}
+.app-editor .record-delete{height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);margin-left:0;padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font:var(--t-label);font-weight:500;color:var(--danger);cursor:pointer}
+.app-editor .record-delete:hover{background:var(--danger-soft)}
 .app-standalone{min-height:100dvh;background:#202631}
 .app-standalone .nova-screen{min-height:100dvh}
 .app-missing{min-height:100dvh;display:grid;place-content:center;gap:var(--sp-4);padding:var(--sp-6);background:var(--canvas);text-align:center}
@@ -191,12 +208,11 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 }
 
 /* ───────────── NOVA App detail: Chat left + resize handle + App right (Chat layout) ───────────── */
-.editor-shell .app-editor{height:100dvh;display:grid;grid-template-columns:var(--editor-chat-width,420px) var(--sp-6) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0;padding:var(--sp-6);background:var(--canvas);column-gap:0}
-.app-editor .editor-head{grid-column:1/-1;grid-row:1;display:block;height:auto;margin-bottom:var(--sp-8);padding:0;border:0;background:none}
-.app-editor .editor-title{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--sp-6);margin-top:var(--sp-4)}
-.app-editor .editor-title h1{min-width:0;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:var(--t-display);letter-spacing:-.02em;color:var(--ink)}
-.app-editor .editor-chat{grid-row:2;grid-column:1}
-.app-editor .editor-app-window{grid-row:2;grid-column:3}
+.editor-shell .app-editor{height:100dvh;display:grid;grid-template-columns:var(--editor-chat-width,420px) var(--sp-6) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);gap:0;padding:var(--sp-6);background:var(--canvas);column-gap:0}
+.app-editor .editor-head{grid-column:1/-1;grid-row:1;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);margin-bottom:var(--sp-4);padding:0;border:0;background:none}
+.app-editor .editor-side{grid-row:3;grid-column:1;min-height:0;display:flex;flex-direction:column;gap:var(--sp-4)}
+.app-editor .editor-side .editor-chat{flex:1 1 auto;width:auto;min-height:0}
+.app-editor .editor-app-window{grid-row:3;grid-column:3}
 .app-editor .editor-head .editor-back{border:0;width:auto;height:var(--control-sm);display:inline-flex;align-items:center;gap:4px;margin:0 0 0 -4px;padding:0 var(--sp-2) 0 0;font:var(--t-label);font-weight:500;color:var(--ink-2)}
 .app-editor .editor-head .editor-back:hover{background:none;color:var(--ink)}
 .app-editor .editor-actions{display:flex;align-items:center;gap:var(--sp-2)}
@@ -208,7 +224,7 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 .app-editor .editor-save-status{display:block;margin:0 auto 0 0;font:var(--t-meta);color:var(--danger)}
 .app-editor :is(.editor-chat,.editor-app-window){min-height:0;display:flex;flex-direction:column;flex:none;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card);overflow:hidden}
 /* Same drag indicator as Chat */
-.app-editor .chat-resize-handle{grid-row:2;display:grid;place-items:center;margin:0;padding:0;border:0;background:none;cursor:col-resize;touch-action:none}
+.app-editor .chat-resize-handle{grid-row:3;display:grid;place-items:center;margin:0;padding:0;border:0;background:none;cursor:col-resize;touch-action:none}
 .app-editor .chat-resize-handle span{width:4px;height:40px;border-radius:var(--r);background:var(--line-strong);opacity:0;transition:opacity .2s var(--ease)}
 .app-editor .chat-resize-handle:hover span,.app-editor .chat-resize-handle:focus-visible span{opacity:1}
 
@@ -264,7 +280,10 @@ h1 span{display:block;margin:var(--sp-2) 0 0;font:300 18px/24px var(--font)}
 @media(max-width:900px){.editor-shell .app-editor{padding:var(--sp-4)}.app-editor .message-space{padding:var(--sp-6)}}
 @media(max-width:1100px){.market-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:800px){.market-grid{grid-template-columns:1fr}.app-editor .page-record-grid{grid-template-columns:1fr}
-.editor-shell .app-editor{height:auto;min-height:100dvh;grid-template-columns:1fr;grid-template-rows:auto auto auto}
+.editor-shell .app-editor{height:auto;min-height:100dvh;grid-template-columns:1fr;grid-template-rows:auto auto auto auto}
+.app-editor .page-record,.app-editor .editor-side,.app-editor .editor-app-window{grid-column:1}
+.app-editor .editor-side{grid-row:3}
+.app-editor .editor-app-window{grid-row:4}
 .app-editor .chat-resize-handle{display:none}
 .app-editor .editor-chat{height:560px}
 .app-editor .editor-app-window{min-height:520px}
