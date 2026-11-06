@@ -95,3 +95,38 @@
 .org-summary strong{font:400 24px/30px var(--font)}
 .directory-filters{padding:var(--sp-4)}
 .employee-form{padding:var(--sp-4)}}
+/* Employee directory and organization controls share workspace components. */
+.organization-shell .page-heading h1{display:flex;align-items:center;gap:16px}
+.organization-shell .page-heading h1 .employee-count{font:var(--t-label);padding:6px 12px;border-radius:var(--r-pill,24px);background:var(--lime);color:var(--lime-ink)}
+.directory-filters .employee-search{flex:0 1 300px;width:300px;min-width:180px}
+.directory-filters .employee-department-filter{width:180px}
+.directory-filters .op-segments{margin-left:auto}
+.employee-bindings{display:inline-flex;gap:8px;align-items:center}.binding-logo{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:var(--surface-2)}
+.binding-teams{color:#6264a7}.binding-slack{color:#611f69}.binding-discord{color:#5865f2}.binding-line{color:#06c755}.binding-empty{color:var(--ink-3)}
+.employee-detail-link{font:inherit;font-weight:600;color:var(--ink);text-align:left}.employee-detail-link:hover{text-decoration:underline}
+.organization-units{padding:24px;margin-bottom:24px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow-card)}
+.unit-root,.unit-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.unit-root{padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:12px}.unit-root>strong{font-size:18px}.unit-root>button:first-of-type{margin-left:auto}
+.unit-row{padding:6px 0 6px calc(var(--depth)*24px);border-left:2px solid var(--line);padding-left:calc(12px + var(--depth)*24px)}.unit-row>button:first-child{min-width:180px;justify-content:space-between}.unit-count{font:var(--t-meta);padding:4px 8px;background:var(--surface-3);border-radius:20px;color:var(--ink-2)}
+.unit-row button[aria-pressed=true]{background:var(--lime);color:var(--ink)}
+.graph-toolbar select{min-width:180px}.graph-detail{max-height:calc(100% - 100px);overflow:auto}.graph-detail .op-button{margin-top:16px}.notification-setting{display:flex!important;align-items:center;gap:10px!important;padding:12px 0}.notification-setting input{width:18px!important;height:18px!important;accent-color:var(--ink)}
+.unit-dialog header h2{margin:0}.unit-dialog form footer{justify-content:flex-end}
+@media(max-width:700px){.directory-filters .employee-search{flex:1 1 100%;width:100%}.directory-filters .op-segments{margin-left:0}.unit-root>button:first-of-type{margin-left:0}.organization-units{padding:16px}}
+.organization-shell .directory-filters{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important}
+.organization-shell .directory-filters .employee-department-filter{width:180px!important;flex:0 0 180px!important}
+.organization-shell .directory-filters .employee-search{flex:0 1 300px!important}
+.organization-shell .graph-toolbar select{width:220px!important}
+.org-graph .graph-zoom-controls{position:absolute;bottom:20px;left:20px;z-index:2;display:flex;align-items:center;gap:8px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-card)}
+.graph-zoom-controls>span{min-width:46px;text-align:center;font:var(--t-meta);color:var(--ink-2)}
+.graph-zoom-controls button{width:36px;height:36px;padding:0;display:grid;place-items:center}
+.org-graph .graph-toolbar{justify-content:flex-start}
+.graph-detail-heading{display:flex;align-items:center;gap:12px;padding-right:14px}
+.graph-detail-heading h3{margin:0;font:var(--t-label);color:var(--ink)}
+.graph-detail-avatar{display:grid;place-items:center;width:40px;height:40px;flex-shrink:0;border-radius:12px;background:var(--surface-3);color:var(--ink-2)}
+.organization-shell .graph-zoom-controls .op-button{padding:0!important;width:36px!important;min-width:36px!important;height:36px!important}
+.graph-zoom-controls svg{flex-shrink:0;width:16px;height:16px}
+.organization-shell .graph-zoom-controls{gap:4px;padding:4px;border-radius:10px;bottom:16px;left:16px}
+.organization-shell .graph-zoom-controls .op-button{width:28px!important;min-width:28px!important;height:28px!important;min-height:28px!important;border-radius:7px!important}
+.graph-zoom-controls>span{min-width:38px;font-size:11px}.graph-zoom-controls svg{width:14px;height:14px}
+.graph-unit-card{cursor:pointer;outline:none}.graph-unit-card:hover>rect,.graph-unit-card:focus-visible>rect{stroke:var(--lime);stroke-width:3}
+.unit-parent-info{font:var(--t-label);color:var(--ink-2)}
+.graph-notification{font:var(--t-meta);color:var(--ink-2);margin-top:12px}
