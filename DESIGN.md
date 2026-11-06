@@ -257,7 +257,7 @@ UI 的核心工作：**一眼看出「我的 Agent 現在在做什麼、哪裡�
 | 意思 | Icon | 意思 | Icon |
 |---|---|---|---|
 | 編輯 | `Pencil` | 新增 | `Plus` |
-| 儲存 | `Check` | | |
+| 儲存 | `Check` | 用量與費用 | `Wallet` |
 | 設定 | `Settings` | 送出、下一步 | `ArrowRight` |
 | 發佈 | `Globe` | 上一步 | `ChevronLeft` |
 | 返回 | `ChevronLeft` | 下一題 | `ChevronRight` |
