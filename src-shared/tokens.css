@@ -9,6 +9,7 @@
 :root{
   /* Neutrals */
   --canvas:#eeeef2;--frame:#f7f7f9;--surface:#fff;--surface-2:#f4f4f6;--surface-3:#ebebef;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,monospace;
   --ink:#121214;--ink-2:#6e6e78;--ink-3:#a3a3ad;--line:#ececf0;--line-strong:#dcdce2;
 
   /* Accents */
@@ -228,8 +229,8 @@ html .account-popover .account-role-switch{margin:0;padding:var(--sp-2);border:0
 html .account-popover .account-role-switch>span{margin:0;padding:0}
 html .account-popover a{display:flex!important;align-items:center;min-height:36px;padding:0 var(--sp-2)!important;border-radius:var(--r);font:var(--t-label);color:var(--ink)}
 /* Admin links sit below a hairline, apart from the identity and role switch */
-html .account-popover .account-role-switch+a{position:relative;margin-top:var(--sp-2)}
-html .account-popover .account-role-switch+a::before{content:'';position:absolute;left:var(--sp-2);right:var(--sp-2);top:calc(-1 * var(--sp-2) / 2 - .5px);height:1px;background:var(--line)}
+html .account-popover .account-role-switch+:is(a,.account-menu-item){position:relative;margin-top:var(--sp-2)}
+html .account-popover .account-role-switch+:is(a,.account-menu-item)::before{content:'';position:absolute;left:var(--sp-2);right:var(--sp-2);top:calc(-1 * var(--sp-2) / 2 - .5px);height:1px;background:var(--line)}
 /* The avatar stands out from the nav icons: lime fill, the system's accent */
 html .op-rail .account-trigger{background:var(--lime);color:var(--lime-ink)}
 html .op-rail .account-trigger:hover{background:#d9ec72}
@@ -496,20 +497,21 @@ html .agent-interview{position:fixed;inset:0 0 0 80px;z-index:40;width:auto;heig
 html body .agent-detail .agent-delete{border:1px solid var(--line-strong);background:var(--surface);color:var(--danger)}
 html body .agent-detail .agent-delete:hover{background:var(--danger-soft)}
 .agent-delete-copy{font:var(--t-body);color:var(--ink-2)}
-/* Agent settings opened from another flow: a centred modal over that page, same content as the sub page */
+/* Agent settings and 監控紀錄 opened from another flow: the system dialog (6.8) around the same content, no inner dividers */
 html body dialog.agent-settings.agent-detail.agent-settings-modal{inset:0;width:min(1040px,calc(100vw - 48px));height:min(860px,calc(100dvh - 48px));margin:auto;padding:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet)}
 html body dialog.agent-settings.agent-settings-modal::backdrop{background:rgba(18,18,20,.2);backdrop-filter:blur(4px)}
-html body .agent-settings-modal .agent-page-head{padding:var(--sp-6);border-bottom:1px solid var(--line)}
+html body .agent-settings-modal .agent-page-head{padding:var(--sp-8) var(--sp-8) var(--sp-4);border:0}
 html body .agent-settings-modal .agent-page-title{align-items:center}
+html body .agent-settings-modal .agent-page-head .op-button--icon{width:var(--control);height:var(--control);flex:none;border:0;border-radius:var(--r);background:var(--surface-2)}
 html body .agent-settings-modal .agent-settings-identity>span{width:44px;height:44px;background:var(--surface-2);font-size:24px}
 html body .agent-settings-modal .agent-settings-identity h2{font:var(--t-title);letter-spacing:0}
 html body .agent-settings-modal .agent-settings-identity p{margin-top:2px;font:var(--t-meta)}
-html body .agent-detail.agent-settings-modal .agent-settings-body{grid-template-columns:200px minmax(0,1fr);gap:0;margin:0}
-html body .agent-detail.agent-settings-modal .agent-settings-body>nav{width:auto;min-width:0;border-right:1px solid var(--line);border-radius:0;box-shadow:none}
-html body .agent-detail.agent-settings-modal .agent-settings-content{border-radius:0;box-shadow:none;padding:var(--sp-6)}
-html body .agent-settings-modal>.agent-page-actions{justify-content:flex-end;padding:var(--sp-4) var(--sp-6);border-top:1px solid var(--line)}
+html body .agent-detail.agent-settings-modal .agent-settings-body{grid-template-columns:200px minmax(0,1fr);gap:var(--sp-6);margin:0;padding:0 var(--sp-8) var(--sp-4)}
+html body .agent-detail.agent-settings-modal .agent-settings-body>nav{width:auto;min-width:0;padding:0;border:0;border-radius:0;box-shadow:none}
+html body .agent-detail.agent-settings-modal .agent-settings-content{border-radius:0;box-shadow:none;padding:0}
+html body .agent-settings-modal>.agent-page-actions{justify-content:flex-end;padding:var(--sp-4) var(--sp-8) var(--sp-8);border:0}
 html body .agent-settings-modal>.agent-page-actions [role=status]{flex:1}
-@media(max-width:650px){html body .agent-detail.agent-settings-modal .agent-settings-body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}html body .agent-detail.agent-settings-modal .agent-settings-body>nav{border-right:0;border-bottom:1px solid var(--line)}.agent-settings-modal>.agent-page-actions{flex-wrap:wrap}}
+@media(max-width:650px){html body .agent-detail.agent-settings-modal .agent-settings-body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}.agent-settings-modal>.agent-page-actions{flex-wrap:wrap}}
 @media(max-width:900px){
 html .agent-interview{inset:0;overflow:auto}
 .agent-interview-head{flex-direction:column;align-items:flex-start}

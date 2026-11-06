@@ -7,3 +7,8 @@
 .account-role-switch button{border:1px solid transparent;border-radius:var(--op-radius-control);background:transparent;color:#48617f;padding:9px 11px;text-align:left;font-family:inherit;font-size:var(--op-text-caption);font-weight:600;cursor:pointer}
 .account-role-switch button:hover{background:var(--op-color-subtle)}
 .account-role-switch button[aria-pressed=true]{border-color:#ccdaf3;background:var(--op-color-primary-soft);color:#365fb4}
+html .account-popover .account-menu-item{display:flex;align-items:center;gap:var(--sp-2);min-height:36px;padding:0 var(--sp-2);border:0;border-radius:var(--r);background:none;font:var(--t-label);color:var(--ink);text-align:left;cursor:pointer}
+html .account-popover .account-menu-item:hover{background:var(--surface-2)}
+.account-preferences{display:grid;gap:var(--sp-4)}
+.account-preferences>label{display:grid;gap:var(--sp-2);font:var(--t-label);color:var(--ink-2)}
+.account-preferences>p{margin:0;font:var(--t-meta);color:var(--danger)}

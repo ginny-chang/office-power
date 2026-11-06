@@ -1,0 +1,35 @@
+/* 稽核紀錄 reuses the usage page's card, table, tag and empty styles; only what is specific to it lives here */
+.audit-card>header p{margin:2px 0 0;font:var(--t-meta);color:var(--ink-2)}
+.audit-filters{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--sp-2);min-width:0}
+.audit-filters select{width:176px}
+.audit-filters .op-search{width:320px}
+.audit-card{padding:var(--sp-6) 0 0}
+.audit-card>header{padding:0 var(--sp-6)}
+.audit-table :is(th,td){text-align:left}
+.audit-table :is(th,td):last-child{width:auto;text-align:right}
+.audit-table td:first-child{color:var(--ink-2);white-space:nowrap}
+.audit-table td:nth-child(2){white-space:nowrap}
+.audit-table td:last-child .op-button{white-space:nowrap}
+.audit-table .usage-tag{margin-left:0}
+.audit-pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;padding:var(--sp-4) var(--sp-6);border-top:1px solid var(--line)}
+html .audit-pager .op-button{gap:4px;border:0;border-radius:var(--r);background:none;color:var(--ink-2)}
+html .audit-pager .op-button:hover:not(:disabled){background:var(--surface-2);color:var(--ink)}
+html .audit-pager .op-button[aria-current=page]{background:var(--ink);color:#fff}
+html .audit-pager .op-button:disabled{border:0;background:none;color:var(--ink-3)}
+/* Fixed height with 32px on every side, so switching tabs never resizes the dialog; the grey box takes the remaining space */
+html body dialog.audit-dialog[open]{display:flex;flex-direction:column;height:min(720px,calc(100dvh - 48px));max-height:none;overflow:hidden}
+html body .audit-dialog .op-dialog-header{flex:none}
+html body .audit-dialog .op-dialog-body{flex:1;min-height:0;padding:0 var(--sp-8) var(--sp-8);overflow:hidden}
+.audit-detail{height:100%;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:var(--sp-4);min-width:0}
+.audit-detail-time{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);padding:12px var(--sp-4);border-radius:var(--r);background:var(--surface-2)}
+.audit-detail-time span{display:grid;gap:2px;min-width:0}
+.audit-detail-time small{font:var(--t-meta);color:var(--ink-2)}
+.audit-detail-time strong{font:var(--t-body-strong);color:var(--ink)}
+.audit-detail .op-segments{width:max-content;max-width:100%}
+.audit-json{min-height:0;margin:0;padding:var(--sp-4);overflow:auto;border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);font-family:var(--font-mono);line-height:1.6;color:var(--ink);white-space:pre}
+.audit-detail .usage-empty{min-height:0;align-content:center;border-radius:var(--r);background:var(--surface-2)}
+@media(max-width:800px){
+.audit-filters{justify-content:flex-start;width:100%}
+.audit-filters :is(select,.op-search){flex:1 1 200px;width:auto}
+.audit-card>header{flex-direction:column;align-items:flex-start}
+}
