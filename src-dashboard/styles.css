@@ -305,7 +305,7 @@ main,.office-stage{background:#dce6f2}
 .rail-block{padding:0 0 var(--sp-8);border:0}
 .rail-head{margin:0 0 var(--sp-4);gap:var(--sp-2);min-height:32px}
 .rail-head h2{font:var(--t-title);color:var(--ink)}
-.rail-action{height:var(--control-sm);padding:0 var(--sp-4);border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);font-weight:500;color:var(--ink)}
+.rail-action{height:var(--control-md);padding:0 12px;border-radius:var(--r);background:var(--surface-2);font:var(--t-label);font-weight:500;color:var(--ink)}
 .rail-action:hover{background:var(--surface-3);color:var(--ink)}
 .inbox,.app-rows{gap:var(--sp-2);background:none;border-radius:0;overflow:visible}
 .inbox li+li:before,.app-rows li+li:before{display:none}
@@ -318,13 +318,13 @@ main,.office-stage{background:#dce6f2}
 .app-row{grid-template-columns:40px 1fr 16px;gap:var(--sp-4);min-height:0;padding:var(--sp-2);border-radius:var(--r);color:var(--ink-3)}
 .app-row:hover{background:var(--surface-2);color:var(--ink)}
 .app-row-icon{width:40px;height:40px;border-radius:var(--r)}
-.app-row-icon svg{width:18px;height:18px}
+.app-row-icon svg{width:16px;height:16px}
 .green .app-row-icon{background:var(--mint);color:var(--mint-ink)}
 .sand .app-row-icon{background:var(--peach);color:var(--peach-ink)}
 .navy .app-row-icon{background:var(--lavender);color:var(--lavender-ink)}
 .app-row strong{font:var(--t-body-strong);color:var(--ink)}
 .app-row small{margin-top:0;font:var(--t-meta);color:var(--ink-2)}
-.app-rows .unpin{width:var(--control-sm);height:var(--control-sm);border-radius:var(--r);color:var(--red)}
+.app-rows .unpin{width:var(--control-sm);height:var(--control-sm);border-radius:var(--r);color:var(--danger)}
 .rail-link{display:flex;align-items:center;gap:var(--sp-2);margin-top:var(--sp-4);height:48px;padding:0 var(--sp-2) 0 var(--sp-6);border-radius:var(--r);background:var(--surface-2);font:var(--t-body-strong);color:var(--ink)}
 .rail-link svg:first-child{display:none}
 .rail-link svg:last-child{margin-left:auto;width:32px;height:32px;padding:8px;border-radius:var(--r);background:var(--ink);color:#fff}
@@ -351,10 +351,10 @@ main,.office-stage{background:#dce6f2}
 .text-button{font:var(--t-label);color:var(--ink)}
 .icon-button{width:36px;height:36px;border-radius:var(--r);background:var(--surface-2);color:var(--ink-2)}
 .icon-button:hover{background:var(--surface-3);color:var(--ink)}
-.restore-pins .secondary{min-height:var(--control-sm);padding:0 var(--sp-4);font:var(--t-meta);font-weight:500}
+.restore-pins .secondary{min-height:var(--control-md);padding:0 12px;font:var(--t-label);font-weight:500}
 
 /* Status pills */
-.status{height:24px;display:inline-flex;align-items:center;padding:0 var(--sp-2);border-radius:var(--r);font:500 11px/14px var(--font);background:var(--lavender);color:var(--lavender-ink)}
+.status{height:24px;display:inline-flex;align-items:center;padding:0 var(--sp-2);border-radius:var(--r);font:var(--t-meta);font-weight:500;background:var(--lavender);color:var(--lavender-ink)}
 .status.attention{background:var(--lime);color:var(--lime-ink)}
 .status.done{background:var(--mint);color:var(--mint-ink)}
 .status.idle{background:var(--surface-2);color:var(--ink-2)}
@@ -385,7 +385,7 @@ main,.office-stage{background:#dce6f2}
 .bot-label[data-agent="nova"] svg{background:var(--lime)}
 .bot-label:hover,.bot-label[data-hovered="true"]{box-shadow:0 0 0 1.5px var(--ink),var(--shadow-float)!important}
 .bot-bubble{width:auto;min-width:168px;padding:8px 16px;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-float)}
-.bot-bubble:after{border:0;background:var(--surface)}
+.bot-bubble:after{content:none}
 .bubble-meta{font:var(--t-meta)!important;color:var(--ink-2)!important;letter-spacing:0!important}
 .bot-bubble .bubble-meta>i{background:#c4d94a}
 .bot-bubble.done .bubble-meta>i{background:var(--mint-strong)}
@@ -503,7 +503,7 @@ main,.office-stage{background:#dce6f2}
 .compact-apps>button>svg:last-child{flex:none;margin-left:auto}
 .compact-icon{width:40px;height:40px;border-radius:var(--r);background:var(--mint);color:var(--mint-ink)}
 .compact-icon.sand{background:var(--peach);color:var(--peach-ink)}.compact-icon.navy{background:var(--lavender);color:var(--lavender-ink)}
-.compact-apps>button>b{height:var(--control-sm);display:grid;place-items:center;padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface);font:var(--t-meta);font-weight:500;color:var(--ink)}
+.compact-apps>button>b{height:var(--control-md);display:grid;place-items:center;padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface);font:var(--t-meta);font-weight:500;color:var(--ink)}
 .compact-apps>button>b{background:var(--ink);color:#fff}
 .compact-apps>button:hover>b{background:#2c2c30}
 .tab-page-heading{padding:0 0 var(--sp-4);border-bottom:0}
@@ -519,11 +519,11 @@ main,.office-stage{background:#dce6f2}
 }
 @media(max-width:1060px){.board-toolbar{top:112px;left:104px;right:auto}
 .agent-grid{top:168px}}
-body .bot-settings-button{height:var(--control-sm);padding:0 12px;gap:6px;border-radius:var(--r);font:var(--t-meta);font-weight:500}
+body .bot-settings-button{height:var(--control-md);padding:0 12px;gap:6px;border-radius:var(--r);font:var(--t-meta);font-weight:500}
 @media(max-width:720px){.sidebar{width:56px;padding:var(--sp-4) 8px}
 .nav-item{width:40px;height:40px}
 .office-header{top:var(--sp-4);left:72px}
-.office-header h1{font:400 28px/34px var(--font)}
+.office-header h1{font:400 32px/38px var(--font)}
 .office-header p{font:var(--t-meta)}
 .board-toolbar{top:80px;left:72px;right:16px}
 .board-toolbar .op-segmented>button{height:36px;padding:0 var(--sp-4);font:var(--t-meta);font-weight:500}
@@ -617,7 +617,7 @@ html body .agent-detail .agent-settings-content .agent-check small{font:var(--t-
 @media(max-width:800px){
 html body .agent-settings.agent-detail{inset:0;padding:var(--sp-6) var(--sp-4);overflow:auto}
 .agent-detail .agent-page-title{flex-direction:column;align-items:flex-start}
-.agent-detail .agent-settings-identity h2{font:400 30px/36px var(--font)}
+.agent-detail .agent-settings-identity h2{font:400 32px/38px var(--font)}
 .agent-detail .agent-settings-body{grid-template-columns:1fr}
 html body .agent-detail .agent-settings-body>nav{flex-direction:row;overflow-x:auto}
 html body .agent-detail .agent-settings-body>nav .op-button{width:auto;flex:none}

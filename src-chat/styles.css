@@ -86,7 +86,7 @@ body{background:var(--canvas)}
 .thread-panel>header{padding:0 var(--sp-4) var(--sp-6)}
 .thread-panel h1{font:400 32px/38px var(--font);letter-spacing:-.02em;color:var(--ink)}
 .new-chat{width:var(--control);height:var(--control);border:0;border-radius:var(--r);background:var(--ink);color:#fff}
-.new-chat svg{width:18px;height:18px}
+.new-chat svg{width:16px;height:16px}
 .new-chat:hover{background:#2a2a2e}
 .thread-panel .op-search{margin:0 var(--sp-2) var(--sp-6);border:0}
 .thread-scroll{padding:0 var(--sp-2) var(--sp-6)}
@@ -157,7 +157,7 @@ body{background:var(--canvas)}
 .message-space:has(.chat-welcome){display:flex;flex-direction:column}
 .conversation .chat-welcome{width:100%;max-width:420px;margin:auto;padding:0;border:0;border-radius:0;background:none;box-shadow:none;text-align:center}
 .chat-welcome .welcome-icon{width:56px;height:56px;margin:0 auto var(--sp-6);display:grid;place-items:center;border-radius:var(--r);background:var(--surface-2)}
-.chat-welcome h2,.conversation .chat-welcome h2{font:400 24px/32px var(--font);letter-spacing:-.01em;color:var(--ink)}
+.chat-welcome h2,.conversation .chat-welcome h2{font:var(--t-title);color:var(--ink)}
 .chat-welcome>p{margin-top:var(--sp-2);font:var(--t-label);color:var(--ink-2)}
 .conversation .suggestions{display:grid;gap:var(--sp-2);margin-top:var(--sp-8);border-radius:0;overflow:visible;background:none}
 html body .conversation .suggestions .op-button{width:100%;min-height:var(--control);justify-content:space-between;gap:var(--sp-2);padding:0 12px 0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);box-shadow:none;font:var(--t-label);color:var(--ink);text-align:left;white-space:normal}
@@ -172,7 +172,7 @@ html body .conversation .suggestions .op-button span{min-width:0}
 .nova-message-card>header span{font:500 11px/14px var(--font);letter-spacing:.08em;color:var(--ink)}
 .nova-message-card>header small{height:24px;display:inline-flex;align-items:center;padding:0 var(--sp-2);border-radius:var(--r);background:var(--lime);font:500 11px/14px var(--font);color:var(--lime-ink)}
 .nova-message-card>footer{border-top:0;background:none;font:var(--t-meta);color:var(--ink-2)}
-.nova-message-card button,.app-preview-overlay footer button{height:var(--control-sm);padding:0 var(--sp-4);border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);font-weight:500;color:var(--ink)}
+.nova-message-card button,.app-preview-overlay footer button{height:var(--control-md);padding:0 var(--sp-4);border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);font-weight:500;color:var(--ink)}
 .nova-preview{margin:0 var(--sp-4);padding:var(--sp-6);border-radius:var(--r);background:var(--mint);color:var(--ink)}
 .nova-preview>span{font:500 11px/14px var(--font);letter-spacing:.08em;color:var(--mint-ink)}
 .nova-preview h3{margin:var(--sp-2) 0 var(--sp-2);font:400 22px/30px var(--font)}
@@ -206,7 +206,7 @@ html body .conversation .suggestions .op-button span{min-width:0}
 .thread-panel>header{height:96px;flex-shrink:0;align-items:center;padding:0 var(--sp-2)}
 .thread-panel h1{font:var(--t-display);letter-spacing:-.02em;color:var(--ink)}
 .new-chat{width:var(--control);height:var(--control)}
-.new-chat svg{width:18px;height:18px}
+.new-chat svg{width:16px;height:16px}
 .thread-panel .op-search{margin:0 0 var(--sp-4)}
 .thread-scroll{padding:0 0 var(--sp-4)}
 .conversation>header{height:96px;padding:0 var(--sp-6)}
@@ -219,10 +219,10 @@ html body .conversation .suggestions .op-button span{min-width:0}
 /* Thread list: chevron 12 · icon 24 · label, threads hang off the icon's centre line */
 .agent-folder-group{margin-bottom:4px}
 .agent-folder-toggle{min-height:var(--control);grid-template-columns:12px 24px minmax(0,1fr) auto;gap:var(--sp-2);padding:0 var(--sp-2)}
-.folder-chevron{width:12px;height:12px}
-.agent-folder-icon{width:24px;height:24px;border-radius:8px}
+.folder-chevron{width:16px;height:16px}
+.agent-folder-icon{width:24px;height:24px;border-radius:var(--r)}
 .agent-folder-copy strong{font:var(--t-body-strong);color:var(--ink)}
-.agent-folder-toggle>em{min-width:20px;height:20px;padding:0 6px;font-size:11px}
+.agent-folder-toggle>em{min-width:24px;height:24px;padding:0 var(--sp-2);font:600 12px/24px var(--font)}
 .agent-threads{margin:0 0 var(--sp-2) 40px;padding-left:12px}
 .agent-threads:before{top:4px;bottom:4px}
 .conversation-row{margin:0}
@@ -235,7 +235,7 @@ html body .conversation .suggestions .op-button span{min-width:0}
 .conversation-row.active .row-pin:hover{background:var(--surface);color:var(--ink)}
 /* One pin slot per row: pinned rows always show a pin; hovering shows the action in the same spot
    (pin for unpinned rows, unpin for pinned rows); unpinned rows show nothing at rest. */
-.conversation-row .row-pin{right:4px;top:50%;width:28px;height:28px;transform:translateY(-50%);opacity:0}
+.conversation-row .row-pin{right:4px;top:50%;width:var(--control-sm);height:var(--control-sm);padding:0;transform:translateY(-50%);opacity:0}
 .conversation-row .row-pin.pinned,.conversation-row:hover .row-pin,.conversation-row .row-pin:focus-visible{opacity:1}
 .row-pin .pin-hover,.conversation-row:hover .row-pin.pinned .pin-idle{display:none}
 .conversation-row:hover .row-pin.pinned .pin-hover{display:block}
@@ -248,7 +248,7 @@ html body .conversation .suggestions .op-button span{min-width:0}
 
 /* New-chat agent picker */
 .thread-panel>header{position:relative}
-.agent-picker{position:absolute;top:calc(100% - var(--sp-4));right:var(--sp-4);z-index:20;width:min(340px,calc(100vw - 96px));max-height:min(560px,calc(100vh - 160px));overflow:auto;padding:var(--sp-4) var(--sp-2) var(--sp-2);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet),0 0 0 1px var(--line)}
+.agent-picker{position:absolute;top:calc(100% - var(--sp-4));left:0;right:auto;z-index:20;width:min(340px,calc(100vw - 96px));max-height:min(560px,calc(100vh - 160px));overflow:auto;padding:var(--sp-4) var(--sp-2) var(--sp-2);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet),0 0 0 1px var(--line)}
 .agent-picker.inline{position:static;z-index:auto;width:min(520px,100%);max-height:none;margin:0 auto;padding:0;border-radius:0;background:none;box-shadow:none}
 .agent-folder-copy .agent-folder-expand{font:var(--t-meta);font-weight:500;color:var(--ink-3)}
 .agent-folder-toggle[aria-expanded=true] .agent-folder-expand{color:var(--ink-2)}
@@ -314,7 +314,7 @@ html body .conversation .suggestions .op-button span{min-width:0}
 .thread-actions{display:flex;gap:4px}
 .thread-panel .thread-icon{width:var(--control);height:var(--control);display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink);cursor:pointer}
 .thread-panel .thread-icon:hover,.thread-panel .thread-icon[aria-pressed=true],.thread-panel .thread-icon[aria-expanded=true]{background:var(--surface-2)}
-.thread-panel .thread-icon svg{width:18px;height:18px}
+.thread-panel .thread-icon svg{width:16px;height:16px}
 .chat-section{margin-bottom:var(--sp-4)}
 .chat-section>h2{margin:0 0 4px;padding:0 var(--sp-2);font:var(--t-meta);font-weight:500;color:var(--ink-3)}
 .chat-section>.conversation-row{margin:0}
@@ -326,7 +326,7 @@ html body .conversation .suggestions .op-button span{min-width:0}
 .agent-folder-row .folder-chevron{color:var(--ink-3);transition:transform .2s var(--ease)}
 .agent-folder-group:not(.collapsed) .agent-folder-row .folder-chevron{transform:rotate(90deg)}
 .agent-folder-row .agent-folder-toggle:hover{background:none}
-.agent-folder-new{position:absolute;top:50%;right:4px;transform:translateY(-50%);width:28px;height:28px;margin:0;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);opacity:0;cursor:pointer}
+.agent-folder-new{position:absolute;top:50%;right:4px;transform:translateY(-50%);width:var(--control-sm);height:var(--control-sm);margin:0;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);opacity:0;cursor:pointer}
 .agent-folder-row:hover .agent-folder-new,.agent-folder-new:focus-visible{opacity:1}
 /* the "+" takes the badge's spot while hovered */
 .agent-folder-row:hover .agent-folder-toggle>em{visibility:hidden}
@@ -340,16 +340,16 @@ html body .conversation .suggestions .op-button span{min-width:0}
 /* Hover and the selected row share one light fill */
 .thread-panel .conversation-row:hover,.thread-panel .agent-folder-row:hover,.thread-panel .conversation-row.active{background:var(--surface-2)}
 .agent-folder-row{padding-right:32px}
-.agent-folder-row .agent-folder-toggle{display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:40px}
-.agent-app-icon{display:grid;place-items:center;border-radius:10px;background:var(--agent-tile,#f7fbe8);color:var(--agent-ink,#7d9a28);box-shadow:none}
+.agent-folder-row .agent-folder-toggle{display:grid;grid-template-columns:16px 32px minmax(0,1fr) auto;align-items:center;gap:var(--sp-2);min-height:40px;text-align:left}
+.agent-app-icon{display:grid;place-items:center;border-radius:var(--r);background:var(--agent-tile,#f7fbe8);color:var(--agent-ink,#7d9a28);box-shadow:none}
 .agent-folder-icon.agent-app-icon{width:32px;height:32px}
 .agent-folder-icon.agent-app-icon:before,.agent-mark.agent-app-icon:before{display:none}
 .conversation>header .agent-mark.agent-app-icon,.agent-picker .agent-mark.agent-app-icon{width:36px;height:36px;background:var(--agent-tile,#f7fbe8)}
 .chat-section>h2{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.section-toggle{width:28px;height:28px;display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);cursor:pointer}
+.section-toggle{width:var(--control-sm);height:var(--control-sm);display:grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;color:var(--ink-2);cursor:pointer}
 .section-toggle svg{transition:transform .2s var(--ease)}
 .section-toggle[aria-expanded=true] svg{transform:rotate(90deg)}
-.section-toggle:hover{color:var(--ink)}
+.section-toggle:hover{background:var(--surface-2);color:var(--ink)}
 .message.agent{max-width:100%}
 .message.agent p{padding:0;border-radius:0;background:none;color:var(--ink);font:var(--t-body)}
 .message.agent small{display:none}

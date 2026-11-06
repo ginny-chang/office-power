@@ -1,5 +1,5 @@
 import React,{useRef,useState,useEffect} from 'react';
-import {ChevronLeft,Trash2,ArrowUp,AppWindow,Maximize2,X,User} from 'lucide-react';
+import {ChevronLeft,Trash2,ArrowRight,AppWindow,Maximize2,X,User} from 'lucide-react';
 import {Dialog,Button} from '../src-shared/ui/index.jsx';
 import {appIcons,appTypes} from './app-data.js';
 import {TypeIcon} from './type-icons.jsx';
@@ -43,21 +43,21 @@ export default function AppEditor({app,onSave,onDelete,onBack}){
     <textarea className="app-settings-desc" aria-label="App 說明" rows={2} value={record.description} onChange={e=>updateRecord({description:e.target.value})}/>
    </div>
    <div className="app-settings-side">
-    <span className="record-author"><User size={14}/>{app.author||'未指定'}</span>
+    <span className="record-author"><User size={16}/>{app.author||'未指定'}</span>
     <select className="app-settings-category" aria-label="分類" value={record.category} onChange={e=>updateRecord({category:e.target.value})}>{categories.map(name=><option key={name}>{name}</option>)}</select>
-    <button type="button" className="record-delete" onClick={()=>setConfirm(true)}><Trash2 size={15}/>刪除</button>
+    <button type="button" className="record-delete" onClick={()=>setConfirm(true)}><Trash2 size={16}/>刪除</button>
    </div>
   </div>
   <div className="editor-side">
   <section className="editor-chat conversation" aria-label="App Agent 對話">
    <header><span className="agent-mark" style={{'--agent':app.color,color:app.color}}><Icon size={20}/></span><div><h2>{draft.name||'未命名 App'} Agent</h2><p>App 調整 · 已就緒</p></div></header>
    <div className="message-space">
-    {!messages.length&&<div className="chat-welcome"><span className="welcome-icon" style={{color:app.color}}><Icon size={24}/></span><h2>告訴我你需要做什麼調整</h2><p>描述想改的地方，右側會即時顯示完整的 App 畫面。</p><div className="suggestions">{suggestions.map(q=><Button variant="secondary" type="button" key={q} onClick={()=>send(q)}><span>{q}</span><ArrowUp size={16}/></Button>)}</div></div>}
+    {!messages.length&&<div className="chat-welcome"><span className="welcome-icon" style={{color:app.color}}><Icon size={24}/></span><h2>告訴我你需要做什麼調整</h2><p>描述想改的地方，右側會即時顯示完整的 App 畫面。</p><div className="suggestions">{suggestions.map(q=><Button variant="secondary" type="button" key={q} onClick={()=>send(q)}><span>{q}</span><ArrowRight size={16}/></Button>)}</div></div>}
     {!!messages.length&&<div className="date-rule"><span>新對話</span></div>}
     {messages.map((m,i)=><div className={`message ${m.role}`} key={i}><span>{m.role==='agent'&&<Icon size={16}/>}</span><div><p>{m.text}</p><small>{m.role==='me'?'你':'Agent'} · 剛剛</small></div></div>)}
     <div ref={bottom}/>
    </div>
-   <footer><form className="composer" onSubmit={e=>{e.preventDefault();send()}}><textarea rows={1} aria-label="App 修改需求" placeholder={`傳訊息給 ${draft.name||'App'} Agent…`} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}/><button type="submit" disabled={!input.trim()} aria-label="送出修改需求"><ArrowUp size={18}/></button></form></footer>
+   <footer><form className="composer" onSubmit={e=>{e.preventDefault();send()}}><textarea rows={1} aria-label="App 修改需求" placeholder={`傳訊息給 ${draft.name||'App'} Agent…`} value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}/><button type="submit" disabled={!input.trim()} aria-label="送出修改需求"><ArrowRight size={16}/></button></form></footer>
    </section>
   </div>
   <div className="chat-resize-handle" role="separator" aria-label="調整 Chat 與 App 寬度" aria-orientation="vertical" aria-valuemin={280} aria-valuemax={Math.max(280,Math.min(720,window.innerWidth-520))} aria-valuenow={chatWidth} tabIndex={0} onPointerDown={beginResize} onPointerMove={moveResize} onPointerUp={endResize} onPointerCancel={endResize} onKeyDown={e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();setChatWidth(width=>clampChatWidth(width+(e.key==='ArrowRight'?28:-28)))}}}><span/></div>

@@ -38,21 +38,14 @@
 
 .schedule-dialog .schedule-list{display:block;min-height:0;border:0;border-radius:0;background:none;overflow:visible}
 .schedule-dialog .schedule-filters{padding:0;margin-bottom:var(--sp-4)}
-.schedule-dialog .schedule-status-filters{gap:var(--sp-6);margin-bottom:var(--sp-4);border-bottom:1px solid var(--line-strong)}
-.schedule-dialog .schedule-status-filters button{height:var(--control);margin-bottom:-1px;padding:0;border-bottom:2px solid transparent;border-radius:0;background:none;font:var(--t-label);font-weight:500;color:var(--ink-2)}
-.schedule-dialog .schedule-status-filters button:hover{color:var(--ink)}
-.schedule-dialog .schedule-status-filters button[aria-pressed=true]{background:none;border-bottom-color:var(--ink);color:var(--ink)}
-.schedule-dialog .schedule-status-filters>span{font:var(--t-meta);color:var(--ink-3)}
 .schedule-search-row{display:flex;gap:var(--sp-2)}
 .schedule-dialog label.schedule-search{flex:1;min-width:0;padding:0;border:0;background:var(--surface);color:var(--ink-3)}
-.schedule-dialog label.schedule-search input{padding:0 var(--sp-10);font:var(--t-body);color:var(--ink)}
+.schedule-dialog label.schedule-search input{padding:0 var(--sp-10);font:var(--t-label);color:var(--ink)}
 /* Both selects share the last third, right under the header search and aligned to it */
 .schedule-search-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-6)}
-.schedule-dialog .schedule-selects{grid-column:3;display:flex;gap:var(--sp-2);margin:0}
-.schedule-dialog .schedule-selects>*{flex:1;width:0;min-width:0}
-.schedule-dialog .schedule-selects>span{align-self:center;text-align:right}
+.schedule-dialog .schedule-selects{grid-column:1/-1;display:flex;justify-content:flex-end;gap:var(--sp-2);margin:0}
+.schedule-dialog .schedule-selects>*{flex:none;width:160px;min-width:0}
 .schedule-dialog .schedule-selects select{height:var(--control);padding:0 var(--sp-4);border:0;border-radius:var(--r);background-color:var(--surface);font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
-.schedule-dialog .schedule-selects>span{font:var(--t-meta);color:var(--ink-3)}
 
 .schedule-dialog .schedule-rows{min-height:0;display:grid;gap:var(--sp-2);align-content:start}
 .schedule-dialog .schedule-row{display:block;min-height:0;padding:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card);transition:box-shadow .25s var(--ease)}
@@ -60,8 +53,8 @@
 .schedule-dialog .schedule-row-main{align-items:center;gap:var(--sp-4);padding:var(--sp-4) var(--sp-6);border-radius:var(--r)}
 .schedule-dialog .schedule-row-main:hover{background:none}
 .schedule-dialog .schedule-dot{width:8px;height:8px;margin:0;align-self:flex-start;margin-top:7px;background:var(--ink-3);border:0}
-.schedule-dialog .schedule-dot.success{background:#34c759;box-shadow:0 0 0 3px rgba(52,199,89,.18)}
-.schedule-dialog .schedule-dot.failed{background:#ff3b30;box-shadow:0 0 0 3px rgba(255,59,48,.15)}
+.schedule-dialog .schedule-dot.success{background:var(--mint-strong);box-shadow:none}
+.schedule-dialog .schedule-dot.failed{background:var(--danger);box-shadow:none}
 .schedule-dialog .schedule-dot.disabled{background:var(--ink-3)}
 .schedule-dialog .schedule-row h3{font:var(--t-body-strong);color:var(--ink)}
 .schedule-dialog .schedule-row p{margin-top:2px;font:var(--t-label);color:var(--ink-2)}
@@ -176,3 +169,40 @@
 .schedule-dialog .schedule-editor-footer .op-button{min-height:var(--control);padding:0 var(--sp-4);border-radius:var(--r);font:var(--t-label);font-weight:500}
 .schedule-dialog .schedule-editor-footer .op-button--secondary{border:0;background:none}
 .schedule-dialog .schedule-editor-footer .op-button--secondary:hover{background:var(--surface-3)}
+/* Edit page: head with actions, form on the left, upcoming runs and run records on the right */
+.schedule-dialog .schedule-editor{display:block;margin-top:0;overflow:visible}
+.schedule-dialog .schedule-editor-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--sp-6)}
+.schedule-dialog .schedule-editor-head>div:first-child{min-width:0}
+.schedule-editor-actions{display:flex;align-items:center;gap:var(--sp-2);flex:none}
+.schedule-editor-actions>button{white-space:nowrap}
+.schedule-delete{height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font:var(--t-label);font-weight:500;color:var(--danger);cursor:pointer}
+.schedule-delete:hover{background:var(--danger-soft)}
+.schedule-delete-copy{font:var(--t-body);color:var(--ink-2)}
+.schedule-editor-columns{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:var(--sp-6);align-items:start;margin-top:var(--sp-8)}
+.schedule-dialog .schedule-editor-body{display:grid;overflow:visible}
+.schedule-editor-side{position:sticky;top:0;display:grid;gap:var(--sp-6)}
+.schedule-dialog .schedule-editor-section{display:grid;margin:0}
+.schedule-dialog .schedule-editor-section>h3{margin:0}
+.schedule-zone{display:flex;align-items:center;gap:var(--sp-2);font:var(--t-label);color:var(--ink-2)}
+.schedule-zone button{padding:0;border:0;background:none;font:var(--t-label);font-weight:500;color:var(--ink);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+html .schedule-dialog.schedule-page .schedule-editor-section label.op-search input{background-color:transparent}
+.schedule-upcoming>strong{font:var(--t-body-strong);color:var(--ink)}
+.schedule-upcoming ol{display:grid;gap:var(--sp-2);margin:0;padding:0;list-style:none}
+.schedule-upcoming li{font:var(--t-label);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.schedule-runs>p{font:var(--t-label);color:var(--ink-2)}
+.schedule-runs article{display:flex;gap:12px;padding-top:var(--sp-4);border-top:1px solid var(--line)}
+.schedule-runs article:first-of-type{padding-top:0;border-top:0}
+.schedule-runs article>div{display:grid;gap:4px;min-width:0;justify-items:start}
+.schedule-runs strong{font:var(--t-body-strong);color:var(--ink)}
+.schedule-runs small{font:var(--t-meta);color:var(--ink-2)}
+.schedule-runs p{font:var(--t-label);color:var(--ink-2)}
+.schedule-runs .op-button{margin-top:var(--sp-2)}
+.schedule-dialog .schedule-result p{margin:0}
+.schedule-result-actions{display:flex;gap:var(--sp-2);margin-top:var(--sp-4)}
+@media(max-width:900px){
+.schedule-dialog .schedule-editor-head{flex-direction:column;align-items:flex-start}
+.schedule-editor-columns{grid-template-columns:minmax(0,1fr)}
+.schedule-editor-side{position:static}
+}
+.schedule-editor :is(label.op-search,.agent-editor-row){flex-direction:row}
+@media(max-width:720px){.schedule-dialog .schedule-selects{flex-wrap:wrap}.schedule-dialog .schedule-selects>*{flex:1 1 140px;width:auto}}
