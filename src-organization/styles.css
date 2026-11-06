@@ -34,6 +34,7 @@
 .employee-table{font:var(--t-label)}
 .employee-table th{padding:var(--sp-4) var(--sp-6);background:none;font:var(--t-meta);color:var(--ink-2)}
 .employee-table td{padding:var(--sp-4) var(--sp-6);border-top:1px solid var(--line);color:var(--ink-2)}
+.employee-table select{height:32px;max-width:180px;padding:0 28px 0 10px;border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-label);color:var(--ink);cursor:pointer}
 .employee-table tbody tr:hover td{background:var(--frame)}
 .employee-name{gap:var(--sp-4)}
 .employee-name i{width:40px;height:40px;border:0;border-radius:var(--r);background:var(--mint);color:var(--mint-ink);font:500 14px/1 var(--font)}
@@ -66,7 +67,11 @@
 .graph-hint{bottom:var(--sp-4);left:var(--sp-6);padding:var(--sp-2) var(--sp-4);border-radius:var(--r);background:var(--surface);font:var(--t-meta);color:var(--ink-2)}
 
 /* Employee sheet */
-.employee-dialog>header{padding:var(--sp-8) var(--sp-8) var(--sp-4);border:0}
+.employee-dialog>header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-4);padding:var(--sp-8) var(--sp-8) var(--sp-4);border:0}
+.employee-dialog>header h2{font:var(--t-title);color:var(--ink)}
+.employee-dialog>header p{margin-top:4px;font:var(--t-label);color:var(--ink-2)}
+.employee-dialog .dialog-close{width:36px;height:36px;flex:none;display:grid;place-items:center;margin:0;padding:0;border:0;border-radius:var(--r);background:var(--surface-2);color:var(--ink-2);cursor:pointer}
+.employee-dialog .dialog-close:hover{background:var(--surface-3);color:var(--ink)}
 .employee-method{gap:4px;padding:0 var(--sp-8)}
 .employee-method button{height:var(--control);padding:0 var(--sp-4);gap:var(--sp-2);border-radius:var(--r);background:var(--surface-2);font:var(--t-label);font-weight:500;color:var(--ink)}
 .employee-method button[aria-pressed=true]{background:var(--ink);color:#fff}
