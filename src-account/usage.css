@@ -130,3 +130,5 @@ i.cost,i.input{background:var(--ink)}
 .usage-agents label.op-search{flex:none}
 .usage-detail-bars{grid-template-columns:minmax(0,1fr)}
 }
+.usage-empty:has(>svg){display:grid;justify-items:center;gap:var(--sp-4);color:var(--ink-2)}
+.usage-empty>p{margin:0}

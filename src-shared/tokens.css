@@ -9,6 +9,7 @@
 :root{
   /* Neutrals */
   --canvas:#eeeef2;--frame:#f7f7f9;--surface:#fff;--surface-2:#f4f4f6;--surface-3:#ebebef;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,monospace;
   --ink:#121214;--ink-2:#6e6e78;--ink-3:#a3a3ad;--line:#ececf0;--line-strong:#dcdce2;
 
   /* Accents */
