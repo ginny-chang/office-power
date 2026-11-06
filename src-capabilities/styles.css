@@ -80,3 +80,7 @@
 @media(max-width:650px){.management main{padding:var(--sp-6) var(--sp-4)}
 .manage-card{padding:var(--sp-6)}
 .manage-toolbar input{flex-basis:100%}}
+
+/* Page-level 新增 sits at the right edge of the row, with the tabs on the left */
+html body .catalog-bar{width:100%}
+html body .catalog-bar>.primary{margin-left:auto}

@@ -1,6 +1,6 @@
 import {Input,Button,Dialog} from '../src-shared/ui/index.jsx';
 import React, {useEffect, useRef, useState} from 'react';
-import {Clock, Search, Plus, ChevronLeft, ChevronRight, Play, RotateCw, Trash2} from 'lucide-react';
+import {Clock,Search,Plus,ChevronLeft,ChevronRight,Play,RotateCw,Trash2,Check} from 'lucide-react';
 import './schedule-settings.css';
 import useLocalData from '../src-shared/useLocalData.js';
 import {initialEmployees} from '../src-organization/data.js';
@@ -49,7 +49,7 @@ function ScheduleForm({value,agents,runs,running,onRun,onDelete,onSave}){
  const canSubmit=complete&&!unchanged;
  const people=employees.filter(person=>person.status==='active'&&`${person.name} ${person.email} ${person.department}`.toLowerCase().includes(employeeQuery.toLowerCase()));
  return <><form className="schedule-editor" onSubmit={e=>{e.preventDefault();if(canSubmit)onSave({...draft,name:draft.name.trim(),prompt:draft.prompt.trim()})}}>
- <header className="schedule-dialog-header schedule-editor-head"><div><h2 id="schedule-title">{value.id?'編輯排程任務':'新增排程任務'}</h2><p>安排 Agent 的工作，查看每一次執行結果。</p></div><div className="schedule-editor-actions">{value.id&&<button type="button" className="schedule-delete" onClick={()=>setConfirming(true)}><Trash2 size={16}/>刪除</button>}<RunButton running={running} disabled={running||!draft.prompt.trim()} onClick={()=>onRun({...draft,id:value.id})}><Play size={16}/>立即執行</RunButton><Button variant="primary" type="submit" disabled={!canSubmit}><Plus size={16}/>{value.id?'儲存':'新增'}</Button></div></header>
+ <header className="schedule-dialog-header schedule-editor-head"><div><h2 id="schedule-title">{value.id?'編輯排程任務':'新增排程任務'}</h2><p>安排 Agent 的工作，查看每一次執行結果。</p></div><div className="schedule-editor-actions">{value.id&&<button type="button" className="schedule-delete" onClick={()=>setConfirming(true)}><Trash2 size={16}/>刪除</button>}<RunButton running={running} disabled={running||!draft.prompt.trim()} onClick={()=>onRun({...draft,id:value.id})}><Play size={16}/>立即執行</RunButton><Button variant="primary" type="submit" disabled={!canSubmit}>{value.id?<Check size={16}/>:<Plus size={16}/>}{value.id?'儲存':'新增'}</Button></div></header>
  <div className="schedule-editor-columns"><div className="schedule-editor-body">
  <section className="schedule-editor-section"><h3>任務內容</h3><label>任務名稱 <em>*</em><Input aria-label="任務名稱" required maxLength={80} value={draft.name} onChange={e=>{setNameEdited(true);update('name',e.target.value)}} placeholder="輸入 Prompt 後會自動帶入"/></label>
  <label>執行 Agent <em>*</em><Input as="select" aria-label="執行 Agent" required value={draft.agent} onChange={e=>update('agent',e.target.value)}>{agents.map(a=><option key={a}>{a}</option>)}</Input></label>

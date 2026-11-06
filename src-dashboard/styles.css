@@ -384,11 +384,11 @@ main,.office-stage{background:#dce6f2}
 .bot-label svg{width:22px;height:22px;padding:0;border:0;border-radius:var(--r);background:var(--surface-2);box-shadow:none}
 .bot-label[data-agent="nova"] svg{background:var(--lime)}
 .bot-label:hover,.bot-label[data-hovered="true"]{box-shadow:0 0 0 1.5px var(--ink),var(--shadow-float)!important}
-.bot-bubble{width:auto;min-width:168px;padding:8px 16px;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-float)}
+.bot-bubble{width:auto;min-width:168px;padding:8px 16px;border:0;border-radius:var(--r);background:var(--lime);box-shadow:var(--shadow-float)}
 .bot-bubble:after{content:none}
-.bubble-meta{font:var(--t-meta)!important;color:var(--ink-2)!important;letter-spacing:0!important}
-.bot-bubble .bubble-meta>i{background:#c4d94a}
-.bot-bubble.done .bubble-meta>i{background:var(--mint-strong)}
+.bubble-meta{font:var(--t-meta)!important;color:var(--lime-ink)!important;letter-spacing:0!important}
+.bot-bubble .bubble-meta>i{background:var(--lime-ink)}
+.bot-bubble .bubble-meta>span{color:var(--lime-ink)}
 .bot-bubble strong{font:var(--t-body-strong);color:var(--ink)}
 
 /* List view */
@@ -404,12 +404,6 @@ main,.office-stage{background:#dce6f2}
 .agent-list-settings{display:inline-flex;align-items:center;gap:4px;border:0;background:none;font:var(--t-meta);font-weight:500;color:var(--ink-2)}
 .agent-list-settings:hover{color:var(--ink)}
 /* Admins get an add tile at the end of the list (and a matching spot in the 3D office) */
-.agent-add-card{min-height:160px;display:grid;place-content:center;justify-items:center;gap:var(--sp-2);border:1px dashed var(--line-strong);border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
-.agent-add-card:hover{background:var(--surface)}
-.agent-add-card>span{width:40px;height:40px;display:grid;place-items:center;border-radius:var(--r);background:var(--surface);color:var(--ink)}
-.office-add-agent{display:grid;justify-items:center;gap:4px;padding:var(--sp-2) 12px;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card);font:var(--t-meta);font-weight:500;color:var(--ink);cursor:pointer;white-space:nowrap}
-.office-add-agent span{font-size:18px;line-height:1}
-.office-add-agent:hover{box-shadow:var(--shadow-float)}
 
 /* Sheets */
 .modal{border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet)}
@@ -535,14 +529,6 @@ body .bot-settings-button{height:var(--control-md);padding:0 12px;gap:6px;border
 
 /* Upstream rules for features added on main (create agent, schedule editor, role switch…), kept under the soft layer */
 @layer legacy{
-.office-add-agent{display:grid;justify-items:center;gap:1px;min-width:82px;padding:8px 10px;border:1px dashed #a7bce0;border-radius:var(--op-radius-surface);background:#f9fbfff0;color:#587bb8;box-shadow:0 6px 18px #526c9b20;cursor:pointer;white-space:nowrap;pointer-events:auto}
-.office-add-agent:hover,.office-add-agent:focus-visible{background:var(--op-color-surface);border-color:#5b83d3;transform:translateY(-2px)}
-.office-add-agent span{font-size:var(--op-text-heading);line-height:1}
-.office-add-agent small{font-size:var(--op-text-caption);font-weight:700}
-.reference-board .agent-add-card{min-height:154px;display:grid;place-content:center;justify-items:center;gap:9px;border:1px dashed #afc1dc;border-radius:var(--op-radius-surface);background:#f8fbffbb;color:#5c7db6}
-.reference-board .agent-add-card:hover{background:var(--op-color-surface);border-color:#6990d7}
-.reference-board .agent-add-card span{display:grid;place-items:center;width:36px;height:36px;border-radius:var(--op-radius-control);background:#e9f0fd}
-.reference-board .agent-add-card strong{font-size:var(--op-text-caption)}
 .board-schedule-list{display:grid;gap:12px;align-content:start}
 .board-schedule-list>button{display:flex;align-items:center;gap:12px;width:100%;height:auto;min-height:80px;padding:16px;text-align:left;border:1px solid var(--op-color-border);border-radius:var(--op-radius-surface);background:var(--op-color-surface)}
 .board-schedule-list>button>span:nth-child(2){flex:1;min-width:0}
@@ -644,15 +630,40 @@ html .create-agent-employees .agent-editor-row.inactive{opacity:.5;cursor:defaul
 .reference-board .agent-list-card>.status{grid-column:3;grid-row:1;align-self:center}
 html body .reference-board .agent-list-settings{top:50%;right:var(--sp-4);bottom:auto;width:var(--control);height:var(--control);display:grid;place-items:center;padding:0;border-radius:var(--r);transform:translateY(-50%);color:var(--ink-2)}
 html body .reference-board .agent-list-settings:hover{background:var(--surface-2);color:var(--ink)}
-.reference-board .agent-add-card{min-height:96px}
 .reference-board .agent-list-card{grid-template-columns:40px minmax(0,1fr) auto}
 .reference-board .agent-card-identity{min-width:0}
 .reference-board .agent-card-identity :is(strong,small){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .reference-board .agent-list-card{gap:var(--sp-2) 12px;padding:var(--sp-4) 60px var(--sp-4) var(--sp-4)}
 .reference-board .agent-list-card .agent-card-identity strong{font:var(--t-body-strong)}
 html body .reference-board .agent-list-settings{right:12px}
-/* Agent list: 16px between cards; the add tile is a white card with a dashed outline, icon and label side by side */
+/* Agent list: 16px between cards */
 .reference-board .agent-grid{gap:var(--sp-4)}
-.reference-board .agent-add-card{min-height:72px;display:flex;align-items:center;justify-content:center;gap:var(--sp-2);border:1px dashed var(--line-strong);background:var(--surface)}
-.reference-board .agent-add-card:hover{background:var(--surface);border-color:var(--ink-3)}
-.reference-board .agent-add-card>span{width:auto;height:auto;background:none}
+/* Toolbar: filters, search, 新增 Agent on one right-aligned row. Without room for that (narrow window, wide panel)
+   the filters wrap under search and 新增 instead of running into the page title.
+   新增 Agent stays here whatever the number of agents and in both views. */
+html body .board-toolbar{left:320px;flex-flow:row wrap-reverse;justify-content:flex-end;align-items:center;gap:var(--sp-2)}
+:is(.board-toolbar-filters,.board-toolbar-actions){display:flex;align-items:center;gap:var(--sp-2);max-width:100%}
+.board-add-agent{flex:none;height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--ink);font:var(--t-label);font-weight:500;color:#fff;white-space:nowrap;cursor:pointer}
+.board-add-agent:hover{background:#2c2c30}
+.reference-board .agent-grid{top:128px}
+@media(max-width:1060px){html body .board-toolbar{left:104px;justify-content:flex-start}
+.reference-board .agent-grid,.reference-board.panel-wide .agent-grid{top:216px}}
+@media(max-width:720px){html body .board-toolbar{left:72px;overflow:visible}
+.board-toolbar-filters{overflow-x:auto;scrollbar-width:none}
+.board-toolbar-filters>*{flex:none}
+.board-toolbar-actions{width:100%}
+html body .board-toolbar .agent-search{flex:1 1 0;width:auto;min-width:0}
+.reference-board .agent-grid,.reference-board.panel-wide .agent-grid{top:176px}}
+/* Empty tab: centred in the open area between the rail and the panel, in the system grey */
+.reference-board .empty-scene{position:absolute;inset:0 calc(var(--panel) + var(--sp-12)) 0 104px;height:auto;gap:var(--sp-2);padding:0 var(--sp-6);color:var(--ink-2);text-align:center}
+.reference-board .empty-scene h3{margin:var(--sp-2) 0 0;font:var(--t-title);color:var(--ink-2)}
+.reference-board .empty-scene p{margin:0;font:var(--t-label);color:var(--ink-2)}
+@media(max-width:720px){.reference-board .empty-scene{inset:176px var(--sp-4) calc(40% + 24px) 72px}}
+/* Panel: the content scrolls above the cost row; its scrollbar shows while scrolling and hides when idle */
+.reference-board .board-panel>.panel-cost{position:static;flex:none}
+.reference-board .board-panel>.panel-content{padding-right:calc(var(--sp-6) - 8px);padding-bottom:var(--sp-6);scrollbar-width:auto;scrollbar-color:auto;scrollbar-gutter:stable}
+.board-panel>.panel-content::-webkit-scrollbar{width:8px}
+.board-panel>.panel-content::-webkit-scrollbar-track{background:transparent}
+.board-panel>.panel-content::-webkit-scrollbar-thumb{border:2px solid var(--surface);border-radius:var(--r);background:transparent}
+.board-panel>.panel-content.is-scrolling::-webkit-scrollbar-thumb{background:var(--line-strong)}
+.board-panel>.panel-content::-webkit-scrollbar-thumb:hover{background:var(--ink-3)}

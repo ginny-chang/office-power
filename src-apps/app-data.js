@@ -1,5 +1,6 @@
 import {BriefcaseBusiness,Wrench,Monitor,CalendarDays,Clock,ClipboardList,ReceiptText,Leaf,Users,Ticket} from 'lucide-react';
 // App types shown on cards and in the catalog filter, in display order.
+export const appsStorageKey='office-nova-apps-v2';
 export const appTypes=['營運與資產','人資與出勤','專案協作','財務管理','業務管理','生活助理'];
 export const initial=[
  ['equipment','器材管理','營運與資產','員工自助借還器材，追蹤每一次借用與歸還。','Ramble',BriefcaseBusiness,'#678d9b',18,0,['投影機 · 可借用','視訊鏡頭 · 已借出','會議麥克風 · 可借用']],

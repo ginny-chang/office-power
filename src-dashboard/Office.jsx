@@ -99,21 +99,13 @@ function Station({agent,index,onSelect,onSettings,read,reduced}){
     </group>
  <Agent at={[-.22,.31,-.38]} index={index} reduced={reduced} hovered={hovered} onHover={e=>{e.stopPropagation();setHovered(true)}} onLeave={()=>setHovered(false)} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
  <Html position={[.18,.47,1.24]} center zIndexRange={[5,1]}><div className="bot-name-actions" {...hoverProps} data-hovered={hovered}><Button variant="plain" type="button" data-agent={agent.id} data-hovered={hovered} className="bot-label" style={{padding:'7px 11px',borderRadius:12,fontSize:12,color:agent.color,background:'#fcfdff',boxShadow:'0 3px 10px #66779920'}} onClick={()=>onSelect(agent.id)}><AgentIcon agent={agent.id} emoji={agent.emoji} size={21}/>{agent.name}</Button>{onSettings&&<Button variant="plain" type="button" className="bot-settings-button" aria-label={`設定 ${agent.name}`} onClick={e=>{e.stopPropagation();onSettings(agent.id)}}><Settings size={14}/>設定</Button>}</div></Html>
- {agent.event&&!read.includes(agent.id)&&<Html position={[0,3.15,.1]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" {...hoverProps} className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
+ {agent.event&&agent.published!==false&&!read.includes(agent.id)&&<Html position={[0,3.15,.1]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" {...hoverProps} className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
  </group>
 }
 function Connection({to,index,reduced}){
  const dot=useRef();const path=useMemo(()=>new THREE.LineCurve3(new THREE.Vector3(0,.07,0),new THREE.Vector3(to[0],.07,to[2])),[to]);
  useFrame(({clock})=>{dot.current.position.copy(path.getPoint(reduced?.5:(clock.elapsedTime*.14+index*.16)%1))});
  return <><mesh><tubeGeometry args={[path,1,.025,6,false]}/><meshBasicMaterial color="#fff" toneMapped={false}/></mesh><group ref={dot}><mesh><sphereGeometry args={[.075,12,8]}/><meshBasicMaterial color="#fff" toneMapped={false}/></mesh><mesh><sphereGeometry args={[.14,12,8]}/><meshBasicMaterial color="#fff" transparent opacity={.23} depthWrite={false} toneMapped={false}/></mesh></group></>
-}
-function AddAgentSpot({position,onCreate}){
- return <group position={position}>
-  <mesh position={[0,.07,0]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.86,.94,48]}/><meshBasicMaterial color="#ffffff" transparent opacity={.38} side={THREE.DoubleSide}/></mesh>
-  <mesh position={[0,.13,0]}><cylinderGeometry args={[.88,.88,.22,48]}/><meshStandardMaterial color="#ecf3ff" roughness={.5} transparent opacity={.38}/></mesh>
-  <mesh position={[0,.25,0]} rotation={[-Math.PI/2,0,0]}><circleGeometry args={[.80,48]}/><meshStandardMaterial color="#f8fbff" transparent opacity={.35} roughness={.6}/></mesh>
-  <Html position={[0,.62,0]} center zIndexRange={[7,4]}><Button variant="plain" className="office-add-agent" type="button" onClick={event=>{event.stopPropagation();onCreate()}} aria-label="新增 Agent"><span>＋</span><small>新增 Agent</small></Button></Html>
- </group>
 }
 function Camera({reset,controls,reduced,intro,radius,frame}){
  const {camera,size,invalidate}=useThree();const elapsed=useRef(0),initial=useRef(true);
@@ -147,7 +139,7 @@ function BlueFloor(){
  useEffect(()=>()=>texture.dispose(),[texture]);
  return <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.025,0]}><planeGeometry args={[160,130]}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh>
 }
-function Scene({agents,allAgents=agents,onSelect,onSettings,onCreate,showAdd,read,reset,reduced,onReady,frame}){
+function Scene({agents,allAgents=agents,onSelect,onSettings,read,reset,reduced,onReady,frame}){
  const controls=useRef(),intro=useRef(!reduced);
  const layout=useMemo(()=>officeLayout(allAgents),[allAgents]);
  const visibleAgents=layout.agents.filter(a=>agents.some(visible=>visible.id===a.id));
@@ -155,8 +147,7 @@ function Scene({agents,allAgents=agents,onSelect,onSettings,onCreate,showAdd,rea
  return <><color attach="background" args={['#eeeef2']}/><ambientLight intensity={.9}/><hemisphereLight args={['#ffffff','#c7c7cc',1.15]}/><directionalLight position={[-3,9,6]} intensity={2.4} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-15} shadow-camera-right={15} shadow-camera-top={15} shadow-camera-bottom={-15} shadow-normalBias={.03}/><directionalLight position={[8,4,-6]} color="#e7f0ff" intensity={1.4}/>
  <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.03,0]} receiveShadow><planeGeometry args={[160,130]}/><meshStandardMaterial color="#e8e8ec" roughness={.8}/></mesh><BlueFloor/>
  <gridHelper args={[140,140,'#ffffff','#ffffff']} scale={[1,1,.81]} position={[0,-.009,0]} material-transparent material-opacity={.22}/>
- {visibleAgents.map((a,i)=><React.Fragment key={a.id}>{a.id!=='nova'&&<Connection to={a.at} index={i} reduced={reduced}/>}<Station agent={a} index={i} onSelect={onSelect} onSettings={onSettings} read={read} reduced={reduced}/></React.Fragment>)}
- {showAdd&&<AddAgentSpot position={[0,0,layout.radius+2.4]} onCreate={onCreate}/>}
- <Camera reset={reset} controls={controls} reduced={reduced} intro={intro} radius={layout.radius+(showAdd?1.8:0)} frame={frame}/><OrbitControls ref={controls} onStart={()=>{intro.current=false}} enablePan enableZoom screenSpacePanning mouseButtons={{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}} minZoom={3} maxZoom={150} target={[0,.35,0]} enableDamping={!reduced} dampingFactor={.08}/></>
+ {visibleAgents.map((a,i)=><React.Fragment key={a.id}>{a.id!=='nova'&&visibleAgents.some(b=>b.id==='nova')&&<Connection to={a.at} index={i} reduced={reduced}/>}<Station agent={a} index={i} onSelect={onSelect} onSettings={onSettings} read={read} reduced={reduced}/></React.Fragment>)}
+ <Camera reset={reset} controls={controls} reduced={reduced} intro={intro} radius={layout.radius} frame={frame}/><OrbitControls ref={controls} onStart={()=>{intro.current=false}} enablePan enableZoom screenSpacePanning mouseButtons={{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}} minZoom={3} maxZoom={150} target={[0,.35,0]} enableDamping={!reduced} dampingFactor={.08}/></>
 }
 export default function Office(props){const [visible,setVisible]=useState(true);useEffect(()=>{const fn=()=>setVisible(!document.hidden);document.addEventListener('visibilitychange',fn);return()=>document.removeEventListener('visibilitychange',fn)},[]);return <div className="three-office" aria-label="可水平旋轉與縮放的 3D AI 辦公室"><Canvas orthographic shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[24,38,20],zoom:18,near:.1,far:180}} gl={{antialias:true,powerPreference:'high-performance'}}><Scene {...props}/></Canvas></div>}

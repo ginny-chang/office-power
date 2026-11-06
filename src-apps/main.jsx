@@ -4,7 +4,7 @@ import {Search,User,Undo2,X,ChevronDown,Check,Maximize2,Plus,MessageCircle,Layou
 import WorkspaceRail from '../src-shared/WorkspaceRail.jsx';
 import {useUserRole} from '../src-shared/UserRole.jsx';
 import useLocalData from '../src-shared/useLocalData.js';
-import {appSeed,appTypes,migrateApps,marketCatalog} from './app-data.js';
+import {appSeed,appTypes,appsStorageKey,migrateApps,marketCatalog} from './app-data.js';
 import AppScreen from './AppScreen.jsx';
 import {TypeIcon,paletteFor} from './type-icons.jsx';
 import AppEditor from './AppEditor.jsx';
@@ -24,7 +24,7 @@ function MarketCard({item,installed,onOpen,onAdd,onChat}){
 }
 function App(){
  const isAdmin=useUserRole()==='admin';
- const [apps,setApps,error]=useLocalData('office-nova-apps-v2',appSeed),[trash,setTrash]=useLocalData('office-nova-app-trash-v1',[]);
+ const [apps,setApps,error]=useLocalData(appsStorageKey,appSeed),[trash,setTrash]=useLocalData('office-nova-app-trash-v1',[]);
  const [query,setQuery]=useState(''),[type,setType]=useState(''),[typeOpen,setTypeOpen]=useState(false),[library,setLibrary]=useState('mine'),[editing,setEditing]=useState(new URLSearchParams(location.search).get('edit'));
  // Move saved apps (and trashed ones) off old seed authors and merged categories, keeping publish/delete state.
  useLayoutEffect(()=>{if(migrateApps(apps)!==apps)setApps(migrateApps);if(migrateApps(trash)!==trash)setTrash(migrateApps)},[]);

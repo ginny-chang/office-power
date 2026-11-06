@@ -13,6 +13,8 @@
 
   /* Accents */
   --lime:#e5f68c;--lime-ink:#3d4a00;
+  /* Lime for chart marks on white: lines and the split bar */
+  --lime-strong:#c2d177;
   /* NOVA App types: six soft hues around the lime primary.
      tile = squircle and type chip, top/bottom = glyph gradient, ink = chip text (AA on the tile). */
   --type-butter-tile:#fcf9f3;--type-butter-top:#f1dfab;--type-butter-bottom:#ba9838;--type-butter-ink:#504524;
@@ -21,7 +23,7 @@
   --type-aqua-tile:#f5f9fc;--type-aqua-top:#c5e4f5;--type-aqua-bottom:#4e97c2;--type-aqua-ink:#29495b;
   --type-lavender-tile:#faf9fd;--type-lavender-top:#e8daf9;--type-lavender-bottom:#a07fd4;--type-lavender-ink:#54377a;
   --type-peach-tile:#fcf9f6;--type-peach-top:#f6dac6;--type-peach-bottom:#c48456;--type-peach-ink:#5c3f29;
-  /* Delete and failure, and nothing else: red text or status dot, a faint red wash on hover */
+  /* Delete, failure and a value that fell: red text or status dot, a faint red wash behind it */
   --danger:#d93036;--danger-soft:#fdeeee;
   --mint:#cfe7de;--mint-strong:#7fd0c3;--mint-ink:#1f6b5f;
   --lavender:#e3e6f3;--lavender-strong:#a9b3e0;--lavender-ink:#3e4a86;
@@ -259,11 +261,11 @@ html .model-options button>span{grid-template-columns:1fr}
 
 /* One field, site-wide: grey fill, no border, 12px radius, body text, 16px in from the sides; a textarea also has 12px above and below.
    Wrapped fields (search capsules, composers, sort boxes) and filters on the canvas style their wrapper instead; App previews keep their theme. */
-html body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden]),textarea,select):not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,[class*=screen-]) *){border:0!important;border-radius:var(--r);background-color:var(--surface-2)!important;font:var(--t-body);color:var(--ink);box-sizing:border-box}
-html body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden]),select):not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,[class*=screen-]) *):not(.model-search-wrap input){padding-left:var(--sp-4)!important}
-html body input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden]):not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,[class*=screen-]) *):not(.model-search-wrap input){padding-right:var(--sp-4)!important}
-html body textarea:not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,[class*=screen-]) *){min-height:var(--control);padding:12px var(--sp-4)!important;line-height:20px!important;resize:vertical}
-html body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden]),textarea,select):not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,[class*=screen-]) *)::placeholder{color:var(--ink-3)}
+html body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden]),textarea,select):not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,.usage-actions,[class*=screen-]) *){border:0!important;border-radius:var(--r);background-color:var(--surface-2)!important;font:var(--t-body);color:var(--ink);box-sizing:border-box}
+html body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden]),select):not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,.usage-actions,[class*=screen-]) *):not(.model-search-wrap input){padding-left:var(--sp-4)!important}
+html body input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden]):not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,.usage-actions,[class*=screen-]) *):not(.model-search-wrap input){padding-right:var(--sp-4)!important}
+html body textarea:not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,.usage-actions,[class*=screen-]) *){min-height:var(--control);padding:12px var(--sp-4)!important;line-height:20px!important;resize:vertical}
+html body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden]),textarea,select):not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,.usage-actions,[class*=screen-]) *)::placeholder{color:var(--ink-3)}
 
 /* One focus state for every field and search box: white fill and the soft ring on the outermost box, never an outline.
    A wrapped field (search, composer, sort box) passes it to its wrapper; App previews keep their own theme. */
@@ -282,7 +284,8 @@ html .bot-name-actions{gap:var(--sp-2)}
 html .bot-name-actions>.op-button{gap:var(--sp-2)}
 /* Office bubbles: status on the first line, the event below; they size to their text instead of the button height */
 html .reference-board .bot-bubble.op-button{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:4px;width:auto;min-height:0;padding:var(--sp-2) var(--sp-4);border:0;text-align:left;white-space:nowrap}
-html .reference-board .bot-bubble.op-button:hover{border:0;background:var(--surface)}
+html .reference-board .bot-bubble.op-button{background:var(--lime)}
+html .reference-board .bot-bubble.op-button:hover{border:0;background:var(--lime);box-shadow:var(--shadow-sheet)}
 html .reference-board .bot-bubble .bubble-meta{display:flex;gap:var(--sp-2);margin:0;font:var(--t-meta)}
 html .office-header{gap:var(--sp-6)}
 html a.brand{gap:var(--sp-2)}
@@ -398,7 +401,6 @@ html .agent-interview{position:fixed;inset:0 0 0 80px;z-index:40;width:auto;heig
 .agent-interview-prev{flex:none;height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:1px solid var(--ink);border-radius:var(--r);background:var(--surface);font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
 .agent-interview-prev:hover:not(:disabled){background:var(--surface-2)}
 .agent-interview-prev:disabled{border-color:var(--line-strong);background:var(--surface-3);color:var(--ink-3);cursor:not-allowed}
-.agent-interview-timeline>h2{margin:0 0 var(--sp-6);font:var(--t-title);color:var(--ink)}
 .agent-interview-timeline>ol{display:grid;gap:var(--sp-6);margin:0;padding:0;list-style:none}
 .agent-interview-timeline>ol>li{position:relative;display:flex;gap:var(--sp-4)}
 .agent-interview-timeline>ol>li:not(:last-child)::before{content:'';position:absolute;left:20px;top:var(--control);bottom:calc(-1 * var(--sp-6));width:1px;background:var(--line-strong)}
@@ -415,10 +417,99 @@ html .agent-interview{position:fixed;inset:0 0 0 80px;z-index:40;width:auto;heig
 .agent-interview-answers p{margin:0;font:var(--t-label);color:var(--ink-2)}
 .agent-interview-answers strong{font:var(--t-body-strong);color:var(--ink);overflow-wrap:anywhere}
 .agent-interview-answers small{font:var(--t-label);color:var(--ink-3)}
-.agent-interview-spec{display:grid;gap:var(--sp-6);margin-top:var(--sp-6);padding-top:var(--sp-6);border-top:1px solid var(--line)}
-html .agent-interview-spec :is(input:not([type=checkbox],[type=radio]),textarea,select){width:100%}
-html .agent-interview-spec label.op-search input{padding:0 var(--sp-10);background:none}
-.agent-interview-spec-actions{position:sticky;bottom:calc(-1 * var(--sp-6));display:flex;justify-content:flex-end;margin:0 calc(-1 * var(--sp-6)) calc(-1 * var(--sp-6));padding:var(--sp-4) var(--sp-6);border-top:1px solid var(--line);background:var(--surface)}
+/* After the interview: the summary and revisions on the left, the Blueprint on the right */
+.agent-interview-timeline>header{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);margin-bottom:var(--sp-6)}
+.agent-interview-timeline>header h2{margin:0;font:var(--t-title);color:var(--ink)}
+.agent-interview-timeline>header em{height:24px;display:inline-flex;align-items:center;padding:0 var(--sp-2);border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);font-style:normal;color:var(--ink-2)}
+.agent-interview-log{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:var(--sp-4);padding:0 var(--sp-6) var(--sp-6)}
+.agent-interview-summary{display:grid;gap:var(--sp-2);padding:var(--sp-4);border-radius:var(--r);background:var(--surface-2);color:var(--ink)}
+.agent-interview-summary small{display:flex;align-items:center;gap:var(--sp-2);font:var(--t-meta);font-weight:500;color:var(--ink-2)}
+.agent-interview-summary h3{margin:0;font:var(--t-title);color:var(--ink)}
+.agent-interview-summary h4{margin:var(--sp-2) 0 0;font:var(--t-body-strong);color:var(--ink)}
+.agent-interview-summary ul,.agent-blueprint ul{display:grid;gap:4px;margin:0;padding-left:var(--sp-4);font:var(--t-label);color:var(--ink-2)}
+.agent-interview-summary p{margin:var(--sp-2) 0 0;font:var(--t-body-strong);color:var(--ink)}
+.agent-interview-reply{display:flex;align-items:center;gap:var(--sp-2);margin:0;font:var(--t-body);color:var(--ink)}
+.agent-interview-reply.muted{font:var(--t-label);color:var(--ink-2)}
+.agent-interview-revise{flex:none;display:grid;gap:var(--sp-2);padding:var(--sp-4) var(--sp-6) var(--sp-6);border-top:1px solid var(--line)}
+.agent-interview-revise h3{margin:0;font:var(--t-body-strong);color:var(--ink)}
+.agent-interview-revise>p{margin:0 0 var(--sp-2);font:var(--t-meta);color:var(--ink-2)}
+.agent-interview-chips{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-2)}
+.agent-interview-chips button{height:var(--control-sm);display:inline-flex;align-items:center;gap:4px;padding:0 var(--sp-2);border:0;border-radius:var(--r);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-strong);font:var(--t-meta);font-weight:500;color:var(--ink);cursor:pointer}
+.agent-interview-chips button:hover:not(:disabled){background:var(--surface-2)}
+.agent-interview-chips button:disabled{color:var(--ink-3);cursor:not-allowed}
+.agent-interview-revise .agent-interview-composer{margin:0;padding:0}
+.agent-blueprint{margin:var(--sp-6) 0 0 60px;border:1px solid var(--line);border-radius:var(--r);transition:opacity .2s var(--ease)}
+.agent-blueprint.updating{opacity:.5}
+.agent-blueprint>header{display:grid;gap:var(--sp-2);padding:var(--sp-6)}
+.agent-blueprint>header small{font:var(--t-meta);font-weight:500;color:var(--ink-2)}
+.agent-blueprint>header h3{margin:0;font:var(--t-title);color:var(--ink)}
+.agent-blueprint>header p{margin:0;font:var(--t-label);color:var(--ink-2)}
+.agent-blueprint-tags{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-2)}
+.agent-blueprint-tags span{height:24px;display:inline-flex;align-items:center;padding:0 var(--sp-2);border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);color:var(--ink-2)}
+.agent-blueprint-section{border-top:1px solid var(--line)}
+.agent-blueprint-section>summary{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-4) var(--sp-6);font:var(--t-body-strong);color:var(--ink);list-style:none;cursor:pointer}
+.agent-blueprint-section>summary::-webkit-details-marker{display:none}
+.agent-blueprint-section>summary>span{flex:1}
+.agent-blueprint-section>summary>svg:last-child{color:var(--ink-2);transition:transform .2s var(--ease)}
+.agent-blueprint-section:not([open])>summary>svg:last-child{transform:rotate(-90deg)}
+.agent-blueprint-section>div{display:grid;gap:var(--sp-2);padding:0 var(--sp-6) var(--sp-4);font:var(--t-label);color:var(--ink-2)}
+.agent-blueprint-section p{margin:0}
+.agent-blueprint-identity{display:flex;align-items:center;gap:12px}
+.agent-blueprint-identity>i{width:32px;height:32px;display:grid;place-items:center;border-radius:var(--r);background:var(--surface-2);font-style:normal}
+.agent-blueprint-identity>span{display:grid;gap:2px}
+.agent-blueprint-identity strong{font:var(--t-body-strong);color:var(--ink)}
+.agent-blueprint-identity small{font:var(--t-meta);color:var(--ink-2)}
+.agent-blueprint-section dl{display:grid;gap:12px;margin:var(--sp-2) 0 0}
+.agent-blueprint-section dt{font:var(--t-meta);color:var(--ink-2)}
+.agent-blueprint-section dd{margin:4px 0 0;font:var(--t-label);color:var(--ink)}
+.agent-blueprint-section dd.prompt{padding:12px var(--sp-4);border-radius:var(--r);background:var(--surface-2);white-space:pre-wrap;overflow-wrap:anywhere}
+.agent-blueprint-section dd.palette{display:flex;align-items:center;gap:var(--sp-2)}
+.agent-blueprint-section dd.palette .agent-interview-swatches{width:96px;height:var(--sp-4)}
+.agent-blueprint>footer{display:grid;gap:var(--sp-2);padding:var(--sp-6);border-top:1px solid var(--line)}
+.agent-blueprint>footer h4{margin:0;font:var(--t-title);color:var(--ink)}
+.agent-blueprint>footer>p{margin:0;font:var(--t-label);color:var(--ink-2)}
+.agent-blueprint fieldset{min-width:0;margin:var(--sp-2) 0 0;padding:0;border:0}
+.agent-blueprint legend{padding:0;font:var(--t-body-strong);color:var(--ink)}
+.agent-blueprint fieldset>p{margin:4px 0 var(--sp-2);font:var(--t-meta);color:var(--ink-2)}
+.agent-blueprint fieldset>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2)}
+.agent-blueprint fieldset label{display:flex;align-items:flex-start;gap:12px;padding:12px var(--sp-4);border-radius:var(--r);box-shadow:inset 0 0 0 1px var(--line-strong);cursor:pointer}
+.agent-blueprint fieldset label:hover{background:var(--surface-2)}
+.agent-blueprint fieldset label.selected{box-shadow:inset 0 0 0 1px var(--ink)}
+.agent-blueprint fieldset:disabled label{opacity:.6;cursor:default;background:none}
+.agent-blueprint fieldset input{width:16px;height:16px;flex:none;margin:2px 0 0;accent-color:var(--ink)}
+.agent-blueprint fieldset label>span{display:grid;gap:2px;min-width:0}
+.agent-blueprint fieldset strong{font:var(--t-body-strong);color:var(--ink)}
+.agent-blueprint fieldset small{font:var(--t-meta);color:var(--ink-2)}
+.agent-blueprint-confirm{display:flex;justify-content:flex-end;margin-top:var(--sp-4)}
+:is(.agent-blueprint-confirm,.agent-blueprint-done) :is(button,a){height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:1px solid transparent;border-radius:var(--r);background:var(--ink);font:var(--t-label);font-weight:500;color:#fff;white-space:nowrap;cursor:pointer}
+:is(.agent-blueprint-confirm,.agent-blueprint-done) :is(button,a):hover:not(:disabled){background:#2c2c30}
+.agent-blueprint-done a{text-decoration:none}
+.agent-blueprint-done button.secondary{border-color:var(--line-strong);background:var(--surface);color:var(--ink)}
+.agent-blueprint-done button.secondary:hover:not(:disabled){background:var(--surface-2)}
+.agent-blueprint-confirm button:disabled{border-color:var(--line-strong);background:var(--surface-3);color:var(--ink-3);cursor:not-allowed}
+.agent-blueprint-done{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:var(--sp-4)}
+.agent-blueprint-done>i{width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:var(--r);background:var(--mint);color:var(--mint-ink)}
+.agent-blueprint-done>div{display:flex;gap:var(--sp-2);flex:none;margin-left:auto}
+.agent-blueprint-done>span{flex:1 1 200px;display:grid;gap:2px;min-width:0}
+.agent-blueprint-done strong{font:var(--t-body-strong);color:var(--ink)}
+.agent-blueprint-done small{font:var(--t-meta);color:var(--ink-2)}
+html body .agent-detail .agent-delete{border:1px solid var(--line-strong);background:var(--surface);color:var(--danger)}
+html body .agent-detail .agent-delete:hover{background:var(--danger-soft)}
+.agent-delete-copy{font:var(--t-body);color:var(--ink-2)}
+/* Agent settings opened from another flow: a centred modal over that page, same content as the sub page */
+html body dialog.agent-settings.agent-detail.agent-settings-modal{inset:0;width:min(1040px,calc(100vw - 48px));height:min(860px,calc(100dvh - 48px));margin:auto;padding:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet)}
+html body dialog.agent-settings.agent-settings-modal::backdrop{background:rgba(18,18,20,.2);backdrop-filter:blur(4px)}
+html body .agent-settings-modal .agent-page-head{padding:var(--sp-6);border-bottom:1px solid var(--line)}
+html body .agent-settings-modal .agent-page-title{align-items:center}
+html body .agent-settings-modal .agent-settings-identity>span{width:44px;height:44px;background:var(--surface-2);font-size:24px}
+html body .agent-settings-modal .agent-settings-identity h2{font:var(--t-title);letter-spacing:0}
+html body .agent-settings-modal .agent-settings-identity p{margin-top:2px;font:var(--t-meta)}
+html body .agent-detail.agent-settings-modal .agent-settings-body{grid-template-columns:200px minmax(0,1fr);gap:0;margin:0}
+html body .agent-detail.agent-settings-modal .agent-settings-body>nav{width:auto;min-width:0;border-right:1px solid var(--line);border-radius:0;box-shadow:none}
+html body .agent-detail.agent-settings-modal .agent-settings-content{border-radius:0;box-shadow:none;padding:var(--sp-6)}
+html body .agent-settings-modal>.agent-page-actions{justify-content:flex-end;padding:var(--sp-4) var(--sp-6);border-top:1px solid var(--line)}
+html body .agent-settings-modal>.agent-page-actions [role=status]{flex:1}
+@media(max-width:650px){html body .agent-detail.agent-settings-modal .agent-settings-body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}html body .agent-detail.agent-settings-modal .agent-settings-body>nav{border-right:0;border-bottom:1px solid var(--line)}.agent-settings-modal>.agent-page-actions{flex-wrap:wrap}}
 @media(max-width:900px){
 html .agent-interview{inset:0;overflow:auto}
 .agent-interview-head{flex-direction:column;align-items:flex-start}
