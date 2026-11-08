@@ -13,7 +13,7 @@
 
 | Area | Decision |
 | --- | --- |
-| My Board | Keep spatial Office and actionable Agent cards. Use shared control tokens. |
+| My Board | Keep spatial Office and actionable Agent cards. Use shared control tokens. The six agents share one glossy white robot; the tool beside each follows the role: operations archive, HR badge, project clipboard, finance calculator, sales bars, and NOVA's lime leaf. |
 | Chat | Preserve Agent/conversation lists; flatten welcome content and suggested questions. |
 | NOVA Apps | Keep cards for app screenshots and launch/edit actions; remove card-shaped gallery container. |
 | APP Pack | Keep results/screenshots; use a single metric strip and version record list. |
