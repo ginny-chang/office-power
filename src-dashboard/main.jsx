@@ -15,7 +15,7 @@ import ScheduleSettings, {initialSchedules, scheduleLabel, nextRun} from './Sche
 
 const Office = lazy(() => import('./Office.jsx'));
 // Screen space covered by the title, toolbar and rail; the 3D office centres in what is left.
-const officeFrame=(w,h)=>w>720?{left:80,right:w>1100?400:344,top:w>1060?96:160}:{left:56,top:118,bottom:Math.round(h*.4)+12};
+const officeFrame=(w,h)=>w>720?{left:80,right:w>1100?400:344,top:w>1060?96:160,bottom:148}:{left:56,top:118,bottom:Math.round(h*.4)+12};
 // Thin line glyphs (Lucide, 1.5 stroke via tokens.css) behind the name-based API.
 const glyphs={grid:LayoutGrid,chat:MessageCircle,apps:Blocks,clock:Clock,studio:Box,people:Users,search:Search,arrow:ChevronRight,chevron:ChevronDown,expand:Maximize2,reset:RotateCcw,plus:Plus,pin:Pin,close:X,check:Check,bell:Bell,menu:Menu,sun:Sun,pause:Pause,play:Play,list:List,bolt:Zap,shield:Shield,calendar:CalendarDays,external:ExternalLink,folder:Folder,coin:CircleDollarSign,wallet:Wallet,audit:ScrollText,globe:Globe,pack:Package,settings:Settings,pencil:Pencil};
 export function Icon({name,size=20,...props}){const Glyph=glyphs[name]||LayoutGrid;return <Glyph size={size} aria-hidden="true" {...props}/>}
