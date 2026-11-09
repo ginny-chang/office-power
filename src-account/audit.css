@@ -1,5 +1,5 @@
 /* 稽核紀錄 reuses the usage page's card, table, tag and empty styles; only what is specific to it lives here */
-.audit-card>header p{margin:2px 0 0;font:var(--t-meta);color:var(--ink-2)}
+.audit-card>header p{margin:4px 0 0;font:var(--t-label);color:var(--ink-2)}
 .audit-filters{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--sp-2);min-width:0}
 .audit-filters select{width:176px}
 .audit-filters .op-search{width:320px}
@@ -14,7 +14,7 @@
 .audit-pager{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;padding:var(--sp-4) var(--sp-6);border-top:1px solid var(--line)}
 html .audit-pager .op-button{gap:4px;border:0;border-radius:var(--r);background:none;color:var(--ink-2)}
 html .audit-pager .op-button:hover:not(:disabled){background:var(--surface-2);color:var(--ink)}
-html .audit-pager .op-button[aria-current=page]{background:var(--ink);color:#fff}
+html .audit-pager .op-button[aria-current=page]{background:var(--action);color:var(--on-ink)}
 html .audit-pager .op-button:disabled{border:0;background:none;color:var(--ink-3)}
 /* Fixed height with 32px on every side, so switching tabs never resizes the dialog; the grey box takes the remaining space */
 html body dialog.audit-dialog[open]{display:flex;flex-direction:column;height:min(720px,calc(100dvh - 48px));max-height:none;overflow:hidden}

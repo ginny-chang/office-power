@@ -1,44 +1,43 @@
-/* 進階設定. Spacing follows DESIGN.md 3.3: 32 from page head to content, 16 between cards, 24 inside a card, 16 between groups, 8 from label to field. */
-.settings-tabs{margin-bottom:var(--sp-4)}
+/* 設定: 帳號 and 外觀與語言 for every role, then 模型 for admins. Spacing follows DESIGN.md 3.3: 24 from page head to content, 16 between cards, 24 inside a card, 16 between groups, 8 from label to field. */
 .settings-alert{margin:0 0 var(--sp-4)}
-.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4);align-items:stretch}
-.settings-grid.single>*,.settings-grid>.wide{grid-column:1/-1}
-html .settings-card.op-card{display:grid;align-content:start;gap:var(--sp-4);min-width:0;padding:var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
+.settings-stack{display:grid;gap:var(--sp-4)}
+/* Selects end where the second theme card ends: half the theme grid */
+.settings-card{--settings-col:calc((100% - var(--sp-4)) / 2)}
+html .settings-card.op-card{display:grid;align-content:start;gap:var(--sp-6);min-width:0;padding:var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
+/* Card heading shared with Runtime 管理: title, then a 4px gap to the description (DESIGN.md 3.3) */
+.settings-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-4)}
 .settings-card-head h2{margin:0;font:var(--t-title);color:var(--ink)}
 .settings-card-head p{margin:4px 0 0;font:var(--t-label);color:var(--ink-2)}
-.settings-fields{display:grid;gap:var(--sp-4)}
 .settings-card .manage-field{display:grid;gap:var(--sp-2);margin:0;font:var(--t-label);color:var(--ink-2)}
-.settings-model-row{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
-.settings-model-row select{flex:1;min-width:0}
-.settings-model-row .op-button{flex:none}
-.settings-current{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);margin:0;font:var(--t-label);color:var(--ink-2)}
+/* 帳號: three read-only facts on one row */
+.settings-account{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4);margin:0}
+.settings-account>div,.settings-model-meta>div{display:grid;align-content:start;gap:var(--sp-2);min-width:0}
+:is(.settings-account,.settings-model-meta) dt{font:var(--t-label);color:var(--ink-2)}
+:is(.settings-account,.settings-model-meta) dd{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);min-height:28px;margin:0;font:var(--t-body-strong);color:var(--ink);overflow-wrap:anywhere}
+/* 外觀與語言 */
+/* Beats the kit's .op-input:not(...) width:100% */
+html body .settings-card :is(.settings-language,.settings-model-row) select.op-input:not([type]){width:var(--settings-col)}
 .settings-themes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-4);min-width:0;margin:0;padding:0;border:0}
-.settings-themes>label{display:grid;align-content:start;gap:var(--sp-2);min-width:0;padding:var(--sp-4);border-radius:var(--r);background:var(--surface-2)}
+.settings-themes>legend{grid-column:1/-1;margin:0 0 var(--sp-2);padding:0;font:var(--t-label);color:var(--ink-2)}
+.settings-themes>label{cursor:pointer;display:grid;align-content:start;gap:var(--sp-2);min-width:0;padding:var(--sp-4);border-radius:var(--r);background:var(--surface-2)}
 .settings-themes>label.selected{background:var(--surface);box-shadow:inset 0 0 0 1px var(--ink)}
 .settings-theme-head{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
-.settings-theme-head input{width:16px;height:16px;flex:none;margin:0;accent-color:var(--ink)}
+.settings-theme-head input{width:16px;height:16px;flex:none;margin:0;accent-color:var(--action)}
 .settings-theme-head strong{flex:1;min-width:0;font:var(--t-body-strong);color:var(--ink)}
-.settings-themes>label:not(.selected) strong{color:var(--ink-2)}
+.settings-themes>label:has(input:disabled){cursor:default}
+.settings-themes>label:has(input:disabled) strong{color:var(--ink-2)}
 .settings-themes small{font:var(--t-meta);color:var(--ink-2)}
 .settings-swatches{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));height:24px;margin-top:var(--sp-2);overflow:hidden;border-radius:var(--r);box-shadow:inset 0 0 0 1px var(--line)}
 .settings-swatches i{display:block}
-.settings-env{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4);margin:0}
-.settings-env>div{display:grid;align-content:start;gap:var(--sp-2);min-width:0;padding:var(--sp-4);border-radius:var(--r);background:var(--surface-2)}
-.settings-env dt{font:var(--t-label);color:var(--ink-2)}
-.settings-env dd{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);min-width:0;margin:0;font:var(--t-body-strong);color:var(--ink);overflow-wrap:anywhere}
-.settings-env .usage-tag{background:var(--surface)}
-.settings-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-4)}
-.settings-go{flex:none;display:inline-flex;align-items:center;gap:4px;height:var(--control-sm);font:var(--t-label);font-weight:500;color:var(--ink-2);text-decoration:none}
-.settings-go:hover{color:var(--ink)}
-.settings-provider{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--sp-4);padding:var(--sp-4);border-radius:var(--r);background:var(--surface-2)}
-.settings-provider strong{font:var(--t-body-strong);color:var(--ink)}
-@media(max-width:1100px){.settings-themes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* 模型 */
+.settings-model-row{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
+.settings-model-row select{flex:none;min-width:0}
+.settings-model-row .op-button{flex:none}
+.settings-model-meta{display:flex;flex-wrap:wrap;gap:var(--sp-4) var(--sp-8);margin:0}
+@media(max-width:1100px){.settings-themes{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-card{--settings-col:100%}.settings-model-row select{flex:1 1 auto}}
 @media(max-width:800px){
-.settings-grid,.settings-env{grid-template-columns:minmax(0,1fr)}
-.settings-grid>*{grid-column:1/-1}
-.settings-tabs{display:flex;max-width:100%;overflow-x:auto;scrollbar-width:none}
-.settings-tabs>*{flex:none}
+.settings-account{grid-template-columns:minmax(0,1fr)}
 .settings-model-row{flex-wrap:wrap}
-.settings-model-row select{flex:1 1 100%}
+.settings-card{--settings-col:100%}
 }
-@media(max-width:560px){.settings-themes{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:560px){.settings-themes{grid-template-columns:minmax(0,1fr)}.settings-card{--settings-col:100%}}

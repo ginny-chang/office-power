@@ -27,7 +27,7 @@
 .create-agent-step{display:grid;gap:12px;min-width:0}
 .create-agent-step .create-agent-icons{margin-bottom:4px}
 .create-agent-label b{color:#d36252}
-.create-agent-dialog textarea,.create-agent-dialog select{width:100%;padding:12px 13px;border:1px solid #cedaec;border-radius:var(--op-radius-control);background:white;color:var(--op-color-text);font:inherit;font-size:var(--op-text-label)}
+.create-agent-dialog textarea,.create-agent-dialog select{width:100%;padding:12px 13px;border:1px solid #cedaec;border-radius:var(--op-radius-control);background:var(--surface);color:var(--op-color-text);font:inherit;font-size:var(--op-text-label)}
 .create-agent-dialog textarea{resize:vertical;min-height:160px;line-height:1.65}
 .create-agent-dialog textarea:focus,.create-agent-dialog select:focus{outline:2px solid #8aa9e3;outline-offset:1px}
 .create-agent-access{padding:0;border:0}

@@ -36,7 +36,7 @@
 .usage-legend i,.usage-chart-tip i{width:8px;height:8px;flex:none;border-radius:50%}
 i.tokens,i.output{background:var(--lime-strong)}
 i.cost,i.input{background:var(--ink)}
-.usage-chart-tip i.cost{background:#fff}
+.usage-chart-tip i.cost{background:var(--surface)}
 
 .usage-chart-wrap{display:grid;gap:var(--sp-6)}
 .usage-chart{position:relative;display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:240px auto;column-gap:var(--sp-2);row-gap:var(--sp-2)}
