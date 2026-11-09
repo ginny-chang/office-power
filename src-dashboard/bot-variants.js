@@ -37,6 +37,11 @@ export const DASHBOARD_BOTS = [
   {variant: 'life', name: '大腦總管 NOVA', role: '團隊協作'},
 ];
 
+// Existing roster status. attention is the alert: the robot waves and shows a point.
+export function isAgentAlert(agent) {
+  return agent?.status === 'attention';
+}
+
 export function botVariantFor(agent = {}) {
   if (byId[agent.id]) return byId[agent.id];
   const text = `${agent.name || ''} ${agent.role || ''}`;

@@ -2,19 +2,19 @@ import React,{useCallback,useEffect,useRef,useState} from 'react';
 import {Canvas,useFrame,useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {ChevronLeft,ChevronRight,Settings} from 'lucide-react';
-import {BotLighting,botVariantFor} from './office-bots.jsx';
-import {BOT_VARIANTS} from './bot-variants.js';
+import {BotLighting} from './office-bots.jsx';
+import {botVariantFor,isAgentAlert} from './bot-variants.js';
 import {RobotRow,ROW_PITCH} from './office-desk.jsx';
-function BotFace({variant}){
- const color=(BOT_VARIANTS[variant]||BOT_VARIANTS.life).color;
- return <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true" focusable="false"><rect x="10" y="16" width="28" height="26" rx="10" fill="#f7f8fa"/><rect x="16" y="8" width="5" height="9" rx="2.5" fill="#f4f5f7"/><rect x="27" y="8" width="5" height="9" rx="2.5" fill="#f4f5f7"/><rect x="15" y="7" width="5" height="3" rx="1" fill="#8e959e"/><rect x="28" y="7" width="5" height="3" rx="1" fill="#8e959e"/><rect x="14" y="21" width="20" height="13" rx="5" fill="#14161c"/><rect x="18" y="23" width="3.5" height="8" rx="1.7" fill="#fbfcff"/><rect x="26.5" y="23" width="3.5" height="8" rx="1.7" fill="#fbfcff"/><circle cx="36" cy="36" r="5.5" fill={color}/></svg>;
-}
+import {AgentPortrait,AlertPoint} from './bot-avatar.jsx';
 function AgentDock({agents,activeId,read,onFocus,onSettings}){
  return <div className="agent-dock" role="listbox" aria-label="Agent">{agents.map(agent=>{
   const fresh=!!(agent.event&&agent.published!==false&&!read.includes(agent.id));
+  const alert=isAgentAlert(agent);
   const selected=agent.id===activeId;
+  const label=[agent.name,fresh?'有新動態':null,alert?'等待你':null].filter(Boolean).join('，');
   return <div key={agent.id} className={`agent-dock-item${selected?' is-selected':''}${fresh?' has-update':''}`} role="presentation">
-   <button type="button" role="option" aria-selected={selected} className="agent-dock-avatar" aria-label={fresh?`${agent.name}，有新動態`:`${agent.name}`} onClick={()=>onFocus(agent.id)}><BotFace variant={botVariantFor(agent)}/></button>
+   <button type="button" role="option" aria-selected={selected} className="agent-dock-avatar" aria-label={label} onClick={()=>onFocus(agent.id)}><AgentPortrait variant={botVariantFor(agent)}/></button>
+   {alert&&<AlertPoint/>}
    {onSettings&&<button type="button" className="agent-dock-settings" aria-label={`設定 ${agent.name}`} onClick={()=>onSettings(agent.id)}><Settings size={16}/></button>}
   </div>;
  })}</div>;

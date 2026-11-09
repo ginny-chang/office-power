@@ -4,6 +4,7 @@ import {OrbitControls,Html} from '@react-three/drei';
 import * as THREE from 'three';
 import {OfficeBot,BotLighting} from '../src-dashboard/office-bots.jsx';
 import {DASHBOARD_BOTS} from '../src-dashboard/bot-variants.js';
+import {AgentPortrait,AlertPoint} from '../src-dashboard/bot-avatar.jsx';
 
 export default {
   title:'Product/Office bots',
@@ -28,7 +29,7 @@ function Lineup({reduced}){
       <meshStandardMaterial color="#f4f4f6" roughness={0.94}/>
     </mesh>
     {DASHBOARD_BOTS.map((bot,i)=><group key={bot.variant} position={[spots[i][0],0,spots[i][1]]}>
-      <OfficeBot variant={bot.variant} reduced={reduced} rest={0.18} index={i} scale={0.96}/>
+      <OfficeBot variant={bot.variant} reduced={reduced} alert={bot.variant==='hr'} rest={0.18} index={i} scale={0.96}/>
       <Html position={[0.12,0.02,1.15]} center zIndexRange={[4,0]} style={{pointerEvents:'none'}}>
         <div style={{width:168,textAlign:'center',whiteSpace:'nowrap',fontFamily:'Archivo,"Noto Sans TC",sans-serif',color:'#121214'}}>
           <div style={{fontSize:14,fontWeight:600,lineHeight:'20px'}}>{bot.name}</div>
@@ -56,3 +57,4 @@ function Showcase(){
 }
 
 export const SixVariants={name:'六種角色',render:()=><Showcase/>};
+export const Avatars={name:'頭像與提醒',render:()=><div style={{display:'flex',gap:20,alignItems:'flex-end',flexWrap:'wrap'}}>{DASHBOARD_BOTS.map(bot=>{const alert=bot.variant==='hr',fresh=bot.variant==='hr'||bot.variant==='operations';return <div key={bot.variant} style={{position:'relative',width:52,textAlign:'center'}}><div style={{width:48,height:48,margin:'0 auto',display:'grid',placeItems:'center',borderRadius:'50%',background:'#fff',boxShadow:fresh?'0 0 0 2px #3d4a00, 0 0 0 6px #e5f68c, 0 8px 18px rgba(18,18,20,.08)':'0 8px 18px rgba(18,18,20,.08)'}}><AgentPortrait variant={bot.variant}/></div>{alert&&<AlertPoint/>}<div style={{marginTop:12,fontSize:12,lineHeight:'16px',fontWeight:600,color:'#121214'}}>{bot.name}</div></div>})}</div>};

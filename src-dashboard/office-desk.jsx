@@ -4,7 +4,7 @@ import {CanvasTexture,SRGBColorSpace} from 'three';
 import {Html} from '@react-three/drei';
 import {Button} from '../src-shared/ui/index.jsx';
 import {OfficeBot} from './office-bots.jsx';
-import {BOT_VARIANTS,botVariantFor} from './bot-variants.js';
+import {BOT_VARIANTS,botVariantFor,isAgentAlert} from './bot-variants.js';
 
 function useBox(w,h,d,radius=0.04,segments=2){
  const geo=useMemo(()=>new RoundedBoxGeometry(w,h,d,segments,radius),[w,h,d,radius,segments]);
@@ -28,6 +28,23 @@ function Screen({color}){
  useEffect(()=>()=>map.dispose(),[map]);
  return <mesh position={[0,0,.02]}><planeGeometry args={[.62,.36]}/><meshBasicMaterial map={map} toneMapped={false}/></mesh>;
 }
+function watermarkTexture(variant){
+ const spec=BOT_VARIANTS[variant]||BOT_VARIANTS.life;
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
+ const ctx=canvas.getContext('2d');
+ ctx.fillStyle=spec.color;ctx.globalAlpha=.9;
+ ctx.translate(128,128);
+ if(spec.tool==='bars'){[ -46,0,46].forEach((x,i)=>{const h=70+i*28;ctx.fillRect(x-16,40-h,32,h)});}
+ else if(spec.tool==='leaf'){ctx.beginPath();ctx.ellipse(0,-8,62,86,0,0,Math.PI*2);ctx.fill();}
+ else if(spec.tool==='calculator'){ctx.fillRect(-54,-70,108,140);ctx.globalAlpha=.35;ctx.fillStyle='#fff';for(let r=0;r<4;r++)for(let c=0;c<3;c++)ctx.fillRect(-40+c*28,-28+r*28,18,18);}
+ else {ctx.fillRect(-58,-72,116,148);}
+ const map=new CanvasTexture(canvas);map.colorSpace=SRGBColorSpace;return map;
+}
+function Watermark({variant}){
+ const map=useMemo(()=>watermarkTexture(variant),[variant]);
+ useEffect(()=>()=>map.dispose(),[map]);
+ return <mesh position={[0,1.45,-1.85]} raycast={()=>null}><planeGeometry args={[2.5,2.3]}/><meshBasicMaterial map={map} transparent opacity={.16} depthWrite={false} toneMapped={false}/></mesh>;
+}
 function WorkDesk({color}){
  return <group position={[0,0,-1.05]}>
   <Box w={2.15} h={.07} d={.92} radius={.04} color="#e7e1d6" position={[0,.74,0]} rough={.55}/>
@@ -42,11 +59,16 @@ function Spot({agent,at,selected,fresh,reduced,onSelect}){
  const [hovered,setHovered]=useState(false);
  const variant=botVariantFor(agent);
  const accent=(BOT_VARIANTS[variant]||BOT_VARIANTS.life).color;
+ const alert=isAgentAlert(agent);
  return <group position={at} onPointerOver={e=>{e.stopPropagation();setHovered(true)}} onPointerOut={()=>setHovered(false)}>
-  <WorkDesk color={accent}/>
-  {selected&&<mesh rotation={[-Math.PI/2,0,0]} position={[0,.025,.15]} raycast={()=>null}><ringGeometry args={[.78,.9,48]}/><meshBasicMaterial color={fresh?'#e5f68c':'#121214'}/></mesh>}
-  <OfficeBot variant={variant} reduced={reduced} hovered={hovered||selected} rest={.18} index={at[0]} position={[0,0,.2]} scale={1.05} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
-  {fresh&&<Html position={[.2,2.35,.2]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
+  <Box w={3.35} h={.1} d={4.6} radius={.14} color="#fbfaf8" position={[0,.05,.45]} rough={.86} cast={false}/>
+  <Watermark variant={variant}/>
+  <group position={[0,.1,0]}>
+   <WorkDesk color={accent}/>
+   {selected&&<mesh rotation={[-Math.PI/2,0,0]} position={[0,.03,.35]} raycast={()=>null}><ringGeometry args={[.78,.9,48]}/><meshBasicMaterial color={fresh?'#e5f68c':'#121214'}/></mesh>}
+   <OfficeBot variant={variant} reduced={reduced} hovered={hovered||selected} alert={alert} rest={.18} index={at[0]} position={[0,0,.55]} scale={1.05} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
+   {fresh&&<Html position={[.2,2.55,.55]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
+  </group>
  </group>;
 }
 export const ROW_PITCH=4.15;
