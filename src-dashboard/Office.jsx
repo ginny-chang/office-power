@@ -19,11 +19,9 @@ function AgentDock({agents,activeId,read,onFocus,onSettings,onAdd}){
   </div>;
  })}{onAdd&&<button type="button" className="agent-dock-add" aria-label="新增 Agent" onClick={onAdd}><Plus size={20}/></button>}</div>;
 }
-function rowBounds(count,halfView){
- const last=Math.max(0,count-1)*ROW_PITCH,edge=1.7;
- const min=halfView-edge,max=last+edge-halfView;
- if(count<=1||min>max)return{min:last/2,max:last/2};
- return{min,max};
+function rowBounds(count){
+ const last=Math.max(0,(count-1)*ROW_PITCH);
+ return{min:0,max:last};
 }
 function RowCamera({count,focusIndex,onSettle,reduced,frame}){
  const {camera,size,gl,invalidate}=useThree();
@@ -31,7 +29,7 @@ function RowCamera({count,focusIndex,onSettle,reduced,frame}){
  const {left=0,right=0,top=0,bottom=0}=frame?.(size.width,size.height)||{};
  const freeW=Math.max(280,size.width-left-right-72),freeH=Math.max(280,size.height-top-bottom-12);
  const zoom=Math.max(24,Math.min(freeW/(ROW_PITCH*3.85),freeH/4.5));
- const bounds=rowBounds(count,freeW/zoom/2);
+ const bounds=rowBounds(count);
  const clamp=value=>Math.min(bounds.max,Math.max(bounds.min,value));
  useEffect(()=>{const dx=(right-left)/2,dy=(bottom-top)/2;if(dx||dy)camera.setViewOffset(size.width,size.height,dx,dy,size.width,size.height);else camera.clearViewOffset();camera.zoom=zoom;camera.updateProjectionMatrix();invalidate()},[camera,size.width,size.height,left,right,top,bottom,zoom,invalidate]);
  useEffect(()=>{target.current=clamp(Math.max(0,focusIndex)*ROW_PITCH);if(reduced)current.current=target.current;invalidate()},[focusIndex,bounds.min,bounds.max,reduced,invalidate]);
@@ -49,22 +47,22 @@ function RowCamera({count,focusIndex,onSettle,reduced,frame}){
  useFrame((_,delta)=>{
   const k=reduced?1:1-Math.exp(-delta*7);
   current.current+= (target.current-current.current)*k;
-  camera.position.set(current.current+.1,3.15,6.6);
-  camera.lookAt(current.current,2.85,.12);
+  camera.position.set(current.current+.15,4.6,8.4);
+  camera.lookAt(current.current,.7,.35);
   camera.zoom=zoom;camera.updateProjectionMatrix();
  });
  return null;
 }
 function Scene({agents,focusId,cameraIndex=2,onSelect,onSettle,read,reduced,onReady,frame}){
  useEffect(()=>{onReady?.()},[onReady]);
- return <><color attach="background" args={['#e7ebf0']}/><BotLighting/>
+ return <><color attach="background" args={['#f4f2ef']}/><BotLighting/>
  <RobotRow agents={agents} focusId={focusId} read={read} reduced={reduced} onSelect={onSelect}/>
  <RowCamera count={agents.length} focusIndex={cameraIndex} onSettle={onSettle} reduced={reduced} frame={frame}/></>
 }
 export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],...props}){
  const [visible,setVisible]=useState(true);
  const [focusId,setFocusId]=useState(null);
- const [cameraIndex,setCameraIndex]=useState(1.88);
+ const [cameraIndex,setCameraIndex]=useState(1);
  useEffect(()=>{const fn=()=>setVisible(!document.hidden);document.addEventListener('visibilitychange',fn);return()=>document.removeEventListener('visibilitychange',fn)},[]);
  useEffect(()=>{if(focusId&&!agents.some(agent=>agent.id===focusId))setFocusId(agents[0]?.id??null)},[agents,focusId]);
  const focus=agents.find(agent=>agent.id===focusId)||agents.find(agent=>agent.event&&!read.includes(agent.id))||agents[0];
