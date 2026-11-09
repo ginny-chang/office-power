@@ -74,7 +74,7 @@ svg.lucide{stroke-width:1.5}
 /* Stays above sub pages (z-index 40) so its tooltips are not covered */
 html .op-rail{z-index:50;background:var(--frame);border-right:0}
 .op-rail .op-rail-item{width:44px;height:44px;display:grid;place-items:center;border-radius:var(--r);background:none;color:var(--ink-2);transition:background .2s var(--ease),color .2s var(--ease)}
-.op-rail .op-rail-item:hover:not(:disabled){background:var(--surface-2);color:var(--ink)}
+.op-rail .op-rail-item:hover:not(:disabled,.active,[aria-current]){background:var(--surface-2);color:var(--ink)}
 .op-rail .op-rail-item.active,.op-rail .op-rail-item[aria-current]{background:var(--action);color:var(--on-ink)}
 .op-rail .op-rail-item:disabled{background:none;color:var(--ink-3)}
 .op-rail :is(.op-rail-item,.account-trigger)[data-label]::after{padding:var(--sp-2) 12px;border:0;border-radius:var(--r);background:var(--ink);color:var(--on-ink);font:500 12px/16px var(--font);box-shadow:var(--shadow-float)}
@@ -236,6 +236,7 @@ html .account-popover .account-role-switch+:is(a,.account-menu-item)::before{con
 /* The avatar stands out from the nav icons: lime fill, the system's accent */
 html .op-rail .account-trigger{background:var(--lime);color:var(--lime-ink)}
 html .op-rail .account-trigger:hover{background:#d9ec72}
+html[data-theme="tech-light"] .op-rail .account-trigger:hover{background:color-mix(in srgb,var(--lime) 88%,var(--action))}
 /* Plain buttons in kit dialog footers follow the tiers: cancel is tertiary, .primary is black */
 html .op-dialog-footer>button:not(.op-button){min-height:var(--control);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
 html .op-dialog-footer>button:not(.op-button):hover{background:var(--surface-2)}
