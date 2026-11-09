@@ -75,17 +75,21 @@ function ArcSpot({x,reduced,children}){
  useFrame((_,delta)=>{
   const group=ref.current;
   if(!group)return;
-  const dx=x-(camera.position.x-.15);
+  const center=camera.position.x-.15;
+  const dx=x-center;
   const steps=Math.abs(dx)/ROW_PITCH;
-  const z=steps*steps*1.15;
-  const scale=Math.max(.58,1.22-steps*.2);
-  const yaw=-Math.sign(dx)*Math.min(.62,steps*.2);
+  const dir=Math.sign(dx)||0;
+  const z=-steps*steps*1.35;
+  const scale=Math.max(.58,1.14-steps*.16);
+  const yaw=-dir*Math.min(.95,steps*.42);
+  const xPos=center+dir*steps*ROW_PITCH*(1-Math.min(.28,steps*.08));
   const k=reduced?1:1-Math.exp(-delta*7);
   const pose=shown.current;
   pose.z+=(z-pose.z)*k;
   pose.scale+=(scale-pose.scale)*k;
   pose.yaw+=(yaw-pose.yaw)*k;
-  group.position.set(x,0,pose.z);
+  pose.x=pose.x===undefined?xPos:pose.x+(xPos-pose.x)*k;
+  group.position.set(pose.x,0,pose.z);
   group.scale.setScalar(pose.scale);
   group.rotation.y=pose.yaw;
  });
