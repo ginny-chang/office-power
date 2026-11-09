@@ -22,7 +22,8 @@ const demoRows=[
 ];
 const demoId=(prefix,seed)=>{let hash=seed*2654435761%4294967296;const part=()=>{hash=(hash*1103515245+12345)%2147483648;return hash.toString(16).padStart(8,'0')};return `${prefix}-${part()}-${part().slice(0,4)}`};
 const demoEvents=(()=>{let time=Date.UTC(2026,10,6,4,7,56);return demoRows.map(([category,subject,actor,summary,agentId,minutes],index)=>{time-=minutes*60000;return {id:demoId('audit',index+1),ts:new Date(time).toISOString(),category,subject,actor,summary,agentId,requestId:category==='Agent 使用'?demoId('req',index+101):null}})})();
-const fromSettings=log=>({id:log.id,ts:log.time,category:'設定變更',subject:log.resource,actor:log.actor,summary:log.action,agentId:null,requestId:null});
+// 主體 is the thing that changed (the setting item); the new value goes in 摘要, like the live page's records
+const fromSettings=log=>({id:log.id,ts:log.time,category:'設定變更',subject:log.action?.replace(/^更新/,'')||log.resource,actor:log.actor,summary:log.action?`改為 ${log.resource}`:'',agentId:null,requestId:null});
 const formatter=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
 const when=iso=>formatter.format(new Date(iso));
 const severity=category=>bad.has(category)?'warning':'info';

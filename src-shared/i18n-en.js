@@ -160,6 +160,8 @@ export default {
 "帳號": "Account",
 "更新介面語言": "Update language",
 "更新控制中心預設模型": "Update default model",
+"控制中心預設模型": "Default model",
+"改為": "Changed to",
 "未指定模型的 Agent 與任務共用。儲存前會先驗證，成功後從下一回合生效，不中斷執行中的工作。": "Shared by agents and tasks with no model set. It is verified before saving and takes effect from the next turn without interrupting running work.",
 "模型來源": "Model source",
 "模型驗證成功，從下一回合開始生效。": "Model verified. It takes effect from the next turn.",
