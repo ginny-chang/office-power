@@ -638,9 +638,9 @@ html body .reference-board .agent-list-settings:hover{background:var(--surface-2
 html body .reference-board .agent-list-settings{right:12px}
 /* Agent list: 16px between cards */
 .reference-board .agent-grid{gap:var(--sp-4)}
-/* Toolbar: filters, search, 新增 Agent on one right-aligned row. Without room for that (narrow window, wide panel)
-   the filters wrap under search and 新增 instead of running into the page title.
-   新增 Agent stays here whatever the number of agents and in both views. */
+/* Toolbar: filters and search on one right-aligned row. Without room for that (narrow window, wide panel)
+   the filters wrap under search instead of running into the page title.
+   新增 Agent sits after the bot avatars, and after the cards in list view. */
 html body .board-toolbar{left:320px;flex-flow:row wrap-reverse;justify-content:flex-end;align-items:center;gap:var(--sp-2)}
 :is(.board-toolbar-filters,.board-toolbar-actions){display:flex;align-items:center;gap:var(--sp-2);max-width:100%}
 .board-add-agent{flex:none;height:var(--control);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--ink);font:var(--t-label);font-weight:500;color:#fff;white-space:nowrap;cursor:pointer}
@@ -676,6 +676,10 @@ html body .board-toolbar .agent-search{flex:1 1 0;width:auto;min-width:0}
 .agent-dock-item.has-update.is-selected .agent-dock-avatar{box-shadow:0 0 0 3px #121214,0 0 0 6px #e5f68c,0 8px 18px rgba(18,18,20,.12)}
 .agent-dock-settings{position:absolute;top:-8px;right:-8px;width:32px;height:32px;display:grid;place-items:center;padding:0;border-radius:50%;background:#121214;color:#fff;opacity:0;pointer-events:none}
 .agent-dock-item:hover .agent-dock-settings,.agent-dock-item:focus-within .agent-dock-settings{opacity:1;pointer-events:auto}
+.agent-dock-add{width:48px;height:48px;margin-bottom:4px;display:grid;place-items:center;padding:0;border-radius:50%;background:#121214;color:#fff;box-shadow:0 8px 18px rgba(18,18,20,.12);pointer-events:auto}
+.agent-dock-add:hover{background:#2c2c30}
+.agent-list-add{width:100%;min-height:72px;justify-content:center}
+.reference-board .empty-scene .board-add-agent{margin-top:12px}
 .agent-dock-caption{position:absolute;z-index:8;left:104px;right:calc(var(--panel) + 48px);bottom:92px;display:flex;justify-content:center;align-items:baseline;gap:8px;margin:0;pointer-events:none;color:#121214;font:600 14px/20px var(--font)}
 .agent-dock-caption span{font:500 12px/16px var(--font);color:#3a3a42}
 .agent-row-arrow{position:absolute;z-index:8;top:46%;width:44px;height:44px;display:grid;place-items:center;padding:0;border-radius:50%;background:#fff;color:#121214;box-shadow:0 8px 20px rgba(18,18,20,.12)}

@@ -1,12 +1,12 @@
 import React,{useCallback,useEffect,useRef,useState} from 'react';
 import {Canvas,useFrame,useThree} from '@react-three/fiber';
 import * as THREE from 'three';
-import {ChevronLeft,ChevronRight,Settings} from 'lucide-react';
+import {ChevronLeft,ChevronRight,Plus,Settings} from 'lucide-react';
 import {BotLighting} from './office-bots.jsx';
 import {botVariantFor,isAgentAlert} from './bot-variants.js';
 import {RobotRow,ROW_PITCH} from './office-desk.jsx';
 import {AgentPortrait,AlertPoint} from './bot-avatar.jsx';
-function AgentDock({agents,activeId,read,onFocus,onSettings}){
+function AgentDock({agents,activeId,read,onFocus,onSettings,onAdd}){
  return <div className="agent-dock" role="listbox" aria-label="Agent">{agents.map(agent=>{
   const fresh=!!(agent.event&&agent.published!==false&&!read.includes(agent.id));
   const alert=isAgentAlert(agent);
@@ -17,7 +17,7 @@ function AgentDock({agents,activeId,read,onFocus,onSettings}){
    {alert&&<AlertPoint/>}
    {onSettings&&<button type="button" className="agent-dock-settings" aria-label={`設定 ${agent.name}`} onClick={()=>onSettings(agent.id)}><Settings size={16}/></button>}
   </div>;
- })}</div>;
+ })}{onAdd&&<button type="button" className="agent-dock-add" aria-label="新增 Agent" onClick={onAdd}><Plus size={20}/></button>}</div>;
 }
 function rowBounds(count,halfView){
  const last=Math.max(0,count-1)*ROW_PITCH,edge=1.7;
@@ -61,7 +61,7 @@ function Scene({agents,focusId,cameraIndex=2,onSelect,onSettle,read,reduced,onRe
  <RobotRow agents={agents} focusId={focusId} read={read} reduced={reduced} onSelect={onSelect}/>
  <RowCamera count={agents.length} focusIndex={cameraIndex} onSettle={onSettle} reduced={reduced} frame={frame}/></>
 }
-export default function Office({agents=[],onSelect,onSettings,read=[],...props}){
+export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],...props}){
  const [visible,setVisible]=useState(true);
  const [focusId,setFocusId]=useState(null);
  const [cameraIndex,setCameraIndex]=useState(1.88);
@@ -76,6 +76,6 @@ export default function Office({agents=[],onSelect,onSettings,read=[],...props})
   <button type="button" className="agent-row-arrow is-prev" aria-label="往左看" disabled={focusIndex<=0} onClick={()=>agents[focusIndex-1]&&choose(agents[focusIndex-1].id)}><ChevronLeft size={22}/></button>
   <button type="button" className="agent-row-arrow is-next" aria-label="往右看" disabled={focusIndex>=agents.length-1} onClick={()=>agents[focusIndex+1]&&choose(agents[focusIndex+1].id)}><ChevronRight size={22}/></button>
   {focus&&<p className="agent-dock-caption"><strong>{focus.name}</strong><span>{focus.role}</span></p>}
-  <AgentDock agents={agents} activeId={focus?.id} read={read} onFocus={choose} onSettings={onSettings}/>
+  <AgentDock agents={agents} activeId={focus?.id} read={read} onFocus={choose} onSettings={onSettings} onAdd={onAdd}/>
  </div>;
 }
