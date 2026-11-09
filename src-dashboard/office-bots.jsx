@@ -1,9 +1,11 @@
 import React, {useEffect, useMemo, useRef} from 'react';
 import {useFrame, useThree} from '@react-three/fiber';
+import {RoundedBox} from '@react-three/drei';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {ExtrudeGeometry, Shape, PMREMGenerator, CanvasTexture, SRGBColorSpace} from 'three';
 import * as THREE from 'three';
+import {createRobotShell} from '../src/components/robot-shell.js';
 import {BOT_VARIANTS, botVariantFor} from './bot-variants.js';
 
 export {botVariantFor};
@@ -54,33 +56,34 @@ function contactShadow() {
   return shadowTexture;
 }
 
-function White() {
-  return <meshPhysicalMaterial color="#ffffff" roughness={0.18} metalness={0.02} clearcoat={1} clearcoatRoughness={0.1} envMapIntensity={1.05}/>;
+const robotShell = createRobotShell();
+function ShellMat() {
+  return <meshStandardMaterial color="#f1f2f3" roughness={0.48}/>;
 }
 function RobotBody({eyes, arm}) {
   return <group>
-    {[-0.22, 0.22].map(x => <Round key={x} w={0.64} h={0.52} d={0.56} radius={0.25} segments={5} color="#ffffff" position={[x, 0.26, 0.05]} rough={0.2} coat={1} coatRough={0.08}/>)}
-    <Round w={1.16} h={0.7} d={0.74} radius={0.28} segments={4} color="#ffffff" position={[0, 0.5, 0]} rough={0.16} coat={1} coatRough={0.08}/>
-    <Round w={0.42} h={0.1} d={0.05} radius={0.045} segments={2} color="#d5d9e2" position={[0, 0.58, 0.38]} rough={0.42} coat={0.25} castShadow={false}/>
-    <Round w={1.2} h={1.06} d={0.78} radius={0.34} segments={5} color="#ffffff" position={[0, 1.08, 0]} rough={0.15} coat={1} coatRough={0.06}/>
-    <Round w={1.0} h={0.86} d={0.16} radius={0.28} segments={5} color="#090b10" position={[0, 1.16, 0.36]} rough={0.035} metal={0.45} coat={1} coatRough={0.02}/>
-    <mesh position={[-0.04, 1.48, 0.455]} rotation={[0.25, 0, Math.PI / 2]}>
-      <capsuleGeometry args={[0.028, 0.46, 4, 8]}/>
-      <meshBasicMaterial color="#ffffff"/>
-    </mesh>
-    {[-0.18, 0.18].map((x, i) => <mesh key={x} ref={el => {eyes.current[i] = el;}} position={[x, 1.14, 0.47]} castShadow>
-      <capsuleGeometry args={[0.074, 0.2, 8, 16]}/>
-      <meshBasicMaterial color="#ffffff"/>
+    {['torso', 'inset'].map(part => <mesh key={part} geometry={robotShell[part]} position={[0, 0.73, 0]} castShadow dispose={null}><ShellMat/></mesh>)}
+    {[-0.29, 0.29].map(x => <RoundedBox key={x} args={[0.46, 0.32, 0.66]} radius={0.13} smoothness={4} position={[x, 0.16, 0.015]} castShadow><ShellMat/></RoundedBox>)}
+    <RoundedBox args={[0.35, 0.115, 0.08]} radius={0.05} smoothness={3} position={[0, 0.41, 0.36]}><meshStandardMaterial color="#9ca3aa" roughness={0.45}/></RoundedBox>
+    <RoundedBox args={[0.326, 0.096, 0.06]} radius={0.045} smoothness={3} position={[0, 0.41, 0.4]}><meshStandardMaterial color="#e2e5e8" roughness={0.4}/></RoundedBox>
+    <mesh geometry={robotShell.head} position={[0, 0.73, 0]} castShadow dispose={null}><ShellMat/></mesh>
+    <RoundedBox args={[0.79, 0.76, 0.22]} radius={0.22} smoothness={6} position={[0, 0.97, 0.335]} castShadow>
+      <meshPhysicalMaterial color="#101116" roughness={0.16} metalness={0.2} clearcoat={1} clearcoatRoughness={0.08}/>
+    </RoundedBox>
+    {[-0.115, 0.115].map((x, i) => <mesh key={x} ref={el => {eyes.current[i] = el;}} position={[x, 0.9, 0.465]} scale={[1, 1, 0.22]}>
+      <capsuleGeometry args={[0.056, 0.135, 6, 16]}/>
+      <meshBasicMaterial color="#f7f7fa"/>
     </mesh>)}
-    {[-1, 1].map(side => <group key={side} ref={side === 1 ? arm : undefined} position={[side * 0.64, 0.66, 0.08]}>
-      <mesh castShadow>
-        <sphereGeometry args={[0.145, 20, 14]}/>
-        <White/>
+    {[-1, 1].map(side => <group key={side} ref={side === 1 ? arm : undefined} position={[side * 0.55, 0.78, 0.04]}>
+      <mesh position={[0, -0.22, 0]} scale={[0.11, 0.26, 0.14]} castShadow>
+        <sphereGeometry args={[1, 18, 12]}/>
+        <meshStandardMaterial color="#eef0f2" roughness={0.45}/>
       </mesh>
     </group>)}
-    {[-1, 1].map(side => <group key={`ear-${side}`} position={[side * 0.3, 1.48, 0]} rotation={[0, 0, side * -0.55]}>
-      <mesh position={[0, 0.06, 0]}><cylinderGeometry args={[0.168, 0.178, 0.11, 28]}/><meshStandardMaterial color="#3a414b" metalness={0.4} roughness={0.34}/></mesh>
-      <mesh position={[0, 0.28, 0]} castShadow><cylinderGeometry args={[0.155, 0.16, 0.42, 28]}/><White/></mesh>
+    {[-1, 1].map(side => <group key={`ear-${side}`} position={[side * 0.36, 1.33, 0]} rotation={[0, 0, side * -0.4]}>
+      <mesh position={[0, 0.055, 0]}><cylinderGeometry args={[0.14, 0.15, 0.1, 28]}/><meshStandardMaterial color="#e5e7e9" roughness={0.35}/></mesh>
+      <mesh position={[0, 0.13, 0]}><cylinderGeometry args={[0.1, 0.1, 0.05, 28]}/><meshStandardMaterial color="#777d84" metalness={0.8} roughness={0.25}/></mesh>
+      <mesh position={[0, 0.27, 0]} castShadow><cylinderGeometry args={[0.13, 0.13, 0.24, 28]}/><meshStandardMaterial color="#f0f1f3" roughness={0.35}/></mesh>
     </group>)}
   </group>;
 }
@@ -206,9 +209,9 @@ export function OfficeBot({variant = 'life', reduced = false, hovered = false, r
     const blink = reduced || hovered ? 1 : (clock.elapsedTime + index) % 4.8 < 0.1 ? 0.14 : 1;
     eyes.current.forEach(eye => {if (eye) eye.scale.y = blink;});
     if (arm.current) {
-      const wave = alert && !reduced ? Math.sin(clock.elapsedTime * 2.2) : -0.4;
-      arm.current.rotation.z = 0.45 + wave * 0.95;
-      arm.current.rotation.x = -0.15 + wave * 0.4;
+      const wave = alert && !reduced ? Math.sin(clock.elapsedTime * 2.2) : 0;
+      arm.current.rotation.z = wave * 0.95;
+      arm.current.rotation.x = wave * 0.4;
     }
   });
   return <group {...props}>
