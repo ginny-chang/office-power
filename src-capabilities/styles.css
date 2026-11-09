@@ -132,6 +132,16 @@ html body .catalog-bar>.primary{margin-left:auto}
 .kb-tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .kb-tags span{padding:4px 8px;border-radius:999px;background:var(--surface)}
 .dataset-empty{display:grid;justify-items:center;gap:8px;padding:48px 16px;border-radius:var(--r);background:var(--surface);text-align:center}
+.dataset-table-wrap{overflow:auto;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
+.dataset-table{width:100%;border-collapse:collapse;text-align:left}
+.dataset-table th,.dataset-table td{padding:14px 18px;border-bottom:1px solid var(--line);font:var(--t-label);color:var(--ink)}
+.dataset-table th{font:var(--t-meta);color:var(--ink-2);font-weight:500}
+.dataset-table tbody tr{cursor:pointer}
+.dataset-table tbody tr:hover td{background:var(--frame)}
+.dataset-table .skill-switch,.dataset-table .preview-delete{height:32px}
+.skill-lock{font:var(--t-meta);color:var(--ink-3)}
+.folder-import{display:grid;justify-items:center;gap:8px;padding:24px;border-radius:var(--r);background:var(--frame);text-align:center}
+.add-skill-tabs{margin:0}
 .skill-back{display:inline-flex;align-items:center;gap:4px;margin-bottom:var(--sp-4);padding:0;border:0;background:none;color:var(--ink-2);cursor:pointer}
 .skill-dialog-bar,.skill-row{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4)}
 .skill-dialog-bar .primary,.rollback button{height:36px;border:0;border-radius:var(--r);background:var(--ink);color:#fff;cursor:pointer}
