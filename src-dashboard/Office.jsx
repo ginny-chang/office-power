@@ -1,11 +1,10 @@
-import React,{useEffect,useRef,useState} from 'react';
+import React,{useCallback,useEffect,useRef,useState} from 'react';
 import {Canvas,useFrame,useThree} from '@react-three/fiber';
-import {OrbitControls} from '@react-three/drei';
 import * as THREE from 'three';
-import {Settings} from 'lucide-react';
+import {ChevronLeft,ChevronRight,Settings} from 'lucide-react';
 import {BotLighting,botVariantFor} from './office-bots.jsx';
 import {BOT_VARIANTS} from './bot-variants.js';
-import {SharedOffice} from './office-desk.jsx';
+import {RobotRow,ROW_PITCH} from './office-desk.jsx';
 function BotFace({variant}){
  const color=(BOT_VARIANTS[variant]||BOT_VARIANTS.life).color;
  return <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true" focusable="false"><rect x="10" y="16" width="28" height="26" rx="10" fill="#f7f8fa"/><rect x="16" y="8" width="5" height="9" rx="2.5" fill="#f4f5f7"/><rect x="27" y="8" width="5" height="9" rx="2.5" fill="#f4f5f7"/><rect x="15" y="7" width="5" height="3" rx="1" fill="#8e959e"/><rect x="28" y="7" width="5" height="3" rx="1" fill="#8e959e"/><rect x="14" y="21" width="20" height="13" rx="5" fill="#14161c"/><rect x="18" y="23" width="3.5" height="8" rx="1.7" fill="#fbfcff"/><rect x="26.5" y="23" width="3.5" height="8" rx="1.7" fill="#fbfcff"/><circle cx="36" cy="36" r="5.5" fill={color}/></svg>;
@@ -20,33 +19,48 @@ function AgentDock({agents,activeId,read,onFocus,onSettings}){
   </div>;
  })}</div>;
 }
-function Camera({reset,controls,reduced,intro,frame}){
- const {camera,size,invalidate}=useThree();const elapsed=useRef(0),initial=useRef(true);
- // Centre the office in the area the floating UI leaves free, not the whole canvas.
- const {left=0,right=0,top=0,bottom=0}=frame?.(size.width,size.height)||{};
- const span=9.2;
- const fit=Math.max(18,Math.min((size.width-left-right-32)/span,(size.height-top-bottom-16)/(span*.78)));
- useEffect(()=>{const dx=(right-left)/2,dy=(bottom-top)/2;if(dx||dy)camera.setViewOffset(size.width,size.height,dx,dy,size.width,size.height);else camera.clearViewOffset();camera.updateProjectionMatrix();invalidate()},[camera,size.width,size.height,left,right,top,bottom]);
- const lockTilt=()=>{if(controls.current){const angle=Math.atan2(Math.hypot(camera.position.x,camera.position.z),camera.position.y-1.05);controls.current.minPolarAngle=controls.current.maxPolarAngle=angle}};
- const settle=()=>{camera.position.set(2.6,6.4,9.6);camera.zoom=fit;camera.updateProjectionMatrix();controls.current?.target.set(0,1.05,0);lockTilt();controls.current?.update()};
- useEffect(()=>{if(!initial.current){intro.current=false;settle()}initial.current=false},[reset]);
- useEffect(()=>{if(!intro.current||reduced){intro.current=false;settle()}invalidate()},[size.width,size.height,reduced,fit]);
- useFrame((_,delta)=>{
-  if(!intro.current)return;
-  elapsed.current+=Math.min(delta,.05);const t=Math.min(elapsed.current/2.6,1),e=1-Math.pow(1-t,3);
-  // Decreasing azimuth gives the office a subtle clockwise turn on screen.
-  const angle=THREE.MathUtils.lerp(.9,Math.atan2(2.6,9.6),e),radius=THREE.MathUtils.lerp(16,Math.hypot(2.6,9.6),e);
-  camera.position.set(Math.sin(angle)*radius,THREE.MathUtils.lerp(10,6.4,e),Math.cos(angle)*radius);
-  camera.zoom=fit*THREE.MathUtils.lerp(.7,1,e);camera.lookAt(0,1.05,0);camera.updateProjectionMatrix();
-  controls.current?.target.set(0,1.05,0);lockTilt();controls.current?.update();if(t===1)intro.current=false;
- });return null
+function rowBounds(count,halfView){
+ const last=Math.max(0,count-1)*ROW_PITCH,edge=1.9;
+ const min=halfView-edge,max=last+edge-halfView;
+ if(count<=1||min>max)return{min:last/2,max:last/2};
+ return{min,max};
 }
-function Scene({agents,focusId,onSelect,read,reset,reduced,onReady,frame}){
- const controls=useRef(),intro=useRef(!reduced);
+function RowCamera({count,focusIndex,onSettle,reduced,frame}){
+ const {camera,size,gl,invalidate}=useThree();
+ const target=useRef(0),current=useRef(0),drag=useRef(null),wheelTimer=useRef();
+ const {left=0,right=0,top=0,bottom=0}=frame?.(size.width,size.height)||{};
+ const freeW=Math.max(280,size.width-left-right-72),freeH=Math.max(280,size.height-top-bottom-12);
+ const zoom=Math.max(24,Math.min(freeW/6.8,freeH/4.7));
+ const bounds=rowBounds(count,freeW/zoom/2);
+ const clamp=value=>Math.min(bounds.max,Math.max(bounds.min,value));
+ useEffect(()=>{const dx=(right-left)/2,dy=(bottom-top)/2;if(dx||dy)camera.setViewOffset(size.width,size.height,dx,dy,size.width,size.height);else camera.clearViewOffset();camera.zoom=zoom;camera.updateProjectionMatrix();invalidate()},[camera,size.width,size.height,left,right,top,bottom,zoom,invalidate]);
+ useEffect(()=>{target.current=clamp(Math.max(0,focusIndex)*ROW_PITCH);if(reduced)current.current=target.current;invalidate()},[focusIndex,bounds.min,bounds.max,reduced,invalidate]);
+ useEffect(()=>{
+  const el=gl.domElement;
+  const nearest=x=>{let best=0,dist=Infinity;for(let i=0;i<count;i++){const d=Math.abs(i*ROW_PITCH-x);if(d<dist){dist=d;best=i}}return best};
+  const finish=()=>{clearTimeout(wheelTimer.current);wheelTimer.current=setTimeout(()=>onSettle?.(nearest(target.current)),reduced?0:180)};
+  const down=e=>{if(e.button!==0)return;drag.current={x:e.clientX,moved:false};el.setPointerCapture?.(e.pointerId)};
+  const move=e=>{if(!drag.current)return;const dx=e.clientX-drag.current.x;if(Math.abs(dx)>3)drag.current.moved=true;drag.current.x=e.clientX;target.current=clamp(target.current-dx/camera.zoom);invalidate()};
+  const up=e=>{if(!drag.current)return;const moved=drag.current.moved;drag.current=null;if(moved){const stop=ev=>{ev.stopPropagation();el.removeEventListener('click',stop,true)};el.addEventListener('click',stop,true);finish()}};
+  const wheel=e=>{e.preventDefault();const delta=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;target.current=clamp(target.current+delta/camera.zoom);invalidate();finish()};
+  el.addEventListener('pointerdown',down);el.addEventListener('pointermove',move);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);el.addEventListener('wheel',wheel,{passive:false});
+  return()=>{clearTimeout(wheelTimer.current);el.removeEventListener('pointerdown',down);el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);el.removeEventListener('wheel',wheel)};
+ },[gl,camera,count,bounds.min,bounds.max,reduced,onSettle,invalidate]);
+ useFrame((_,delta)=>{
+  const k=reduced?1:1-Math.exp(-delta*7);
+  current.current+= (target.current-current.current)*k;
+  camera.position.set(current.current+1.05,2.55,6.7);
+  camera.lookAt(current.current,1.05,.15);
+  camera.zoom=zoom;camera.updateProjectionMatrix();
+ });
+ return null;
+}
+function Scene({agents,focusId,onSelect,onSettle,read,reduced,onReady,frame}){
+ const focusIndex=Math.max(0,agents.findIndex(agent=>agent.id===focusId));
  useEffect(()=>{onReady?.()},[onReady]);
  return <><color attach="background" args={['#e7ebf0']}/><BotLighting/>
- <SharedOffice agents={agents} focusId={focusId} read={read} reduced={reduced} onSelect={onSelect}/>
- <Camera reset={reset} controls={controls} reduced={reduced} intro={intro} frame={frame}/><OrbitControls ref={controls} onStart={()=>{intro.current=false}} enablePan enableZoom screenSpacePanning mouseButtons={{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}} minZoom={12} maxZoom={220} target={[0,1.05,0]} enableDamping={!reduced} dampingFactor={.08}/></>
+ <RobotRow agents={agents} focusId={focusId} read={read} reduced={reduced} onSelect={onSelect}/>
+ <RowCamera count={agents.length} focusIndex={focusIndex} onSettle={onSettle} reduced={reduced} frame={frame}/></>
 }
 export default function Office({agents=[],onSelect,onSettings,read=[],...props}){
  const [visible,setVisible]=useState(true);
@@ -54,8 +68,12 @@ export default function Office({agents=[],onSelect,onSettings,read=[],...props})
  useEffect(()=>{const fn=()=>setVisible(!document.hidden);document.addEventListener('visibilitychange',fn);return()=>document.removeEventListener('visibilitychange',fn)},[]);
  useEffect(()=>{if(focusId&&!agents.some(agent=>agent.id===focusId))setFocusId(agents[0]?.id??null)},[agents,focusId]);
  const focus=agents.find(agent=>agent.id===focusId)||agents.find(agent=>agent.event&&!read.includes(agent.id))||agents[0];
- return <div className="three-office" aria-label="可旋轉的共享辦公室">
-  <Canvas orthographic shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[10,9,12],zoom:28,near:.1,far:90}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} onSelect={onSelect} read={read}/></Canvas>
+ const focusIndex=Math.max(0,agents.findIndex(agent=>agent.id===focus?.id));
+ const settle=useCallback(index=>{const agent=agents[index];if(agent)setFocusId(agent.id)},[agents]);
+ return <div className="three-office" aria-label="可左右瀏覽的 Agent 工作桌">
+  <Canvas orthographic shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[1,2.6,6.7],zoom:70,near:.1,far:40}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} onSelect={onSelect} onSettle={settle} read={read}/></Canvas>
+  <button type="button" className="agent-row-arrow is-prev" aria-label="往左看" disabled={focusIndex<=0} onClick={()=>agents[focusIndex-1]&&setFocusId(agents[focusIndex-1].id)}><ChevronLeft size={22}/></button>
+  <button type="button" className="agent-row-arrow is-next" aria-label="往右看" disabled={focusIndex>=agents.length-1} onClick={()=>agents[focusIndex+1]&&setFocusId(agents[focusIndex+1].id)}><ChevronRight size={22}/></button>
   {focus&&<p className="agent-dock-caption"><strong>{focus.name}</strong><span>{focus.role}</span></p>}
   <AgentDock agents={agents} activeId={focus?.id} read={read} onFocus={setFocusId} onSettings={onSettings}/>
  </div>;

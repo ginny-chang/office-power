@@ -13,7 +13,7 @@
 
 | Area | Decision |
 | --- | --- |
-| My Board | Keep one shared office. Every agent stands at a desk with a role icon. Avatars sit along the bottom; unread updates use a lime ring, and hover reveals the settings button. |
+| My Board | Agents stand in one horizontal row, each in front of their own desk. Scroll or use the side arrows to move along the row. Avatars sit along the bottom; unread updates use a lime ring, and hover reveals the settings button. |
 | Chat | Preserve Agent/conversation lists; flatten welcome content and suggested questions. |
 | NOVA Apps | Keep cards for app screenshots and launch/edit actions; remove card-shaped gallery container. |
 | APP Pack | Keep results/screenshots; use a single metric strip and version record list. |

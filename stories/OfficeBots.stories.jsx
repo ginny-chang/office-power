@@ -8,7 +8,7 @@ import {DASHBOARD_BOTS} from '../src-dashboard/bot-variants.js';
 export default {
   title:'Product/Office bots',
   tags:['autodocs'],
-  parameters:{docs:{description:{component:'My Board 的六位 Agent 共用同一隻白色機器人。工具依現有職能對應：維修小管家是檔案箱、HR 小幫手是識別證、Nova PM 是清單、Nova 報帳助理是計算機、Sales 助理是長條、大腦總管 NOVA 是萊姆葉。名稱與角色維持 Dashboard 原文。'}}}
+  parameters:{docs:{description:{component:'My Board 的六位 Agent 共用同一隻白色機器人。工具依現有職能對應：維修小管家是檔案箱、HR 小幫手是識別證、Nova PM 是清單、Nova 報帳助理是計算機、Sales 助理是長條、大腦總管 NOVA 是萊姆葉。Dashboard 把他們排成一列，左右滑動檢視，每人背後是自己的工作桌。名稱與角色維持 Dashboard 原文。'}}}
 };
 
 function useReduced(){
