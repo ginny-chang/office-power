@@ -30,7 +30,7 @@ function RowCamera({count,focusIndex,onSettle,reduced,frame}){
  const target=useRef(0),current=useRef(0),drag=useRef(null),wheelTimer=useRef();
  const {left=0,right=0,top=0,bottom=0}=frame?.(size.width,size.height)||{};
  const freeW=Math.max(280,size.width-left-right-72),freeH=Math.max(280,size.height-top-bottom-12);
- const zoom=Math.max(24,Math.min(freeW/5.2,freeH/4.15));
+ const zoom=Math.max(24,Math.min(freeW/(ROW_PITCH*3.85),freeH/4.5));
  const bounds=rowBounds(count,freeW/zoom/2);
  const clamp=value=>Math.min(bounds.max,Math.max(bounds.min,value));
  useEffect(()=>{const dx=(right-left)/2,dy=(bottom-top)/2;if(dx||dy)camera.setViewOffset(size.width,size.height,dx,dy,size.width,size.height);else camera.clearViewOffset();camera.zoom=zoom;camera.updateProjectionMatrix();invalidate()},[camera,size.width,size.height,left,right,top,bottom,zoom,invalidate]);
@@ -49,32 +49,33 @@ function RowCamera({count,focusIndex,onSettle,reduced,frame}){
  useFrame((_,delta)=>{
   const k=reduced?1:1-Math.exp(-delta*7);
   current.current+= (target.current-current.current)*k;
-  camera.position.set(current.current+.55,2.15,5.15);
-  camera.lookAt(current.current,1.2,.45);
+  camera.position.set(current.current+.15,1.78,5.9);
+  camera.lookAt(current.current,1.08,.15);
   camera.zoom=zoom;camera.updateProjectionMatrix();
  });
  return null;
 }
-function Scene({agents,focusId,onSelect,onSettle,read,reduced,onReady,frame}){
- const focusIndex=Math.max(0,agents.findIndex(agent=>agent.id===focusId));
+function Scene({agents,focusId,cameraIndex=2,onSelect,onSettle,read,reduced,onReady,frame}){
  useEffect(()=>{onReady?.()},[onReady]);
  return <><color attach="background" args={['#e7ebf0']}/><BotLighting/>
  <RobotRow agents={agents} focusId={focusId} read={read} reduced={reduced} onSelect={onSelect}/>
- <RowCamera count={agents.length} focusIndex={focusIndex} onSettle={onSettle} reduced={reduced} frame={frame}/></>
+ <RowCamera count={agents.length} focusIndex={cameraIndex} onSettle={onSettle} reduced={reduced} frame={frame}/></>
 }
 export default function Office({agents=[],onSelect,onSettings,read=[],...props}){
  const [visible,setVisible]=useState(true);
  const [focusId,setFocusId]=useState(null);
+ const [cameraIndex,setCameraIndex]=useState(1.88);
  useEffect(()=>{const fn=()=>setVisible(!document.hidden);document.addEventListener('visibilitychange',fn);return()=>document.removeEventListener('visibilitychange',fn)},[]);
  useEffect(()=>{if(focusId&&!agents.some(agent=>agent.id===focusId))setFocusId(agents[0]?.id??null)},[agents,focusId]);
  const focus=agents.find(agent=>agent.id===focusId)||agents.find(agent=>agent.event&&!read.includes(agent.id))||agents[0];
  const focusIndex=Math.max(0,agents.findIndex(agent=>agent.id===focus?.id));
- const settle=useCallback(index=>{const agent=agents[index];if(agent)setFocusId(agent.id)},[agents]);
+ const choose=useCallback(id=>{const index=agents.findIndex(agent=>agent.id===id);if(index>=0)setCameraIndex(index);setFocusId(id)},[agents]);
+ const settle=useCallback(index=>{const agent=agents[index];if(agent){setCameraIndex(index);setFocusId(agent.id)}},[agents]);
  return <div className="three-office" aria-label="可左右瀏覽的 Agent 工作桌">
-  <Canvas orthographic shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[1,2.6,6.7],zoom:70,near:.1,far:40}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} onSelect={onSelect} onSettle={settle} read={read}/></Canvas>
-  <button type="button" className="agent-row-arrow is-prev" aria-label="往左看" disabled={focusIndex<=0} onClick={()=>agents[focusIndex-1]&&setFocusId(agents[focusIndex-1].id)}><ChevronLeft size={22}/></button>
-  <button type="button" className="agent-row-arrow is-next" aria-label="往右看" disabled={focusIndex>=agents.length-1} onClick={()=>agents[focusIndex+1]&&setFocusId(agents[focusIndex+1].id)}><ChevronRight size={22}/></button>
+  <Canvas orthographic shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[1,2.6,6.7],zoom:40,near:.1,far:40}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} cameraIndex={cameraIndex} onSelect={onSelect} onSettle={settle} read={read}/></Canvas>
+  <button type="button" className="agent-row-arrow is-prev" aria-label="往左看" disabled={focusIndex<=0} onClick={()=>agents[focusIndex-1]&&choose(agents[focusIndex-1].id)}><ChevronLeft size={22}/></button>
+  <button type="button" className="agent-row-arrow is-next" aria-label="往右看" disabled={focusIndex>=agents.length-1} onClick={()=>agents[focusIndex+1]&&choose(agents[focusIndex+1].id)}><ChevronRight size={22}/></button>
   {focus&&<p className="agent-dock-caption"><strong>{focus.name}</strong><span>{focus.role}</span></p>}
-  <AgentDock agents={agents} activeId={focus?.id} read={read} onFocus={setFocusId} onSettings={onSettings}/>
+  <AgentDock agents={agents} activeId={focus?.id} read={read} onFocus={choose} onSettings={onSettings}/>
  </div>;
 }

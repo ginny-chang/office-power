@@ -18,7 +18,7 @@ function useReduced(){
   return reduced;
 }
 
-const spots=[[-3.05,1.7],[0,1.7],[3.05,1.7],[-3.05,-1.7],[0,-1.7],[3.05,-1.7]];
+const spots=[[-3.3,2.55],[0,2.55],[3.3,2.55],[-3.3,-2.55],[0,-2.55],[3.3,-2.55]];
 
 function Lineup({reduced}){
   return <>
@@ -50,7 +50,7 @@ class StageBoundary extends React.Component{
 function Showcase(){
   const reduced=useReduced();
   return <StageBoundary><div style={{height:820,margin:'0 -12px',borderRadius:12,overflow:'hidden',background:'#f4f4f6'}} aria-label="六種 Office Power 機器人">
-    <Canvas orthographic shadows dpr={[1,1.75]} frameloop={reduced?'demand':'always'} camera={{position:[0,6.6,8.6],zoom:108,near:0.1,far:50}} gl={{antialias:true}} onCreated={({gl,camera})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.02;camera.lookAt(0,0.55,0)}}>
+    <Canvas orthographic shadows dpr={[1,1.75]} frameloop={reduced?'demand':'always'} camera={{position:[0,5.2,9.4],zoom:72,near:0.1,far:50}} gl={{antialias:true}} onCreated={({gl,camera})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.02;camera.lookAt(0,0.9,0)}}>
       <Lineup reduced={reduced}/>
     </Canvas>
   </div></StageBoundary>;

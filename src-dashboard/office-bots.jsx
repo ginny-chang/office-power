@@ -55,27 +55,28 @@ function contactShadow() {
 }
 
 function White() {
-  return <meshPhysicalMaterial color="#ffffff" roughness={0.16} metalness={0.02} clearcoat={1} clearcoatRoughness={0.08} envMapIntensity={1.15}/>;
+  return <meshPhysicalMaterial color="#ffffff" roughness={0.18} metalness={0.02} clearcoat={1} clearcoatRoughness={0.1} envMapIntensity={1.05}/>;
 }
 function RobotBody({eyes, arm}) {
   return <group>
-    {[-0.27, 0.27].map(x => <Round key={x} w={0.44} h={0.3} d={0.5} radius={0.14} segments={4} color="#ffffff" position={[x, 0.15, 0.04]} rough={0.2} coat={1} coatRough={0.08}/>)}
-    <Round w={1.2} h={1.28} d={0.98} radius={0.4} segments={6} color="#ffffff" position={[0, 0.8, 0]} rough={0.16} coat={1} coatRough={0.08}/>
-    <Round w={0.94} h={0.7} d={0.5} radius={0.24} segments={5} color="#0e1014" position={[0, 1.04, 0.34]} rough={0.08} metal={0.28} coat={1} coatRough={0.05}/>
-    {[-0.18, 0.18].map((x, i) => <mesh key={x} ref={el => {eyes.current[i] = el;}} position={[x, 1.06, 0.62]} castShadow>
-      <capsuleGeometry args={[0.086, 0.24, 8, 16]}/>
+    {[-0.18, 0.18].map(x => <Round key={x} w={0.4} h={0.32} d={0.46} radius={0.15} segments={4} color="#ffffff" position={[x, 0.16, 0.02]} rough={0.22} coat={0.85} coatRough={0.12}/>)}
+    <Round w={0.82} h={0.62} d={0.66} radius={0.2} segments={4} color="#ffffff" position={[0, 0.46, 0]} rough={0.2} coat={0.9} coatRough={0.12}/>
+    <Round w={0.3} h={0.08} d={0.05} radius={0.035} segments={2} color="#e3e6ed" position={[0, 0.52, 0.34]} rough={0.42} coat={0.25} castShadow={false}/>
+    <Round w={0.94} h={1.12} d={0.76} radius={0.26} segments={5} color="#ffffff" position={[0, 1.24, 0]} rough={0.18} coat={1} coatRough={0.1}/>
+    <Round w={0.82} h={0.8} d={0.22} radius={0.22} segments={5} color="#0c0e12" position={[0, 1.3, 0.32]} rough={0.08} metal={0.22} coat={1} coatRough={0.05}/>
+    {[-0.15, 0.15].map((x, i) => <mesh key={x} ref={el => {eyes.current[i] = el;}} position={[x, 1.32, 0.46]} castShadow>
+      <capsuleGeometry args={[0.072, 0.26, 8, 16]}/>
       <meshBasicMaterial color="#ffffff"/>
     </mesh>)}
-    <Round w={0.36} h={0.1} d={0.08} radius={0.045} segments={2} color="#e6e8ee" position={[0, 0.52, 0.5]} rough={0.35} coat={0.4} castShadow={false}/>
-    {[-1, 1].map(side => <group key={side} ref={side === 1 ? arm : undefined} position={[side * 0.62, 0.62, 0.06]}>
-      <mesh position={[0, -0.02, 0]} castShadow>
-        <sphereGeometry args={[0.13, 20, 14]}/>
+    {[-1, 1].map(side => <group key={side} ref={side === 1 ? arm : undefined} position={[side * 0.46, 0.62, 0.04]}>
+      <mesh position={[0, -0.01, 0]} castShadow>
+        <sphereGeometry args={[0.12, 18, 12]}/>
         <White/>
       </mesh>
     </group>)}
-    {[-1, 1].map(side => <group key={`ear-${side}`} position={[side * 0.36, 1.36, 0]} rotation={[0, 0, side * -0.42]}>
-      <mesh position={[0, 0.045, 0]}><cylinderGeometry args={[0.145, 0.155, 0.08, 28]}/><meshStandardMaterial color="#4e555e" metalness={0.65} roughness={0.25}/></mesh>
-      <mesh position={[0, 0.22, 0]} castShadow><cylinderGeometry args={[0.12, 0.128, 0.28, 28]}/><White/></mesh>
+    {[-1, 1].map(side => <group key={`ear-${side}`} position={[side * 0.22, 1.68, 0]} rotation={[0, 0, side * -0.22]}>
+      <mesh position={[0, 0.05, 0]}><cylinderGeometry args={[0.15, 0.16, 0.1, 24]}/><meshStandardMaterial color="#3a414b" metalness={0.5} roughness={0.3}/></mesh>
+      <mesh position={[0, 0.24, 0]} castShadow><cylinderGeometry args={[0.135, 0.14, 0.36, 24]}/><White/></mesh>
     </group>)}
   </group>;
 }
