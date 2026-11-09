@@ -49,8 +49,8 @@ function RowCamera({count,focusIndex,onSettle,reduced,frame}){
  useFrame((_,delta)=>{
   const k=reduced?1:1-Math.exp(-delta*7);
   current.current+= (target.current-current.current)*k;
-  camera.position.set(current.current+.15,1.78,5.9);
-  camera.lookAt(current.current,1.08,.15);
+  camera.position.set(current.current+.1,3.15,6.6);
+  camera.lookAt(current.current,2.85,.12);
   camera.zoom=zoom;camera.updateProjectionMatrix();
  });
  return null;
