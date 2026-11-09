@@ -19,12 +19,12 @@ const rules = [
 ];
 
 export const BOT_VARIANTS = {
-  operations: {id: 'operations', tool: 'box', label: '營運與資產', color: '#8ecff0', deep: '#5aaed4', lite: '#e7f6fd'},
-  hr: {id: 'hr', tool: 'badge', label: '人資與出勤', color: '#d7c6f6', deep: '#b79adf', lite: '#f4effc'},
-  project: {id: 'project', tool: 'clipboard', label: '專案協作', color: '#86e4c4', deep: '#1f8f62', lite: '#f3fffa'},
-  finance: {id: 'finance', tool: 'calculator', label: '財務管理', color: '#f6e6a4', deep: '#e4cb6e', lite: '#fff8df'},
-  sales: {id: 'sales', tool: 'bars', label: '業務管理', color: '#f3b98a', deep: '#e07a42', lite: '#f6c49a'},
-  life: {id: 'life', tool: 'leaf', label: '生活助理', color: '#e5f68c', deep: '#9db844', lite: '#f7fcd8'},
+  operations: {id: 'operations', tool: 'box', label: '營運與資產', color: '#7ec8ee', deep: '#3d9ec8', lite: '#e7f6fd'},
+  hr: {id: 'hr', tool: 'badge', label: '人資與出勤', color: '#cbb6f2', deep: '#9b78d4', lite: '#f4effc'},
+  project: {id: 'project', tool: 'clipboard', label: '專案協作', color: '#7ee0c2', deep: '#1f9a66', lite: '#eefcf6'},
+  finance: {id: 'finance', tool: 'calculator', label: '財務管理', color: '#f6e29a', deep: '#e2c45a', lite: '#fff6dc'},
+  sales: {id: 'sales', tool: 'bars', label: '業務管理', color: '#f3a56e', deep: '#e07038', lite: '#f8c9a4'},
+  life: {id: 'life', tool: 'leaf', label: '生活助理', color: '#c6e85c', deep: '#7ea828', lite: '#f3fcd4'},
 };
 
 // Storybook lineup, in the same order as the approved set. Names are the live dashboard roster.

@@ -20,7 +20,7 @@ function AgentDock({agents,activeId,read,onFocus,onSettings}){
  })}</div>;
 }
 function rowBounds(count,halfView){
- const last=Math.max(0,count-1)*ROW_PITCH,edge=1.9;
+ const last=Math.max(0,count-1)*ROW_PITCH,edge=1.7;
  const min=halfView-edge,max=last+edge-halfView;
  if(count<=1||min>max)return{min:last/2,max:last/2};
  return{min,max};
@@ -30,7 +30,7 @@ function RowCamera({count,focusIndex,onSettle,reduced,frame}){
  const target=useRef(0),current=useRef(0),drag=useRef(null),wheelTimer=useRef();
  const {left=0,right=0,top=0,bottom=0}=frame?.(size.width,size.height)||{};
  const freeW=Math.max(280,size.width-left-right-72),freeH=Math.max(280,size.height-top-bottom-12);
- const zoom=Math.max(24,Math.min(freeW/6.8,freeH/4.7));
+ const zoom=Math.max(24,Math.min(freeW/5.2,freeH/4.15));
  const bounds=rowBounds(count,freeW/zoom/2);
  const clamp=value=>Math.min(bounds.max,Math.max(bounds.min,value));
  useEffect(()=>{const dx=(right-left)/2,dy=(bottom-top)/2;if(dx||dy)camera.setViewOffset(size.width,size.height,dx,dy,size.width,size.height);else camera.clearViewOffset();camera.zoom=zoom;camera.updateProjectionMatrix();invalidate()},[camera,size.width,size.height,left,right,top,bottom,zoom,invalidate]);
@@ -49,8 +49,8 @@ function RowCamera({count,focusIndex,onSettle,reduced,frame}){
  useFrame((_,delta)=>{
   const k=reduced?1:1-Math.exp(-delta*7);
   current.current+= (target.current-current.current)*k;
-  camera.position.set(current.current+1.05,2.55,6.7);
-  camera.lookAt(current.current,1.05,.15);
+  camera.position.set(current.current+.55,2.15,5.15);
+  camera.lookAt(current.current,1.2,.45);
   camera.zoom=zoom;camera.updateProjectionMatrix();
  });
  return null;

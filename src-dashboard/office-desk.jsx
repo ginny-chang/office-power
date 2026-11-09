@@ -61,17 +61,14 @@ function Spot({agent,at,selected,fresh,reduced,onSelect}){
  const accent=(BOT_VARIANTS[variant]||BOT_VARIANTS.life).color;
  const alert=isAgentAlert(agent);
  return <group position={at} onPointerOver={e=>{e.stopPropagation();setHovered(true)}} onPointerOut={()=>setHovered(false)}>
-  <Box w={3.35} h={.1} d={4.6} radius={.14} color="#fbfaf8" position={[0,.05,.45]} rough={.86} cast={false}/>
   <Watermark variant={variant}/>
-  <group position={[0,.1,0]}>
-   <WorkDesk color={accent}/>
-   {selected&&<mesh rotation={[-Math.PI/2,0,0]} position={[0,.03,.35]} raycast={()=>null}><ringGeometry args={[.78,.9,48]}/><meshBasicMaterial color={fresh?'#e5f68c':'#121214'}/></mesh>}
-   <OfficeBot variant={variant} reduced={reduced} hovered={hovered||selected} alert={alert} rest={.18} index={at[0]} position={[0,0,.55]} scale={1.05} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
-   {fresh&&<Html position={[.2,2.55,.55]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
-  </group>
+  <WorkDesk color={accent}/>
+  {selected&&<mesh rotation={[-Math.PI/2,0,0]} position={[0,.02,.85]} raycast={()=>null}><ringGeometry args={[.72,.84,48]}/><meshBasicMaterial color={fresh?'#e5f68c':'#121214'}/></mesh>}
+  <OfficeBot variant={variant} reduced={reduced} hovered={hovered||selected} alert={alert} rest={.12} index={at[0]} position={[0,0,.95]} scale={1.22} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
+  {fresh&&<Html position={[.15,2.7,.95]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
  </group>;
 }
-export const ROW_PITCH=4.15;
+export const ROW_PITCH=3.35;
 export function RobotRow({agents,focusId,read,reduced,onSelect}){
  const width=Math.max(ROW_PITCH,(agents.length-1)*ROW_PITCH+6);
  return <group>
