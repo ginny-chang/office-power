@@ -127,26 +127,39 @@ function Camera({reset,controls,reduced,intro,radius,frame}){
   controls.current?.target.set(0,.35,0);lockTilt();controls.current?.update();if(t===1)intro.current=false;
  });return null
 }
-function BlueFloor(){
+// The floor and backdrop follow the account theme (<html data-theme>); robots and stations keep their own colors.
+const sceneThemes={
+ light:{background:'#eeeef2',floor:'#e8e8ec',wash:['#f8f8fa','#f2f2f5','#eaeaee','#e1e1e6'],grid:'#ffffff',gridOpacity:.22,sky:'#ffffff',ground:'#c7c7cc'},
+ 'soft-dark':{background:'#1a1712',floor:'#1f1b15',wash:['#3a3023','#2f271d','#241f18','#1c1813'],grid:'#4d4134',gridOpacity:.35,sky:'#fff3e2',ground:'#3a3127'},
+ 'tech-light':{background:'#e6ecf5',floor:'#dfe6f0',wash:['#f4f7fb','#ebf0f7','#e2e9f3','#d8e1ee'],grid:'#ffffff',gridOpacity:.3,sky:'#ffffff',ground:'#b9c6d8'},
+ 'tech-dark':{background:'#070b14',floor:'#0a101c',wash:['#1a2a48','#14213a','#0e182c','#0a111f'],grid:'#22d3ee',gridOpacity:.18,sky:'#d8f6ff',ground:'#1c2a44'}
+};
+function useSceneTheme(){
+ const read=()=>sceneThemes[document.documentElement.dataset.theme]||sceneThemes.light;
+ const [theme,setTheme]=useState(read);
+ useEffect(()=>{const observer=new MutationObserver(()=>setTheme(read));observer.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});return()=>observer.disconnect()},[]);
+ return theme;
+}
+function BlueFloor({theme}){
  const texture=useMemo(()=>{
   const canvas=document.createElement('canvas');canvas.width=canvas.height=512;
-  const ctx=canvas.getContext('2d');ctx.fillStyle='#e8e8ec';ctx.fillRect(0,0,512,512);
+  const ctx=canvas.getContext('2d');ctx.fillStyle=theme.floor;ctx.fillRect(0,0,512,512);
   const wash=ctx.createRadialGradient(260,258,8,260,258,240);
-  wash.addColorStop(0,'#f8f8fa');wash.addColorStop(.34,'#f2f2f5');wash.addColorStop(.72,'#eaeaee');wash.addColorStop(1,'#e1e1e6');
+  [0,.34,.72,1].forEach((stop,index)=>wash.addColorStop(stop,theme.wash[index]));
   ctx.fillStyle=wash;ctx.fillRect(0,0,512,512);
   const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;return map;
- },[]);
+ },[theme]);
  useEffect(()=>()=>texture.dispose(),[texture]);
  return <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.025,0]}><planeGeometry args={[160,130]}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh>
 }
 function Scene({agents,allAgents=agents,onSelect,onSettings,read,reset,reduced,onReady,frame}){
- const controls=useRef(),intro=useRef(!reduced);
+ const controls=useRef(),intro=useRef(!reduced),theme=useSceneTheme();
  const layout=useMemo(()=>officeLayout(allAgents),[allAgents]);
  const visibleAgents=layout.agents.filter(a=>agents.some(visible=>visible.id===a.id));
  useEffect(()=>{onReady?.()},[onReady]);
- return <><color attach="background" args={['#eeeef2']}/><ambientLight intensity={.9}/><hemisphereLight args={['#ffffff','#c7c7cc',1.15]}/><directionalLight position={[-3,9,6]} intensity={2.4} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-15} shadow-camera-right={15} shadow-camera-top={15} shadow-camera-bottom={-15} shadow-normalBias={.03}/><directionalLight position={[8,4,-6]} color="#e7f0ff" intensity={1.4}/>
- <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.03,0]} receiveShadow><planeGeometry args={[160,130]}/><meshStandardMaterial color="#e8e8ec" roughness={.8}/></mesh><BlueFloor/>
- <gridHelper args={[140,140,'#ffffff','#ffffff']} scale={[1,1,.81]} position={[0,-.009,0]} material-transparent material-opacity={.22}/>
+ return <><color attach="background" args={[theme.background]}/><ambientLight intensity={.9}/><hemisphereLight args={[theme.sky,theme.ground,1.15]}/><directionalLight position={[-3,9,6]} intensity={2.4} castShadow shadow-mapSize={[2048,2048]} shadow-camera-left={-15} shadow-camera-right={15} shadow-camera-top={15} shadow-camera-bottom={-15} shadow-normalBias={.03}/><directionalLight position={[8,4,-6]} color="#e7f0ff" intensity={1.4}/>
+ <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.03,0]} receiveShadow><planeGeometry args={[160,130]}/><meshStandardMaterial color={theme.floor} roughness={.8}/></mesh><BlueFloor theme={theme}/>
+ <gridHelper key={theme.grid} args={[140,140,theme.grid,theme.grid]} scale={[1,1,.81]} position={[0,-.009,0]} material-transparent material-opacity={theme.gridOpacity}/>
  {visibleAgents.map((a,i)=><React.Fragment key={a.id}>{a.id!=='nova'&&visibleAgents.some(b=>b.id==='nova')&&<Connection to={a.at} index={i} reduced={reduced}/>}<Station agent={a} index={i} onSelect={onSelect} onSettings={onSettings} read={read} reduced={reduced}/></React.Fragment>)}
  <Camera reset={reset} controls={controls} reduced={reduced} intro={intro} radius={layout.radius} frame={frame}/><OrbitControls ref={controls} onStart={()=>{intro.current=false}} enablePan enableZoom screenSpacePanning mouseButtons={{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN}} touches={{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}} minZoom={3} maxZoom={150} target={[0,.35,0]} enableDamping={!reduced} dampingFactor={.08}/></>
 }
