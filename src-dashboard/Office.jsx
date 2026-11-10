@@ -19,7 +19,7 @@ function AgentDock({agents,activeId,read,onFocus,onSettings,onAdd}){
   </div>;
  })}{onAdd&&<button type="button" className="agent-dock-add" aria-label="新增 Agent" onClick={onAdd}><Plus size={20}/></button>}</div>;
 }
-function StageCamera({count,focusIndex,onSettle,reduced,frame}){
+function StageCamera({count,focusIndex,layout,onSettle,reduced,frame}){
  const {camera,size,gl,invalidate}=useThree();
  const target=useRef(0),current=useRef(0),drag=useRef(null),wheelTimer=useRef();
  const {left=0,right=0,top=0,bottom=0}=frame?.(size.width,size.height)||{};
@@ -47,22 +47,24 @@ function StageCamera({count,focusIndex,onSettle,reduced,frame}){
  useFrame((_,delta)=>{
   const k=reduced?1:1-Math.exp(-delta*7);
   current.current+=(target.current-current.current)*k;
-  camera.position.set(current.current,1.08,distance);
-  camera.lookAt(current.current,1.08,0);
+  const x=layout==='arc'?0:current.current;
+  camera.position.set(x,1.08,distance);
+  camera.lookAt(x,1.08,0);
   camera.fov=fov;camera.zoom=1;camera.updateProjectionMatrix();
  });
  return null;
 }
-function Scene({agents,focusId,focusIndex,onSelect,onSettle,read,reduced,onReady,frame}){
+function Scene({agents,focusId,focusIndex,layout,onSelect,onSettle,read,reduced,onReady,frame}){
  useEffect(()=>{onReady?.()},[onReady]);
  return <><color attach="background" args={['#e7ebf0']}/><BotLighting/>
- <RobotRow agents={agents} focusId={focusId} read={read} reduced={reduced} onSelect={onSelect}/>
- <StageCamera count={agents.length} focusIndex={focusIndex} onSettle={onSettle} reduced={reduced} frame={frame}/></>
+ <RobotRow agents={agents} focusId={focusId} layout={layout} read={read} reduced={reduced} onSelect={onSelect}/>
+ <StageCamera count={agents.length} focusIndex={focusIndex} layout={layout} onSettle={onSettle} reduced={reduced} frame={frame}/></>
 }
 export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],...props}){
  const [visible,setVisible]=useState(true);
  const [focusId,setFocusId]=useState(null);
  const [stageHover,setStageHover]=useState(false);
+ const [layout,setLayout]=useState('row');
  useEffect(()=>{const fn=()=>setVisible(!document.hidden);document.addEventListener('visibilitychange',fn);return()=>document.removeEventListener('visibilitychange',fn)},[]);
  useEffect(()=>{if(focusId&&!agents.some(agent=>agent.id===focusId))setFocusId(agents[0]?.id??null)},[agents,focusId]);
  const focus=agents.find(agent=>agent.id===focusId)||agents.find(agent=>agent.event&&!read.includes(agent.id))||agents[0];
@@ -70,7 +72,8 @@ export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],...p
  const choose=useCallback(id=>setFocusId(id),[]);
  const settle=useCallback(index=>{const agent=agents[index];if(agent)setFocusId(agent.id)},[agents]);
  return <div className={`three-office${stageHover?' is-hover':''}`} aria-label="可左右瀏覽的 Agent 工作桌" onMouseEnter={()=>setStageHover(true)} onMouseLeave={()=>setStageHover(false)}>
-  <Canvas shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[2,1.08,9.4],fov:42,near:.1,far:90}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} focusIndex={focusIndex} onSelect={onSelect} onSettle={settle} read={read}/></Canvas>
+  <Canvas shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[2,1.08,9.4],fov:42,near:.1,far:90}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} focusIndex={focusIndex} layout={layout} onSelect={onSelect} onSettle={settle} read={read}/></Canvas>
+  <div className="stage-layout" role="group" aria-label="舞台排列">{[['row','一排'],['arc','弧形']].map(([id,label])=><button key={id} type="button" aria-pressed={layout===id} onClick={()=>setLayout(id)}>{label}</button>)}</div>
   <button type="button" className="agent-row-arrow is-prev" aria-label="往左看" disabled={focusIndex<=0} onClick={()=>agents[focusIndex-1]&&choose(agents[focusIndex-1].id)}><ChevronLeft size={22}/></button>
   <button type="button" className="agent-row-arrow is-next" aria-label="往右看" disabled={focusIndex>=agents.length-1} onClick={()=>agents[focusIndex+1]&&choose(agents[focusIndex+1].id)}><ChevronRight size={22}/></button>
   {focus&&<p className="agent-dock-caption"><strong>{focus.name}</strong><span>{focus.role}</span></p>}

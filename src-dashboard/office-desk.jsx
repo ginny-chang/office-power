@@ -1,7 +1,7 @@
-import React,{useEffect,useMemo,useState} from 'react';
+import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {useFrame} from '@react-three/fiber';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
-import {CanvasTexture,SRGBColorSpace} from 'three';
+import {CanvasTexture,SRGBColorSpace,CatmullRomCurve3,TubeGeometry,Vector3} from 'three';
 import {Html} from '@react-three/drei';
 import {Button} from '../src-shared/ui/index.jsx';
 import {OfficeBot} from './office-bots.jsx';
@@ -68,16 +68,55 @@ function Spot({agent,selected,fresh,reduced,onSelect,index=0}){
   {fresh&&<Html position={[.15,2.7,.95]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
  </group>;
 }
+const ARC_PITCH=3.7;
+function arcPose(offset){
+ const steps=Math.abs(offset);
+ const dir=Math.sign(offset)||0;
+ return {x:offset*ARC_PITCH,z:1.45-steps*steps*.5,yaw:-dir*Math.min(.32,steps*.11),scale:Math.max(.82,1.16-steps*.08)};
+}
+function ArcMover({offset,reduced,children}){
+ const ref=useRef();
+ const pose=useRef(null);
+ useFrame((_,delta)=>{
+  const goal=arcPose(offset);
+  const current=pose.current||(pose.current={...goal});
+  const k=reduced?1:1-Math.exp(-delta*6);
+  current.x+=(goal.x-current.x)*k;
+  current.z+=(goal.z-current.z)*k;
+  current.yaw+=(goal.yaw-current.yaw)*k;
+  current.scale+=(goal.scale-current.scale)*k;
+  ref.current.position.set(current.x,0,current.z);
+  ref.current.rotation.y=current.yaw;
+  ref.current.scale.setScalar(current.scale);
+ });
+ return <group ref={ref}>{children}</group>;
+}
+function StageRim({count,focusIndex}){
+ const geo=useMemo(()=>{
+  const pts=[];
+  const from=-focusIndex-.4,to=(Math.max(count-1,0)-focusIndex)+.4;
+  for(let i=0;i<=56;i++){
+   const pose=arcPose(from+(to-from)*i/56);
+   pts.push(new Vector3(pose.x,.07,pose.z+1.32));
+  }
+  return new TubeGeometry(new CatmullRomCurve3(pts),72,.1,12,false);
+ },[count,focusIndex]);
+ useEffect(()=>()=>geo.dispose(),[geo]);
+ return <mesh geometry={geo} receiveShadow><meshStandardMaterial color="#f7f4ef" roughness={.46} metalness={.02}/></mesh>;
+}
 export const ROW_PITCH=3.45;
-export function RobotRow({agents,focusId,read,reduced,onSelect}){
+export function RobotRow({agents,focusId,layout='row',read,reduced,onSelect}){
+ const focusIndex=Math.max(0,agents.findIndex(agent=>agent.id===focusId));
  const mid=(agents.length-1)*ROW_PITCH/2;
  return <group>
-  <mesh rotation={[-Math.PI/2,0,0]} position={[mid,-.02,18]} receiveShadow><planeGeometry args={[320,240]}/><meshStandardMaterial color="#f4f2ef" roughness={.94}/></mesh>
+  <mesh rotation={[-Math.PI/2,0,0]} position={[layout==='arc'?0:mid,-.02,18]} receiveShadow><planeGeometry args={[320,240]}/><meshStandardMaterial color="#f4f2ef" roughness={.94}/></mesh>
+  {layout==='arc'&&<StageRim count={agents.length} focusIndex={focusIndex}/>}
   {agents.map((agent,index)=>{
    const fresh=!!(agent.event&&agent.published!==false&&!read.includes(agent.id));
-   return <group key={agent.id} position={[index*ROW_PITCH,0,0]}>
-    <Spot agent={agent} index={index} selected={agent.id===focusId} fresh={fresh} reduced={reduced} onSelect={onSelect}/>
-   </group>;
+   const spot=<Spot agent={agent} index={index} selected={agent.id===focusId} fresh={fresh} reduced={reduced} onSelect={onSelect}/>;
+   return layout==='arc'
+    ?<ArcMover key={agent.id} offset={index-focusIndex} reduced={reduced}>{spot}</ArcMover>
+    :<group key={agent.id} position={[index*ROW_PITCH,0,0]}>{spot}</group>;
   })}
  </group>;
 }
