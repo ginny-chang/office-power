@@ -294,7 +294,7 @@ main,.office-stage{background:#dce6f2}
 .board-toolbar .op-segmented>button:hover{background:rgba(255,255,255,.6)}
 .board-toolbar .op-segmented>button[aria-pressed=true]{background:var(--action);color:var(--on-ink)}
 .board-toolbar .seg-count{font:var(--t-meta);color:var(--ink-3)}
-.board-toolbar [aria-pressed=true] .seg-count:not(.op-badge){color:rgba(255,255,255,.6)}
+.board-toolbar [aria-pressed=true] .seg-count:not(.op-badge){color:color-mix(in srgb,var(--on-ink) 70%,transparent)}
 .board-toolbar .op-segmented>button.seg-icon{width:var(--control);padding:0}
 .board-toolbar .op-search{width:220px;background:var(--surface)}
 /* Undo the older fixed 38px toolbar search; the shared .op-search pattern does the rest. */

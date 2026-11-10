@@ -130,7 +130,7 @@ function Camera({reset,controls,reduced,intro,radius,frame}){
 // The floor and backdrop follow the account theme (<html data-theme>); robots and stations keep their own colors.
 const sceneThemes={
  light:{background:'#eeeef2',floor:'#e8e8ec',wash:['#f8f8fa','#f2f2f5','#eaeaee','#e1e1e6'],grid:'#ffffff',gridOpacity:.22,sky:'#ffffff',ground:'#c7c7cc'},
- 'soft-dark':{background:'#1a1712',floor:'#1f1b15',wash:['#3a3023','#2f271d','#241f18','#1c1813'],grid:'#4d4134',gridOpacity:.35,sky:'#fff3e2',ground:'#3a3127'},
+ 'soft-dark':{background:'#0f0b08',floor:'#15100c',wash:['#2e2117','#251b13','#1c150f','#140f0b'],grid:'#4a3a2b',gridOpacity:.35,sky:'#fff1e2',ground:'#2f241b'},
  'tech-light':{background:'#e6ecf5',floor:'#dfe6f0',wash:['#f4f7fb','#ebf0f7','#e2e9f3','#d8e1ee'],grid:'#ffffff',gridOpacity:.3,sky:'#ffffff',ground:'#b9c6d8'},
  'tech-dark':{background:'#070b14',floor:'#0a101c',wash:['#1a2a48','#14213a','#0e182c','#0a111f'],grid:'#22d3ee',gridOpacity:.18,sky:'#d8f6ff',ground:'#1c2a44'}
 };

@@ -1,12 +1,35 @@
 /* Runtime 管理 uses the settings cards; only what is specific to it lives here */
+/* Two sentences, one per line, so the intro needs more room than the usual heading copy */
+html .management .page-heading p.runtime-intro{max-width:none}
 .runtime-engine-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--sp-4);padding:var(--sp-4);border-radius:var(--r);background:var(--surface-2)}
-.runtime-engine-row>span:first-child{display:grid;gap:2px;min-width:0}
-.runtime-engine-row strong{font:var(--t-body-strong);color:var(--ink)}
-.runtime-engine-row small{font:var(--t-meta);color:var(--ink-2)}
-.runtime-field-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4)}
-.runtime-agents{display:flex;flex-wrap:wrap;gap:var(--sp-2)}
-html .runtime-agents>button{height:var(--control-md);display:inline-flex;align-items:center;gap:var(--sp-2);padding:0 12px;border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
-html .runtime-agents>button:hover{background:var(--surface-3)}
+.runtime-engine-row>span:first-child{display:grid;gap:4px;min-width:0}
+.runtime-engine-row strong{display:flex;align-items:center;gap:var(--sp-2);font:var(--t-body-strong);color:var(--ink)}
+.runtime-engine-row strong .usage-tag{background:var(--surface)}
+.runtime-engine-row small{display:flex;align-items:center;gap:6px;font:var(--t-meta);color:var(--ink-2)}
+.runtime-dot{width:8px;height:8px;border-radius:50%;background:var(--mint-strong)}
+.runtime-specs summary{width:max-content;display:flex;align-items:center;gap:4px;font:var(--t-label);color:var(--ink-2);cursor:pointer;list-style:none}
+.runtime-specs summary::-webkit-details-marker{display:none}
+.runtime-specs summary:hover{color:var(--ink)}
+.runtime-specs summary svg{transition:transform .2s cubic-bezier(.25,1,.5,1)}
+.runtime-specs[open] summary svg{transform:rotate(180deg)}
+.runtime-specs dl{display:grid;gap:12px;margin:var(--sp-4) 0 0}
+.runtime-specs dl>div{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:center;gap:var(--sp-4)}
+.runtime-specs dt{font:var(--t-label);color:var(--ink-2)}
+.runtime-specs dd{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin:0;font:var(--t-label);color:var(--ink)}
+/* Equal pills in a grid, 6 a row on wide screens; long names end in … and show in full on hover (title) */
+/* Same count badge as 重要回報 on My Board */
+.runtime-count{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-left:var(--sp-2);padding:0 var(--sp-2);border-radius:var(--r);background:var(--lime);color:var(--lime-ink);font:600 12px/24px var(--font)}
+.runtime-agents{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--sp-2)}
+html .runtime-agents>button{min-width:0;height:var(--control-md);display:flex;align-items:center;gap:var(--sp-2);padding:0 10px 0 12px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);font:var(--t-label);font-weight:500;color:var(--ink);text-align:left;cursor:pointer}
+html .runtime-agents>button:hover{border-color:var(--ink-3);background:var(--surface-2)}
+.runtime-agent-emoji{flex:none}
+.runtime-agent-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html .runtime-agents>button>svg{flex:none;color:var(--ink-2)}
+html .runtime-agents>button:hover>svg{color:var(--ink)}
+/* Fewer columns only when the card itself gets narrow */
+.runtime-agents-wrap{container-type:inline-size}
+@container (max-width:1000px){.runtime-agents{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@container (max-width:560px){.runtime-agents{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .runtime-workers{display:grid;margin:0;padding:0;list-style:none}
 .runtime-workers>li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
 .runtime-workers>li:last-child{padding-bottom:0}
@@ -14,8 +37,9 @@ html .runtime-agents>button:hover{background:var(--surface-3)}
 .runtime-workers>li>span:nth-child(2){flex:1;display:grid;gap:2px;min-width:0}
 .runtime-workers strong{font:var(--t-body-strong);color:var(--ink)}
 .runtime-workers small{overflow:hidden;font:var(--t-meta);color:var(--ink-2);text-overflow:ellipsis;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.runtime-specs summary svg{transition:none}}
 @media(max-width:560px){
-.runtime-field-pair{grid-template-columns:minmax(0,1fr)}
+.runtime-specs dl>div{grid-template-columns:minmax(0,1fr);gap:4px}
 .runtime-workers>li{flex-wrap:wrap}
 .runtime-workers>li>span:nth-child(2){flex-basis:calc(100% - 32px)}
 }

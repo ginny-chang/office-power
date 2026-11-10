@@ -277,6 +277,13 @@ html body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[
 html body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden]),textarea,select):focus:not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,[class*=screen-]) *){background-color:var(--surface)!important;box-shadow:var(--focus-ring)!important}
 html body :is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department):has(:is(input,textarea,select):focus){outline:0!important;border-color:transparent!important;border-radius:var(--r);background-color:var(--surface)!important;box-shadow:var(--focus-ring)!important}
 html body :is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department) :is(input,textarea,select):focus{box-shadow:none!important}
+/* Dark themes: fields sit a step darker than the card, so they read as fields on every page. No outline for now:
+   set --field-line (e.g. color-mix of --line-strong and --ink-3) to bring one back.
+   Same reach as the field rule above: a wrapped field (search, composer, sort box) gets it on its wrapper; focus keeps the ring. */
+html[data-theme="soft-dark"]{--field:#160f0b;--field-line:transparent}
+html[data-theme="tech-dark"]{--field:#0b1222;--field-line:transparent}
+html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden]),textarea,select):not(:is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department,.screen-search,.schedule-selects,.usage-actions,[class*=screen-]) *):not(:focus),html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) body .usage-actions select:not(:focus){background-color:var(--field)!important;box-shadow:inset 0 0 0 1px var(--field-line)}
+html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) body :is(label.op-search,div.op-search:not(.model-search-wrap),.composer,.editor-composer,.sort,.directory-department):not(:has(:is(input,textarea,select):focus)){background-color:var(--field)!important;box-shadow:inset 0 0 0 1px var(--field-line)}
 /* Disabled buttons, every tier: a save with nothing to save reads as inactive without disappearing */
 body button:disabled:is(.agent-save,.editor-save,.op-button--primary,.op-button--secondary,.primary,.schedule-add){border-color:var(--line-strong)!important;background:var(--surface-3)!important;color:var(--ink-3)!important;opacity:1;cursor:not-allowed}
 
@@ -308,7 +315,6 @@ html .runtime-status{padding:4px var(--sp-2);border-radius:var(--r)}
 html .runtime-overview>article.op-card,html .runtime-section-title,html .runtime-overview article>header{margin-top:0;margin-bottom:var(--sp-4)}
 html .runtime-overview>h3.runtime-section-title{margin-bottom:var(--sp-4)}
 html .runtime-specs dl{margin:var(--sp-4) 0}
-html .runtime-agents{padding-top:var(--sp-6)}
 html .runtime-agents>div{gap:var(--sp-2)}
 html .panel-section>header h2 span{padding:0 var(--sp-2);font:600 12px/24px var(--font)}
 html .schedule-row small{margin-top:4px;font:var(--t-meta)}
@@ -525,33 +531,33 @@ html .agent-interview{inset:0;overflow:auto}
 .agent-interview-panel>footer>span{display:none}
 }
 
-/* 簡約深色: the same soft-card language on a warm charcoal base.
-   Roles map across themes: --action (black in light) is amber here, for anything clickable or selected;
-   --lime (the highlight) is white here. Chart marks keep amber via --lime-strong so they read against the cream bars.
+/* 簡約深色: the same soft-card language on a near-black espresso base with dark coffee cards.
+   Roles map across themes: --action (black in light) is bright orange here, for anything clickable or selected;
+   --lime (the highlight) is white here; --mint is a bright green for positive figures. Chart marks keep orange via --lime-strong.
    Set by src-shared/theme.js as <html data-theme="soft-dark"> from the account's theme setting. */
 html[data-theme="soft-dark"]{
   color-scheme:dark;
-  --canvas:#1a1712;--frame:#211d17;--surface:#2b241b;--surface-base:#2b241b;--line-base:#3a3127;--on-highlight:#1a1712;--on-highlight-2:#5c5245;--surface-2:#352d22;--surface-3:#3f3528;
-  --ink:#f4ede3;--on-ink:#1a1712;--action:#ff9a2e;--ink-2:#b3a796;--ink-3:#7d7262;--line:#3a3127;--line-strong:#4d4134;
-  --lime:#fff;--lime-ink:#1a1712;--lime-strong:#ff9a2e;
-  --danger:#ff7a6e;--danger-soft:#3d2320;
-  --mint:#203a31;--mint-strong:#4fb39f;--mint-ink:#93dbc6;
+  --canvas:#0f0b08;--frame:#140f0b;--surface:#1e1611;--surface-base:#1e1611;--line-base:#2f241b;--on-highlight:#120d0a;--on-highlight-2:#5c4a3b;--surface-2:#2a1f17;--surface-3:#35271c;
+  --ink:#f7f1ea;--on-ink:#1a0e06;--action:#f47b2c;--ink-2:#bdaa98;--ink-3:#8a7766;--line:#2f241b;--line-strong:#4a3a2b;
+  --lime:#fff;--lime-ink:#120d0a;--lime-strong:#f47b2c;
+  --danger:#ff6b5b;--danger-soft:#3a1d17;
+  --mint:#15301f;--mint-strong:#4fdc8f;--mint-ink:#7ff0ae;
   --lavender:#2c2c3e;--lavender-strong:#7c86c4;--lavender-ink:#bcc4f2;
-  --peach:#40291a;--peach-ink:#f4bc8f;--rose:#40262a;
+  --peach:#3d2416;--peach-ink:#f6b98a;--rose:#3b1f22;
   --type-butter-tile:#3a3020;--type-butter-ink:#f1dfab;
   --type-lime-tile:#3a3520;--type-lime-ink:#ffc27a;
   --type-mint-tile:#21352c;--type-mint-ink:#a1f0c8;
   --type-aqua-tile:#22313a;--type-aqua-ink:#c5e4f5;
   --type-lavender-tile:#2f2a3a;--type-lavender-ink:#e8daf9;
   --type-peach-tile:#3a2a20;--type-peach-ink:#f6dac6;
-  --shadow-card:0 1px 2px rgba(0,0,0,.3);
-  --focus-ring:0 0 0 1px var(--line-strong),0 0 0 4px rgba(255,154,46,.16);
+  --shadow-card:0 1px 2px rgba(0,0,0,.45);
+  --focus-ring:0 0 0 1px var(--line-strong),0 0 0 4px rgba(244,123,44,.2);
   --shadow-float:0 10px 40px rgba(0,0,0,.4);
   --shadow-sheet:0 30px 80px rgba(0,0,0,.55);
   /* Older page styles still read the op tokens */
   --op-color-canvas:var(--canvas);--op-color-surface:var(--surface);--op-color-subtle:var(--surface-2);
   --op-color-text:var(--ink);--op-color-muted:var(--ink-2);--op-color-border:var(--line);
-  --op-color-primary:var(--action);--op-color-primary-hover:#ffad57;--op-color-primary-soft:var(--surface-2);--op-color-on-primary:var(--on-ink);
+  --op-color-primary:var(--action);--op-color-primary-hover:#ff914a;--op-color-primary-soft:var(--surface-2);--op-color-on-primary:var(--on-ink);
   --op-color-success:var(--mint-ink);--op-color-success-soft:var(--mint);
   --op-color-danger:var(--danger);--op-color-danger-soft:var(--danger-soft);
   --op-color-warning:#f4bc8f;--op-color-warning-soft:#40291a;--op-color-focus:var(--action);
@@ -559,10 +565,15 @@ html[data-theme="soft-dark"]{
 /* My Board pins its own surface and line tokens on .reference-board */
 html:is([data-theme="soft-dark"],[data-theme="tech-dark"],[data-theme="tech-light"]) .reference-board{--surface:var(--surface-base);--line:var(--line-base)}
 html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) .focus .usage-icon{color:#fff}
+/* The 3D office fills the board now; its old card frame (white edge, top highlight, blue shadow) shows as a bright outline on dark */
+html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) .three-office{border:0;box-shadow:none}
+html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) .three-office::after{display:none}
 /* Text on a white highlight surface turns dark again */
-html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) :is(.usage-stats>article.focus,.focus-card,.picker-agent.featured,.bot-bubble,.unit-row button[aria-pressed=true],.manage-alert,.org-feedback){--ink:var(--on-highlight);--ink-2:var(--on-highlight-2);--ink-3:var(--on-highlight-2)}
+html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) :is(.usage-stats>article.focus,.focus-card,.picker-agent.featured,.bot-bubble,.unit-row button[aria-pressed=true],.manage-alert,.org-feedback,.mcp-auth button.active,.agent-sub-grid label.active){--ink:var(--on-highlight);--ink-2:var(--on-highlight-2);--ink-3:var(--on-highlight-2)}
 /* The NOVA App preview rows sit on a translucent white wash in light; use a raised surface here */
 html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) .nova-preview label{background:var(--surface-2)}
+/* 能力中心 highlight choices inherit their text colour, so set it on the box itself */
+html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) :is(.mcp-auth button.active,.agent-sub-grid label.active){color:var(--on-highlight)}
 /* The avatar is a button, so it takes the action color here */
 html:is([data-theme="soft-dark"],[data-theme="tech-dark"]) .op-rail .account-trigger{background:var(--action);color:var(--on-ink)}
 /* NOVA Apps card text is a fixed grey in workspace-updates.css */

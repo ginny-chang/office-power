@@ -14,7 +14,7 @@ const models=agentModels.filter(model=>model.value!=='inherit');
 // Swatches are literal colors so each card previews its own theme whichever one is active. `ready` themes have tokens in tokens.css.
 const themes=[
  {id:'soft-light',name:'簡約淺色',copy:'淺灰底色，萊姆綠點綴',ready:true,colors:['#eeeef2','#ffffff','#e5f68c','#121214']},
- {id:'soft-dark',name:'簡約深色',copy:'炭黑底色，琥珀橘按鈕',ready:true,colors:['#1a1712','#2b241b','#ffffff','#ff9a2e']},
+ {id:'soft-dark',name:'簡約深色',copy:'深咖啡底色，亮橘按鈕',ready:true,colors:['#0f0b08','#1e1611','#ffffff','#f47b2c']},
  {id:'tech-light',name:'科技淺色',copy:'冷灰藍底色，鈷藍按鈕',ready:true,colors:['#e6ecf5','#ffffff','#d6e4ff','#1c4fd8']},
  {id:'tech-dark',name:'科技深色',copy:'深色控制台，青藍按鈕',ready:true,colors:['#070b14','#111a2e','#ffffff','#22d3ee']}
 ];
