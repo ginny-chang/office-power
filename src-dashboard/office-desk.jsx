@@ -1,5 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
-import {useFrame,useThree} from '@react-three/fiber';
+import {useFrame} from '@react-three/fiber';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {CanvasTexture,SRGBColorSpace} from 'three';
 import {Html} from '@react-three/drei';
@@ -56,55 +56,45 @@ function WorkDesk({color}){
   <Box w={.7} h={.02} d={.22} radius={.01} color="#f7f8fa" position={[-.15,.78,.16]}/>
  </group>;
 }
-function Spot({agent,at,selected,fresh,reduced,onSelect,index=0}){
+function Spot({agent,at,yaw=0,selected,fresh,reduced,onSelect,index=0}){
  const [hovered,setHovered]=useState(false);
+ const lift=useRef();
+ const height=useRef(0);
  const variant=botVariantFor(agent);
  const accent=(BOT_VARIANTS[variant]||BOT_VARIANTS.life).color;
  const alert=isAgentAlert(agent);
- return <group position={at} onPointerOver={e=>{e.stopPropagation();setHovered(true)}} onPointerOut={()=>setHovered(false)}>
+ useFrame((_,delta)=>{
+  if(!lift.current)return;
+  const goal=selected?.14:0;
+  const k=reduced?1:1-Math.exp(-delta*8);
+  height.current+=(goal-height.current)*k;
+  lift.current.position.y=height.current;
+ });
+ return <group position={at} rotation={[0,yaw,0]} onPointerOver={e=>{e.stopPropagation();setHovered(true)}} onPointerOut={()=>setHovered(false)}>
   <Watermark variant={variant}/>
   <WorkDesk color={accent}/>
-  <OfficeBot variant={variant} reduced={reduced} hovered={hovered||selected} alert={alert} rest={.12} index={index} position={[0,0,.95]} scale={1} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
-  {fresh&&<Html position={[.15,2.7,.95]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
+  <group ref={lift}>
+   <OfficeBot variant={variant} reduced={reduced} hovered={hovered||selected} alert={alert} rest={0} index={index} position={[0,0,.95]} scale={1} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
+   {fresh&&<Html position={[.15,2.7,.95]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
+  </group>
  </group>;
 }
-function ArcSpot({x,reduced,children}){
- const ref=useRef();
- const {camera}=useThree();
- const shown=useRef({z:0,scale:1,yaw:0});
- useFrame((_,delta)=>{
-  const group=ref.current;
-  if(!group)return;
-  const center=camera.position.x-.15;
-  const dx=x-center;
-  const steps=Math.abs(dx)/ROW_PITCH;
-  const dir=Math.sign(dx)||0;
-  const z=-steps*steps*1.35;
-  const scale=Math.max(.58,1.14-steps*.16);
-  const yaw=-dir*Math.min(.95,steps*.42);
-  const xPos=center+dir*steps*ROW_PITCH*(1-Math.min(.28,steps*.08));
-  const k=reduced?1:1-Math.exp(-delta*7);
-  const pose=shown.current;
-  pose.z+=(z-pose.z)*k;
-  pose.scale+=(scale-pose.scale)*k;
-  pose.yaw+=(yaw-pose.yaw)*k;
-  pose.x=pose.x===undefined?xPos:pose.x+(xPos-pose.x)*k;
-  group.position.set(pose.x,0,pose.z);
-  group.scale.setScalar(pose.scale);
-  group.rotation.y=pose.yaw;
- });
- return <group ref={ref}>{children}</group>;
-}
-export const ROW_PITCH=2.85;
+export const ROW_PITCH=2.42;
 export function RobotRow({agents,focusId,read,reduced,onSelect}){
- const mid=(agents.length-1)*ROW_PITCH/2;
+ const count=Math.max(agents.length,1);
+ const mid=(count-1)/2;
+ const center=(count-1)*ROW_PITCH/2;
  return <group>
-  <mesh rotation={[-Math.PI/2,0,0]} position={[mid,-.02,14]} receiveShadow><planeGeometry args={[220,160]}/><meshStandardMaterial color="#f4f2ef" roughness={.94}/></mesh>
+  <mesh rotation={[-Math.PI/2,0,0]} position={[center,-.02,8]} receiveShadow><planeGeometry args={[240,180]}/><meshStandardMaterial color="#f4f2ef" roughness={.94}/></mesh>
   {agents.map((agent,index)=>{
    const fresh=!!(agent.event&&agent.published!==false&&!read.includes(agent.id));
-   return <ArcSpot key={agent.id} x={index*ROW_PITCH} reduced={reduced}>
-    <Spot agent={agent} at={[0,0,0]} index={index} selected={agent.id===focusId} fresh={fresh} reduced={reduced} onSelect={onSelect}/>
-   </ArcSpot>;
+   const t=index-mid;
+   const reach=Math.max(mid,1);
+   const along=t/reach;
+   const x=t*ROW_PITCH;
+   const z=along*along*1.85;
+   const yaw=-Math.sign(t)*Math.min(.28,Math.abs(along)*.24);
+   return <Spot key={agent.id} agent={agent} at={[center+x,0,z]} yaw={yaw} index={index} selected={agent.id===focusId} fresh={fresh} reduced={reduced} onSelect={onSelect}/>;
   })}
  </group>;
 }
