@@ -191,7 +191,7 @@ function GroundShadow() {
   </mesh>;
 }
 
-export function OfficeBot({variant = 'life', reduced = false, hovered = false, rest = 0.2, index = 0, alert = false, onSelect, ...props}) {
+export function OfficeBot({variant = 'life', reduced = false, hovered = false, selected = false, rest = 0.2, index = 0, alert = false, onSelect, ...props}) {
   const spec = BOT_VARIANTS[variant] || BOT_VARIANTS.life;
   const Tool = tools[spec.tool];
   const root = useRef();
@@ -202,16 +202,17 @@ export function OfficeBot({variant = 'life', reduced = false, hovered = false, r
     const group = root.current;
     if (!group) return;
     const k = reduced ? 1 : 1 - Math.exp(-delta * 7);
+    const look = hovered || selected;
     group.getWorldPosition(world);
-    const facing = hovered ? Math.atan2(camera.position.x - world.x, camera.position.z - world.z) : rest;
+    const facing = look ? Math.atan2(camera.position.x - world.x, camera.position.z - world.z) : rest;
     const diff = THREE.MathUtils.euclideanModulo(facing - group.rotation.y + Math.PI, Math.PI * 2) - Math.PI;
     group.rotation.y += diff * k;
-    const blink = reduced || hovered ? 1 : (clock.elapsedTime + index) % 4.8 < 0.1 ? 0.14 : 1;
+    const blink = reduced || look ? 1 : (clock.elapsedTime + index) % 4.8 < 0.1 ? 0.14 : 1;
     eyes.current.forEach(eye => {if (eye) eye.scale.y = blink;});
     if (arm.current) {
-      const wave = alert && !reduced ? Math.sin(clock.elapsedTime * 2.2) : 0;
-      arm.current.rotation.z = wave * 0.95;
-      arm.current.rotation.x = wave * 0.4;
+      const wave = (hovered || alert) && !reduced ? Math.sin(clock.elapsedTime * 2.2) : 0;
+      arm.current.rotation.z += (wave * 0.95 - arm.current.rotation.z) * k;
+      arm.current.rotation.x += (wave * 0.4 - arm.current.rotation.x) * k;
     }
   });
   return <group {...props}>

@@ -63,7 +63,7 @@ function Spot({agent,selected,fresh,reduced,onSelect,index=0}){
  return <group onPointerOver={e=>{e.stopPropagation();setHovered(true)}} onPointerOut={()=>setHovered(false)}>
   <Watermark variant={variant}/>
   <WorkDesk color={accent}/>
-  <OfficeBot variant={variant} reduced={reduced} hovered={hovered||selected} alert={alert} rest={0} index={index} position={[0,0,.95]} scale={1} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
+  <OfficeBot variant={variant} reduced={reduced} hovered={hovered} selected={selected} alert={alert} rest={0} index={index} position={[0,0,.95]} scale={1} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
   {fresh&&<Html position={[.15,2.7,.95]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
  </group>;
 }
