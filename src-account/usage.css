@@ -36,7 +36,7 @@
 .usage-legend i,.usage-chart-tip i{width:8px;height:8px;flex:none;border-radius:50%}
 i.tokens,i.output{background:var(--lime-strong)}
 i.cost,i.input{background:var(--ink)}
-.usage-chart-tip i.cost{background:#fff}
+.usage-chart-tip i.cost{background:var(--surface)}
 
 .usage-chart-wrap{display:grid;gap:var(--sp-6)}
 .usage-chart{position:relative;display:grid;grid-template-columns:32px minmax(0,1fr);grid-template-rows:240px auto;column-gap:var(--sp-2);row-gap:var(--sp-2)}
@@ -102,10 +102,10 @@ i.cost,i.input{background:var(--ink)}
 .usage-share{width:160px}
 .usage-share-bar{display:block;height:4px;margin-top:4px;border-radius:2px;background:var(--surface-3);overflow:hidden}
 .usage-share-bar i{display:block;height:100%;border-radius:2px;background:var(--ink)}
-.usage-open{width:var(--control-sm);height:var(--control-sm);display:inline-grid;place-items:center;border-radius:var(--r);color:var(--ink-2)}
+.usage-open{width:var(--control-sm);height:var(--control-sm);display:inline-grid;place-items:center;padding:0;border:0;border-radius:var(--r);background:none;cursor:pointer;color:var(--ink-2)}
 .usage-open:hover{background:var(--surface-3);color:var(--ink)}
 .usage-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
-.usage-table td:has(>a.usage-open){text-align:right}
+.usage-row-actions{display:flex;justify-content:flex-end;gap:4px}
 .usage-detail td{padding:0;text-align:left;background:var(--surface-2)}
 .usage-detail td>div{display:grid;gap:var(--sp-4);padding:var(--sp-2) var(--sp-6) var(--sp-6) 76px}
 .usage-detail-bars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-6)}
@@ -130,5 +130,17 @@ i.cost,i.input{background:var(--ink)}
 .usage-agents label.op-search{flex:none}
 .usage-detail-bars{grid-template-columns:minmax(0,1fr)}
 }
+
+/* 監控紀錄 uses this page's stat, table, tag and empty styles; inside a white dialog the stats are grey, not cards on a card */
 .usage-empty:has(>svg){display:grid;justify-items:center;gap:var(--sp-4);color:var(--ink-2)}
 .usage-empty>p{margin:0}
+.agent-monitor .usage-stats{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:var(--sp-6)}
+.agent-monitor .usage-stats>article{background:var(--surface-2);box-shadow:none}
+.agent-monitor .usage-stats>article>header{min-height:0}
+.agent-monitor .usage-table table{min-width:0}
+.agent-monitor .usage-table :is(th,td){text-align:left}
+.agent-monitor .usage-table :is(th,td):first-child{padding-left:0}
+.agent-monitor .usage-table :is(th,td):last-child{width:auto;padding-right:0}
+.agent-monitor .usage-table td{white-space:nowrap}
+.agent-monitor .usage-table .usage-tag{margin-left:0}
+.agent-monitor .usage-table :is(th,td):nth-child(n+5){text-align:right}

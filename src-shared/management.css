@@ -4,13 +4,13 @@
 /* ───────────── Soft card layer (tokens in src-shared/tokens.css) ───────────── */
 .management{background:var(--canvas);color:var(--ink);font:var(--t-body)}
 .management main{max-width:1200px;padding:var(--sp-6)}
-.management .page-heading{margin-bottom:var(--sp-8)}
+.management .page-heading{margin-bottom:var(--sp-6)}
 .management .page-heading h1,.management .page-heading .op-page-title,.management .page-heading :is(h1,.function-title){font:var(--t-display);letter-spacing:-.02em;color:var(--ink)}
 .management .page-heading p{max-width:42rem;font:var(--t-body);color:var(--ink-2)}
 .management .page-segments.op-segments,.management .op-segments.page-segments{display:inline-flex;gap:4px;margin:0 0 var(--sp-6);padding:0;border:0;border-radius:var(--r);background:var(--surface)}
 .management .page-segments .op-button{min-height:var(--control);height:var(--control);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);box-shadow:none;font:var(--t-label);font-weight:500;color:var(--ink)}
 .management .page-segments .op-button:hover{background:var(--surface-3)}
-.management .page-segments .op-button[aria-pressed=true]{background:var(--ink);color:#fff;box-shadow:none}
+.management .page-segments .op-button[aria-pressed=true]{background:var(--action);color:var(--on-ink);box-shadow:none}
 .management .manage-grid{gap:var(--sp-4)}
 .management .manage-card{padding:var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
 .management .manage-card small{font:var(--t-meta);color:var(--ink-2)}

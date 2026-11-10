@@ -1,7 +1,10 @@
 import React,{useState} from 'react';
-import {ArrowDownLeft,ArrowDownRight,ArrowUpRight,ChevronRight,Download,ExternalLink,Layers,MessagesSquare,Receipt,Search,Wallet,X} from 'lucide-react';
+import {ArrowDownLeft,ArrowDownRight,ArrowUpRight,ChevronRight,Download,Layers,MessagesSquare,Receipt,Search,Settings,SquareActivity,Wallet,X} from 'lucide-react';
 import {PageTitle,Button} from '../src-shared/ui/index.jsx';
 import {csv,download} from '../src-shared/Management';
+import useLocalData from '../src-shared/useLocalData.js';
+import AgentSettings from '../src-dashboard/AgentSettings.jsx';
+import AgentMonitor from './AgentMonitor.jsx';
 import './usage.css';
 
 // Demo data in the live page's shape; cost and tokens have their own daily curves because models price tokens differently.
@@ -73,7 +76,12 @@ function DailyChart({cost,tokens,month}){
 
 export default function UsagePanel(){
  const [periodId,setPeriodId]=useState('2026-11'),[query,setQuery]=useState(''),[open,setOpen]=useState(null);
- const period=periods[periodId],agents=period.agents;
+ const [configs,setConfigs]=useLocalData('office-agent-settings-v1',{}),[deleted,setDeleted]=useLocalData('office-deleted-agents-v1',[]),[settingsId,setSettingsId]=useState(null),[monitorId,setMonitorId]=useState(null);
+ const period=periods[periodId];
+ // Rows show the name from Agent 設定. A deleted agent keeps its row, since its cost is history, but can no longer be opened.
+ const agents=period.agents.map(agent=>{const config=configs[agent.id];return config?{...agent,name:config.name||agent.name,role:config.role||agent.role,emoji:config.emoji||agent.emoji}:agent});
+ const settingsAgent=agents.find(agent=>agent.id===settingsId),monitorAgent=agents.find(agent=>agent.id===monitorId);
+ const deleteAgent=id=>{setSettingsId(null);setDeleted(ids=>[...ids,id]);setConfigs(({[id]:removed,...rest})=>rest)};
  const totalCost=sum(agents,'cost'),input=sum(agents,'input'),output=sum(agents,'output'),tokens=input+output,requests=sum(agents,'requests');
  const avg=requests?totalCost/requests:0,prev=period.previous,prevAvg=prev.cost/prev.requests;
  const inputShare=tokens?input/tokens*100:0;
@@ -128,7 +136,7 @@ export default function UsagePanel(){
      <td><strong>{money(agent.cost)}</strong></td>
      <td className="usage-share">{percent(share)}<span className="usage-share-bar" aria-hidden="true"><i style={{width:`${share}%`}}/></span></td>
      <td>{idle?<span className="usage-tag">無用量</span>:<Trend now={agent.cost} before={agent.previous}/>}</td>
-     <td><a className="usage-open" href={`./chat.html?agent=${agent.id}`} aria-label={`開啟 ${agent.name}`} onClick={event=>event.stopPropagation()}><ExternalLink size={16}/></a></td>
+     <td><div className="usage-row-actions"><button type="button" className="usage-open" title="監控紀錄" aria-label={`${agent.name} 的監控紀錄`} onClick={event=>{event.stopPropagation();setMonitorId(agent.id)}}><SquareActivity size={16}/></button>{!deleted.includes(agent.id)&&<button type="button" className="usage-open" title="Agent 設定" aria-label={`${agent.name} 的 Agent 設定`} onClick={event=>{event.stopPropagation();setSettingsId(agent.id)}}><Settings size={16}/></button>}</div></td>
     </tr>
     {expanded&&<tr className="usage-detail"><td colSpan={7}><div>
      <div className="usage-detail-bars"><div><p><span>佔總費用比例（USD）</span><strong>{percent(share)}（{money(agent.cost)}）</strong></p><div className="usage-split"><i className="cost" style={{flexGrow:share}}/><i className="rest" style={{flexGrow:100-share}}/></div></div>
@@ -136,5 +144,7 @@ export default function UsagePanel(){
      <dl>{[['輸入 Token',compact(agent.input)],['輸出 Token',compact(agent.output)],['對話次數',agent.requests],['平均每次成本（USD）',agent.requests?unitCost(agent.cost/agent.requests):'—'],['使用模型',agent.model],['最近活動',agent.last]].map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
     </div></td></tr>}</React.Fragment>})}</tbody></table></div>:<p className="usage-empty">找不到符合的 Agent。</p>}
   </section>
+   {monitorAgent&&<AgentMonitor agent={monitorAgent} scheduleAgent={period.agents.find(agent=>agent.id===monitorId).name} month={periodId.slice(5)} onClose={()=>setMonitorId(null)}/>}
+  {settingsAgent&&<AgentSettings modal agent={{id:settingsAgent.id,name:settingsAgent.name,role:settingsAgent.role,emoji:settingsAgent.emoji}} config={configs[settingsAgent.id]} onSave={config=>setConfigs(previous=>({...previous,[settingsAgent.id]:config}))} onClose={()=>setSettingsId(null)} onDelete={settingsAgent.id==='nova'?undefined:()=>deleteAgent(settingsAgent.id)}/>}
  </>;
 }
