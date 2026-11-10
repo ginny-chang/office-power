@@ -23,15 +23,14 @@ function StageCamera({count,frame}){
  const {camera,size,invalidate}=useThree();
  const {left=0,right=0,top=0,bottom=0}=frame?.(size.width,size.height)||{};
  const freeW=Math.max(280,size.width-left-right-72);
- const center=Math.max(0,count-1)*ROW_PITCH/2;
- const distance=11.2;
- const span=(Math.max(count-1,1)*ROW_PITCH+3.4)*(size.width/freeW);
+ const distance=8.2;
+ const span=((Math.max(count-1,1)*ROW_PITCH)+8.2)*(size.width/freeW);
  const aspect=size.width/Math.max(1,size.height);
  const fov=2*Math.atan((span/2)/distance/aspect)*(180/Math.PI);
  useEffect(()=>{const dx=(right-left)/2,dy=(bottom-top)/2;if(dx||dy)camera.setViewOffset(size.width,size.height,dx,dy,size.width,size.height);else camera.clearViewOffset();camera.fov=fov;camera.zoom=1;camera.updateProjectionMatrix();invalidate()},[camera,size.width,size.height,left,right,top,bottom,fov,invalidate]);
  useFrame(()=>{
-  camera.position.set(center,3.05,distance);
-  camera.lookAt(center,.72,.2);
+  camera.position.set(0,2.2,distance);
+  camera.lookAt(0,4.7,.2);
   camera.fov=fov;camera.zoom=1;camera.updateProjectionMatrix();
  });
  return null;
@@ -51,7 +50,7 @@ export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],...p
  const focusIndex=Math.max(0,agents.findIndex(agent=>agent.id===focus?.id));
  const choose=useCallback(id=>setFocusId(id),[]);
  return <div className="three-office" aria-label="可左右瀏覽的 Agent 工作桌">
-  <Canvas shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[6,3.05,11.2],fov:42,near:.1,far:80}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} onSelect={onSelect} read={read}/></Canvas>
+  <Canvas shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[0,2.2,8.2],fov:42,near:.1,far:80}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} onSelect={onSelect} read={read}/></Canvas>
   <button type="button" className="agent-row-arrow is-prev" aria-label="往左看" disabled={focusIndex<=0} onClick={()=>agents[focusIndex-1]&&choose(agents[focusIndex-1].id)}><ChevronLeft size={22}/></button>
   <button type="button" className="agent-row-arrow is-next" aria-label="往右看" disabled={focusIndex>=agents.length-1} onClick={()=>agents[focusIndex+1]&&choose(agents[focusIndex+1].id)}><ChevronRight size={22}/></button>
   {focus&&<p className="agent-dock-caption"><strong>{focus.name}</strong><span>{focus.role}</span></p>}
