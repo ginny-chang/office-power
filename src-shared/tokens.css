@@ -161,13 +161,15 @@ html .op-input:not([type=checkbox]):not([type=radio]):not([type=file]){min-heigh
 html textarea.op-input{padding:var(--sp-2) var(--sp-4)!important}
 html div.op-search{height:var(--control);gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);color:var(--ink-3)}
 html div.op-search input{height:100%;border:0;background:none;font:var(--t-label);color:var(--ink)}
-/* Dialogs: one white sheet, no inner rules */
-html .op-dialog{border:0;border-radius:var(--r);box-shadow:var(--shadow-sheet)}
-html .op-dialog::backdrop{background:rgba(18,18,20,.2);backdrop-filter:blur(4px)}
+/* Dialogs: one white sheet, same height on every screen; the body scrolls */
+html .op-dialog,html dialog.employee-dialog,html dialog.modal{display:flex;flex-direction:column;height:min(720px,calc(100dvh - 48px));max-height:min(720px,calc(100dvh - 48px));margin:auto;overflow:hidden;border:0;border-radius:var(--r);box-shadow:var(--shadow-sheet)}
+html .op-dialog::backdrop,html dialog.employee-dialog::backdrop,html dialog.modal::backdrop{background:rgba(18,18,20,.2);backdrop-filter:blur(4px)}
+html .op-dialog-header,html .op-dialog-footer,html dialog.employee-dialog>header,html dialog.modal>header{flex:none}
 html .op-dialog-header{padding:var(--sp-8) var(--sp-8) var(--sp-4);border:0}
 html .op-dialog-header h2{font:var(--t-title);color:var(--ink)}
 html .op-dialog-header p{font:var(--t-label);color:var(--ink-2)}
-html .op-dialog-body{padding:0 var(--sp-8) var(--sp-4)}
+html .op-dialog-body{flex:1;min-height:0;overflow:auto;padding:0 var(--sp-8) var(--sp-4)}
+html dialog.employee-dialog>.employee-form,html dialog.employee-dialog>.csv-import,html dialog.modal>*:not(header){flex:1;min-height:0;overflow:auto}
 html .op-dialog-footer{padding:var(--sp-4) var(--sp-8) var(--sp-8);border:0}
 html .op-dialog-header .op-button--icon{width:var(--control);height:var(--control);border-radius:var(--r);background:var(--surface-2)}
 /* Segmented control: the same white strip as My Board's filters */
@@ -501,8 +503,16 @@ html body .agent-detail .agent-delete{border:1px solid var(--line-strong);backgr
 html body .agent-detail .agent-delete:hover{background:var(--danger-soft)}
 .agent-delete-copy{font:var(--t-body);color:var(--ink-2)}
 /* Agent settings and 監控紀錄 opened from another flow: the system dialog (6.8) around the same content, no inner dividers */
-html body dialog.agent-settings.agent-detail.agent-settings-modal{inset:0;width:min(1040px,calc(100vw - 48px));height:min(860px,calc(100dvh - 48px));margin:auto;padding:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet)}
+html body dialog.agent-settings.agent-detail.agent-settings-modal{inset:0;display:flex;flex-direction:column;width:min(1040px,calc(100vw - 48px));height:min(720px,calc(100dvh - 48px));max-height:min(720px,calc(100dvh - 48px));margin:auto;padding:0;overflow:hidden;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet)}
 html body dialog.agent-settings.agent-settings-modal::backdrop{background:rgba(18,18,20,.2);backdrop-filter:blur(4px)}
+html body dialog.agent-settings.agent-settings-modal>.agent-page-head,html body dialog.agent-settings.agent-settings-modal>.agent-page-actions{flex:none}
+html body dialog.agent-settings.agent-settings-modal>.agent-settings-body{flex:1;min-height:0;overflow:auto}
+html dialog.employee-dialog>.employee-method,html dialog.employee-dialog>.import-errors{flex:none}
+html dialog.employee-dialog>.employee-form:has(>.employee-form-fields){display:flex;flex-direction:column;gap:0;overflow:hidden;padding:0}
+html dialog.employee-dialog>.employee-form>.employee-form-fields{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4) var(--sp-6);padding:var(--sp-4) var(--sp-8) var(--sp-6)}
+html dialog.employee-dialog>.employee-form>footer{flex:none;position:static;padding:var(--sp-4) var(--sp-8) var(--sp-8);background:var(--surface)}
+html dialog.employee-dialog>.csv-import>footer{position:sticky;bottom:0;z-index:1;background:var(--surface)}
+@media(max-width:650px){html dialog.employee-dialog>.employee-form>.employee-form-fields{grid-template-columns:1fr}}
 html body .agent-settings-modal .agent-page-head{padding:var(--sp-8) var(--sp-8) var(--sp-4);border:0}
 html body .agent-settings-modal .agent-page-title{align-items:center}
 html body .agent-settings-modal .agent-page-head .op-button--icon{width:var(--control);height:var(--control);flex:none;border:0;border-radius:var(--r);background:var(--surface-2)}
