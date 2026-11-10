@@ -47,8 +47,8 @@ function StageCamera({count,focusIndex,onSettle,reduced,frame}){
  useFrame((_,delta)=>{
   const k=reduced?1:1-Math.exp(-delta*7);
   current.current+=(target.current-current.current)*k;
-  camera.position.set(current.current,3.55,distance);
-  camera.lookAt(current.current,1.02,0);
+  camera.position.set(current.current,1.08,distance);
+  camera.lookAt(current.current,1.08,0);
   camera.fov=fov;camera.zoom=1;camera.updateProjectionMatrix();
  });
  return null;
@@ -70,7 +70,7 @@ export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],...p
  const choose=useCallback(id=>setFocusId(id),[]);
  const settle=useCallback(index=>{const agent=agents[index];if(agent)setFocusId(agent.id)},[agents]);
  return <div className={`three-office${stageHover?' is-hover':''}`} aria-label="可左右瀏覽的 Agent 工作桌" onMouseEnter={()=>setStageHover(true)} onMouseLeave={()=>setStageHover(false)}>
-  <Canvas shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[2,2.7,11.4],fov:42,near:.1,far:90}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} focusIndex={focusIndex} onSelect={onSelect} onSettle={settle} read={read}/></Canvas>
+  <Canvas shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[2,1.08,9.4],fov:42,near:.1,far:90}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} focusIndex={focusIndex} onSelect={onSelect} onSettle={settle} read={read}/></Canvas>
   <button type="button" className="agent-row-arrow is-prev" aria-label="往左看" disabled={focusIndex<=0} onClick={()=>agents[focusIndex-1]&&choose(agents[focusIndex-1].id)}><ChevronLeft size={22}/></button>
   <button type="button" className="agent-row-arrow is-next" aria-label="往右看" disabled={focusIndex>=agents.length-1} onClick={()=>agents[focusIndex+1]&&choose(agents[focusIndex+1].id)}><ChevronRight size={22}/></button>
   {focus&&<p className="agent-dock-caption"><strong>{focus.name}</strong><span>{focus.role}</span></p>}
