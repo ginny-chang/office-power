@@ -1,7 +1,7 @@
 import {AdminOnly} from '../src-shared/UserRole.jsx';
 import React,{useEffect,useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {Folder,Database,Plug,BookOpen,Plus,Search,X,Link2,Bot,Zap,Shield,ChevronLeft,MoreHorizontal,GitBranch,Trash2,Upload} from 'lucide-react';
+import {Folder,Database,Plug,BookOpen,Plus,Search,X,Link2,Bot,Zap,Shield,ChevronLeft,MoreHorizontal,GitBranch,Trash2} from 'lucide-react';
 import LibraryDetail,{CreateLibrary} from './LibraryDetail.jsx';
 import ExternalSources from './ExternalSources.jsx';
 import {Button,Dialog} from '../src-shared/ui/index.jsx';
@@ -92,28 +92,28 @@ function SkillSourceDialog({sources,setSources,onClose,onNotice}){
 }
 
 function skillFromText(text,fallbackName,source){const heading=text.match(/^#\s+(.+)$/m)?.[1];const description=text.split('\n').map(line=>line.trim()).find(line=>line&&!line.startsWith('#'))||`從 ${fallbackName} 匯入`;return {id:crypto.randomUUID(),name:(heading||fallbackName).trim(),description,version:'1.0',enabled:true,instructions:text||`從 ${fallbackName} 匯入`,source,persisted:true}}
+const skillPath=file=>file.webkitRelativePath||file.relativePath||file.name;
+async function readEntry(entry,prefix=''){if(entry.isFile){const file=await new Promise((resolve,reject)=>entry.file(resolve,reject));Object.defineProperty(file,'relativePath',{value:prefix+file.name});return [file]}const reader=entry.createReader(),all=[];let batch;do{batch=await new Promise((resolve,reject)=>reader.readEntries(resolve,reject));for(const child of batch)all.push(...await readEntry(child,`${prefix}${entry.name}/`))}while(batch.length);return all}
 function AddSkill({onClose,onSave}){
- const [kind,setKind]=useState('manual'),[mode,setMode]=useState('github'),[draft,setDraft]=useState({name:'',version:'1.0',description:'',instructions:''}),[url,setUrl]=useState(''),[error,setError]=useState('');
- const fileRef=React.useRef(null),folderRef=React.useRef(null);
+ const [draft,setDraft]=useState({name:'',version:'1.0',description:'',instructions:''}),[url,setUrl]=useState(''),[error,setError]=useState('');
+ const importRef=React.useRef(null);
  const set=(key,value)=>setDraft(item=>({...item,[key]:value}));
  const nameHint=draft.name.trim()&&!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(draft.name.trim())?'建議使用小寫與連字號，例如 meeting-notes。':'';
  const saveManual=()=>{if(!draft.name.trim())return;onSave({id:crypto.randomUUID(),name:draft.name.trim(),description:draft.description.trim(),version:draft.version.trim()||'1.0',enabled:true,instructions:draft.instructions,persisted:true})};
  const fromGithub=()=>{let parsed;try{parsed=new URL(url.trim())}catch{setError('請輸入 Git 連結。');return}if(!parsed.hostname.endsWith('github.com')){setError('請輸入 github.com 的連結。');return}const parts=parsed.pathname.split('/').filter(Boolean);onSave({id:crypto.randomUUID(),name:parts.at(-1)||'github-skill',description:`從 ${parsed.href} 匯入`,version:'1.0',enabled:true,instructions:`來源：${parsed.href}`,source:parsed.href,persisted:true})};
- const fromFile=async event=>{const file=event.target.files?.[0];event.target.value='';if(!file)return;onSave(skillFromText(await file.text(),file.name.replace(/\.md$/i,''),file.name))};
- const fromFolder=async event=>{const files=[...event.target.files];event.target.value='';if(!files.length)return;const skillFile=files.find(file=>/skill\.md$/i.test(file.name))||files.find(file=>/\.md$/i.test(file.name));const folder=files[0].webkitRelativePath?.split('/')[0]||'imported-skill';onSave(skillFromText(skillFile?await skillFile.text():'',folder,folder))};
- const footer=kind==='manual'?<> <Button onClick={onClose}>取消</Button><Button variant="primary" onClick={saveManual} disabled={!draft.name.trim()}>新增技能</Button></>:mode==='github'?<> <Button onClick={onClose}>取消</Button><Button variant="primary" onClick={fromGithub} disabled={!url.trim()}>匯入</Button></>:<Button onClick={onClose}>關閉</Button>;
- return <Dialog title="新增技能" description={kind==='manual'?'手動填寫技能名稱、描述與 SKILL.md 正文。':'用 Git 連結或檔案匯入既有技能。'} size="wide" onClose={onClose} footer={footer}>
+ const importFiles=async files=>{if(!files.length)return;const isFolder=files.length>1||files.some(file=>skillPath(file).includes('/'));if(!isFolder){const file=files[0];if(!/\.md$/i.test(file.name)){setError('請匯入 SKILL.md，或匯入包含 SKILL.md 的資料夾。');return}onSave(skillFromText(await file.text(),file.name.replace(/\.md$/i,''),file.name));return}const skillFile=files.find(file=>/(^|\/)skill\.md$/i.test(skillPath(file)))||files.find(file=>/\.md$/i.test(skillPath(file)));if(!skillFile){setError('資料夾裡找不到 SKILL.md。');return}const folder=skillPath(skillFile).split('/')[0]||'imported-skill';onSave(skillFromText(await skillFile.text(),folder,folder))};
+ const onPicked=async event=>{const files=[...event.target.files];event.target.value='';setError('');try{await importFiles(files)}catch(err){setError(err.message)}};
+ const onDrop=async event=>{event.preventDefault();setError('');try{const collected=[];for(const item of event.dataTransfer.items){const entry=item.webkitGetAsEntry?.();if(entry)collected.push(...await readEntry(entry));else{const file=item.getAsFile();if(file)collected.push(file)}}await importFiles(collected)}catch(err){setError(err.message)}};
+ const onImport=()=>{setError('');if(url.trim()){fromGithub();return}importRef.current.click()};
+ return <Dialog title="新增技能" description="手動填寫技能，或按匯入帶入 Git 連結、SKILL.md 或技能資料夾。" size="wide" onClose={onClose} footer={<><Button onClick={onClose}>取消</Button><Button onClick={onImport} onDragOver={event=>event.preventDefault()} onDrop={onDrop}>匯入</Button><Button variant="primary" onClick={saveManual} disabled={!draft.name.trim()}>新增技能</Button></>}>
   <div className="mcp-form">
-   <div className="manage-tabs button-tabs add-skill-tabs"><button type="button" className={kind==='manual'?'active':''} onClick={()=>setKind('manual')}>手動新增</button><button type="button" className={kind==='external'?'active':''} onClick={()=>setKind('external')}>外部匯入</button></div>
-   {kind==='manual'?<>
-    <div className="mcp-form-grid"><label>名稱（建議小寫-連字號）<input value={draft.name} onChange={e=>set('name',e.target.value)} placeholder="例如 meeting-notes"/>{nameHint&&<small className="skill-name-hint">{nameHint}</small>}</label><label>版本<input value={draft.version} onChange={e=>set('version',e.target.value)}/></label></div>
-    <label>描述（模型會依此判斷何時載入）<textarea rows={3} value={draft.description} onChange={e=>set('description',e.target.value)} placeholder="例如：整理會議記錄，輸出決議、待辦與負責人。"/></label>
-    <label>內文（SKILL.md 正文，不含 frontmatter）<textarea className="skill-body" rows={10} value={draft.instructions} onChange={e=>set('instructions',e.target.value)} placeholder={'# 步驟\n1. ...\n2. ...'}/></label>
-   </>:<>
-    <div className="manage-tabs button-tabs add-skill-tabs"><button type="button" className={mode==='github'?'active':''} onClick={()=>setMode('github')}>Git 連結</button><button type="button" className={mode==='file'?'active':''} onClick={()=>setMode('file')}>加入檔案</button></div>
-    {mode==='github'?<label>Git 連結<input value={url} onChange={e=>{setUrl(e.target.value);setError('')}} placeholder="https://github.com/org/repo"/></label>:<div className="folder-import"><Upload size={28}/><p>選擇 SKILL.md，或選擇包含 SKILL.md 的資料夾。</p><div className="folder-import-actions"><Button type="button" variant="primary" onClick={()=>fileRef.current.click()}>選擇檔案</Button><Button type="button" onClick={()=>folderRef.current.click()}>選擇資料夾</Button></div><input ref={fileRef} hidden type="file" accept=".md,text/markdown" aria-label="選擇技能檔案" onChange={fromFile}/><input ref={folderRef} hidden type="file" webkitdirectory="" aria-label="選擇技能資料夾" onChange={fromFolder}/></div>}
-    {error&&<p className="mcp-error" role="alert">{error}</p>}
-   </>}
+   <div className="mcp-form-grid"><label>名稱（建議小寫-連字號）<input value={draft.name} onChange={e=>set('name',e.target.value)} placeholder="例如 meeting-notes"/>{nameHint&&<small className="skill-name-hint">{nameHint}</small>}</label><label>版本<input value={draft.version} onChange={e=>set('version',e.target.value)}/></label></div>
+   <label>描述（模型會依此判斷何時載入）<textarea rows={3} value={draft.description} onChange={e=>set('description',e.target.value)} placeholder="例如：整理會議記錄，輸出決議、待辦與負責人。"/></label>
+   <label>內文（SKILL.md 正文，不含 frontmatter）<textarea className="skill-body" rows={10} value={draft.instructions} onChange={e=>set('instructions',e.target.value)} placeholder={'# 步驟\n1. ...\n2. ...'}/></label>
+   <label>Git 連結<input value={url} onChange={e=>{setUrl(e.target.value);setError('')}} placeholder="https://github.com/org/repo"/></label>
+   <p className="create-library-note">匯入會自動判斷是 SKILL.md 還是資料夾。有填 Git 連結時，直接匯入該連結。</p>
+   {error&&<p className="mcp-error" role="alert">{error}</p>}
+   <input ref={importRef} hidden type="file" multiple aria-label="匯入技能" onChange={onPicked}/>
   </div>
  </Dialog>;
 }
