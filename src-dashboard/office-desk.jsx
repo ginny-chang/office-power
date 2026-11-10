@@ -1,5 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
-import {useFrame} from '@react-three/fiber';
+import {useFrame,useThree} from '@react-three/fiber';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
 import {CanvasTexture,SRGBColorSpace,CatmullRomCurve3,TubeGeometry,Vector3} from 'three';
 import {Html} from '@react-three/drei';
@@ -68,55 +68,62 @@ function Spot({agent,selected,fresh,reduced,onSelect,index=0}){
   {fresh&&<Html position={[.15,2.7,.95]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
  </group>;
 }
-function arcPose(offset){
- const steps=Math.abs(offset);
- const dir=Math.sign(offset)||0;
+function arcPose(x,centerX){
+ const steps=Math.abs(x-centerX)/ROW_PITCH;
+ const dir=Math.sign(x-centerX)||0;
  return {
-  x:offset*ROW_PITCH,
-  z:2.55-steps*steps*.78,
-  yaw:-dir*Math.min(.4,steps*.14),
-  scale:Math.max(.78,1.34-steps*.1),
+  x,
+  z:1.15-steps*steps*.55,
+  yaw:-dir*Math.min(.34,steps*.12),
+  scale:Math.max(.84,1.16-steps*.08),
  };
 }
-function ArcMover({offset,reduced,children}){
+function ArcMover({x,reduced,children}){
  const ref=useRef();
+ const {camera}=useThree();
  const pose=useRef(null);
  useFrame((_,delta)=>{
-  const goal=arcPose(offset);
+  const goal=arcPose(x,camera.position.x);
   const current=pose.current||(pose.current={...goal});
-  const k=reduced?1:1-Math.exp(-delta*6);
-  current.x+=(goal.x-current.x)*k;
+  const k=reduced?1:1-Math.exp(-delta*7);
   current.z+=(goal.z-current.z)*k;
   current.yaw+=(goal.yaw-current.yaw)*k;
   current.scale+=(goal.scale-current.scale)*k;
-  ref.current.position.set(current.x,0,current.z);
+  ref.current.position.set(x,0,current.z);
   ref.current.rotation.y=current.yaw;
   ref.current.scale.setScalar(current.scale);
  });
  return <group ref={ref}>{children}</group>;
 }
 function StageRim({count}){
+ const {camera}=useThree();
+ const [center,setCenter]=useState(0);
+ const last=useRef(0);
+ useFrame(()=>{
+  const x=camera.position.x;
+  if(Math.abs(x-last.current)>.06){last.current=x;setCenter(x);}
+ });
  const geo=useMemo(()=>{
-  const half=(Math.max(count,1)-1)/2+.55;
+  const start=-.6,end=Math.max(count-1,0)*ROW_PITCH+.6;
   const pts=[];
-  for(let i=0;i<=48;i++){
-   const pose=arcPose(-half+(2*half)*i/48);
-   pts.push(new Vector3(pose.x,.07,pose.z+1.28));
+  for(let i=0;i<=64;i++){
+   const pose=arcPose(start+(end-start)*i/64,center);
+   pts.push(new Vector3(pose.x,.07,pose.z+1.35));
   }
-  return new TubeGeometry(new CatmullRomCurve3(pts),96,.12,14,false);
- },[count]);
+  return new TubeGeometry(new CatmullRomCurve3(pts),80,.1,12,false);
+ },[count,center]);
  useEffect(()=>()=>geo.dispose(),[geo]);
  return <mesh geometry={geo} receiveShadow><meshStandardMaterial color="#f7f4ef" roughness={.46} metalness={.02}/></mesh>;
 }
-export const ROW_PITCH=3.05;
+export const ROW_PITCH=4.6;
 export function RobotRow({agents,focusId,read,reduced,onSelect}){
- const focusIndex=Math.max(0,agents.findIndex(agent=>agent.id===focusId));
+ const mid=(agents.length-1)*ROW_PITCH/2;
  return <group>
-  <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.02,6]} receiveShadow><planeGeometry args={[260,200]}/><meshStandardMaterial color="#f4f2ef" roughness={.94}/></mesh>
+  <mesh rotation={[-Math.PI/2,0,0]} position={[mid,-.02,6]} receiveShadow><planeGeometry args={[280,200]}/><meshStandardMaterial color="#f4f2ef" roughness={.94}/></mesh>
   <StageRim count={agents.length}/>
   {agents.map((agent,index)=>{
    const fresh=!!(agent.event&&agent.published!==false&&!read.includes(agent.id));
-   return <ArcMover key={agent.id} offset={index-focusIndex} reduced={reduced}>
+   return <ArcMover key={agent.id} x={index*ROW_PITCH} reduced={reduced}>
     <Spot agent={agent} index={index} selected={agent.id===focusId} fresh={fresh} reduced={reduced} onSelect={onSelect}/>
    </ArcMover>;
   })}

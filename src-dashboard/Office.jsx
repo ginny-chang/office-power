@@ -1,4 +1,4 @@
-import React,{useCallback,useEffect,useState} from 'react';
+import React,{useCallback,useEffect,useRef,useState} from 'react';
 import {Canvas,useFrame,useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {ChevronLeft,ChevronRight,Plus,Settings} from 'lucide-react';
@@ -19,27 +19,45 @@ function AgentDock({agents,activeId,read,onFocus,onSettings,onAdd}){
   </div>;
  })}{onAdd&&<button type="button" className="agent-dock-add" aria-label="新增 Agent" onClick={onAdd}><Plus size={20}/></button>}</div>;
 }
-function StageCamera({count,frame}){
- const {camera,size,invalidate}=useThree();
+function StageCamera({count,focusIndex,onSettle,reduced,frame}){
+ const {camera,size,gl,invalidate}=useThree();
+ const target=useRef(0),current=useRef(0),drag=useRef(null),wheelTimer=useRef();
  const {left=0,right=0,top=0,bottom=0}=frame?.(size.width,size.height)||{};
  const freeW=Math.max(280,size.width-left-right-72);
- const distance=8.2;
- const span=((Math.max(count-1,1)*ROW_PITCH)+8.2)*(size.width/freeW);
+ const distance=11.4;
+ const span=(ROW_PITCH*3.15+2.4)*(size.width/freeW);
  const aspect=size.width/Math.max(1,size.height);
  const fov=2*Math.atan((span/2)/distance/aspect)*(180/Math.PI);
+ const worldPerPixel=(2*Math.tan((fov*Math.PI/180)/2)*distance)/Math.max(1,size.height);
+ const last=Math.max(0,count-1)*ROW_PITCH;
+ const clamp=value=>Math.min(last,Math.max(0,value));
  useEffect(()=>{const dx=(right-left)/2,dy=(bottom-top)/2;if(dx||dy)camera.setViewOffset(size.width,size.height,dx,dy,size.width,size.height);else camera.clearViewOffset();camera.fov=fov;camera.zoom=1;camera.updateProjectionMatrix();invalidate()},[camera,size.width,size.height,left,right,top,bottom,fov,invalidate]);
- useFrame(()=>{
-  camera.position.set(0,2.2,distance);
-  camera.lookAt(0,4.7,.2);
+ useEffect(()=>{target.current=clamp(Math.max(0,focusIndex)*ROW_PITCH);if(reduced)current.current=target.current;invalidate()},[focusIndex,last,reduced,invalidate]);
+ useEffect(()=>{
+  const el=gl.domElement;
+  const nearest=x=>{let best=0,dist=Infinity;for(let i=0;i<count;i++){const d=Math.abs(i*ROW_PITCH-x);if(d<dist){dist=d;best=i}}return best};
+  const finish=()=>{clearTimeout(wheelTimer.current);wheelTimer.current=setTimeout(()=>onSettle?.(nearest(target.current)),reduced?0:180)};
+  const down=e=>{if(e.button!==0)return;drag.current={x:e.clientX,moved:false};el.setPointerCapture?.(e.pointerId)};
+  const move=e=>{if(!drag.current)return;const dx=e.clientX-drag.current.x;if(Math.abs(dx)>3)drag.current.moved=true;drag.current.x=e.clientX;target.current=clamp(target.current-dx*worldPerPixel);invalidate()};
+  const up=e=>{if(!drag.current)return;const moved=drag.current.moved;drag.current=null;if(moved){const stop=ev=>{ev.stopPropagation();el.removeEventListener('click',stop,true)};el.addEventListener('click',stop,true);finish()}};
+  const wheel=e=>{e.preventDefault();const delta=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;target.current=clamp(target.current+delta*worldPerPixel);invalidate();finish()};
+  el.addEventListener('pointerdown',down);el.addEventListener('pointermove',move);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);el.addEventListener('wheel',wheel,{passive:false});
+  return()=>{clearTimeout(wheelTimer.current);el.removeEventListener('pointerdown',down);el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);el.removeEventListener('wheel',wheel)};
+ },[gl,camera,count,last,reduced,onSettle,invalidate,worldPerPixel]);
+ useFrame((_,delta)=>{
+  const k=reduced?1:1-Math.exp(-delta*7);
+  current.current+=(target.current-current.current)*k;
+  camera.position.set(current.current,2.7,distance);
+  camera.lookAt(current.current,2.15,0);
   camera.fov=fov;camera.zoom=1;camera.updateProjectionMatrix();
  });
  return null;
 }
-function Scene({agents,focusId,onSelect,read,reduced,onReady,frame}){
+function Scene({agents,focusId,focusIndex,onSelect,onSettle,read,reduced,onReady,frame}){
  useEffect(()=>{onReady?.()},[onReady]);
  return <><color attach="background" args={['#e7ebf0']}/><BotLighting/>
  <RobotRow agents={agents} focusId={focusId} read={read} reduced={reduced} onSelect={onSelect}/>
- <StageCamera count={agents.length} frame={frame}/></>
+ <StageCamera count={agents.length} focusIndex={focusIndex} onSettle={onSettle} reduced={reduced} frame={frame}/></>
 }
 export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],...props}){
  const [visible,setVisible]=useState(true);
@@ -49,8 +67,9 @@ export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],...p
  const focus=agents.find(agent=>agent.id===focusId)||agents.find(agent=>agent.event&&!read.includes(agent.id))||agents[0];
  const focusIndex=Math.max(0,agents.findIndex(agent=>agent.id===focus?.id));
  const choose=useCallback(id=>setFocusId(id),[]);
+ const settle=useCallback(index=>{const agent=agents[index];if(agent)setFocusId(agent.id)},[agents]);
  return <div className="three-office" aria-label="可左右瀏覽的 Agent 工作桌">
-  <Canvas shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[0,2.2,8.2],fov:42,near:.1,far:80}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} onSelect={onSelect} read={read}/></Canvas>
+  <Canvas shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[2,2.7,11.4],fov:42,near:.1,far:90}} gl={{antialias:true,powerPreference:'high-performance'}} onCreated={({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05}}><Scene {...props} agents={agents} focusId={focus?.id} focusIndex={focusIndex} onSelect={onSelect} onSettle={settle} read={read}/></Canvas>
   <button type="button" className="agent-row-arrow is-prev" aria-label="往左看" disabled={focusIndex<=0} onClick={()=>agents[focusIndex-1]&&choose(agents[focusIndex-1].id)}><ChevronLeft size={22}/></button>
   <button type="button" className="agent-row-arrow is-next" aria-label="往右看" disabled={focusIndex>=agents.length-1} onClick={()=>agents[focusIndex+1]&&choose(agents[focusIndex+1].id)}><ChevronRight size={22}/></button>
   {focus&&<p className="agent-dock-caption"><strong>{focus.name}</strong><span>{focus.role}</span></p>}
