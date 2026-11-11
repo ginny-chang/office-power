@@ -299,6 +299,15 @@ main,.office-stage{background:#dce6f2}
 .board-toolbar .op-search{width:220px;background:var(--surface)}
 /* Undo the older fixed 38px toolbar search; the shared .op-search pattern does the rest. */
 .board-toolbar .agent-search{position:relative;height:var(--control);padding:0;gap:0;border:0}
+/* Search rests as a square icon button and opens when focused; it stays open while a query is filtering the agents */
+@media(min-width:721px){
+.board-toolbar .agent-search{width:var(--control);cursor:pointer;transition:width .2s cubic-bezier(.25,1,.5,1)}
+.board-toolbar .agent-search:is(:focus-within,.has-query){width:220px;cursor:text}
+.board-toolbar .agent-search:not(:focus-within,.has-query):hover{color:var(--ink)}
+.board-toolbar .agent-search:not(:focus-within,.has-query)>svg{left:50%;transform:translate(-50%,-50%)}
+.board-toolbar .agent-search:not(:focus-within,.has-query)>input{padding:0;opacity:0;cursor:pointer}
+}
+@media(prefers-reduced-motion:reduce){.board-toolbar .agent-search{transition:none}}
 
 /* Right rail: one white card, sections separated by air */
 .board-rail,.agent-panel{top:var(--sp-6);right:var(--sp-6);bottom:var(--sp-6);width:352px;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-float);-webkit-backdrop-filter:none;backdrop-filter:none}
@@ -590,27 +599,31 @@ html body .board-toolbar .agent-search{flex:1 1 0;width:auto;min-width:0}
 .reference-board .agent-dock{position:absolute;z-index:8;left:104px;right:calc(var(--panel) + 48px);bottom:28px;display:flex;justify-content:center;align-items:flex-end;gap:16px;margin:0;pointer-events:none}
 .agent-dock-item{position:relative;width:52px;height:52px;pointer-events:auto}
 .agent-dock-avatar{width:48px;height:48px;display:grid;place-items:center;padding:0;border:2px solid #fff;border-radius:50%;background:#fff;box-shadow:0 8px 18px rgba(18,18,20,.08)}
-.agent-dock-item.has-update .agent-dock-avatar{box-shadow:0 0 0 2px #3d4a00,0 0 0 6px #e5f68c,0 8px 18px rgba(18,18,20,.08)}
+/* New activity is the lime ring alone; the dark ring is reserved for the selected agent */
+.agent-dock-item.has-update .agent-dock-avatar{box-shadow:0 0 0 4px #e5f68c,0 8px 18px rgba(18,18,20,.08)}
 .agent-dock-item.is-selected .agent-dock-avatar{box-shadow:0 0 0 3px #121214,0 8px 18px rgba(18,18,20,.12)}
 .agent-dock-item.has-update.is-selected .agent-dock-avatar{box-shadow:0 0 0 3px #121214,0 0 0 6px #e5f68c,0 8px 18px rgba(18,18,20,.12)}
 .agent-dock-settings{position:absolute;top:-8px;right:-8px;width:32px;height:32px;display:grid;place-items:center;padding:0;border-radius:50%;background:#121214;color:#fff;opacity:0;pointer-events:none}
 .agent-dock-item:hover .agent-dock-settings,.agent-dock-item:focus-within .agent-dock-settings{opacity:1;pointer-events:auto}
 .agent-dock-add{width:48px;height:48px;margin-bottom:4px;display:grid;place-items:center;padding:0;border-radius:50%;background:#121214;color:#fff;box-shadow:0 8px 18px rgba(18,18,20,.12);pointer-events:auto}
 .agent-dock-add:hover{background:#2c2c30}
-.agent-list-add{width:100%;min-height:72px;justify-content:center}
-.reference-board .empty-scene .board-add-agent{margin-top:12px}
-.stage-layout{position:absolute;z-index:9;left:0;right:var(--panel);bottom:128px;width:max-content;margin-inline:auto;display:flex;gap:4px;padding:4px;border-radius:12px;background:#fffffff2;box-shadow:0 8px 18px rgba(18,18,20,.08)}
-.stage-layout button{height:36px;padding:0 14px;border-radius:8px;font:600 13px/16px var(--font);color:#3a3a42}
-.stage-layout button[aria-pressed=true]{background:#121214;color:#fff}
-.agent-dock-caption{position:absolute;z-index:8;left:104px;right:calc(var(--panel) + 48px);bottom:92px;display:flex;justify-content:center;align-items:baseline;gap:8px;margin:0;pointer-events:none;color:#121214;font:600 14px/20px var(--font)}
+.agent-dock-caption{position:absolute;z-index:8;left:104px;right:calc(var(--panel) + 48px);bottom:92px;display:flex;flex-direction:column;align-items:center;gap:2px;margin:0 0 8px;pointer-events:none;color:#121214;font:600 17px/24px var(--font);text-align:center}
 .agent-dock-caption span{font:500 12px/16px var(--font);color:#3a3a42}
 .agent-row-arrow{position:absolute;z-index:8;top:46%;width:44px;height:44px;display:grid;place-items:center;padding:0;border-radius:50%;background:#fff;color:#121214;box-shadow:0 8px 20px rgba(18,18,20,.12);opacity:0;pointer-events:none;transition:opacity .16s}
 .three-office:hover .agent-row-arrow,.three-office:focus-within .agent-row-arrow,.three-office.is-hover .agent-row-arrow{opacity:1;pointer-events:auto}
 .three-office:hover .agent-row-arrow:disabled,.three-office:focus-within .agent-row-arrow:disabled,.three-office.is-hover .agent-row-arrow:disabled{opacity:.38;pointer-events:none}
 .agent-row-arrow.is-prev{left:112px}
 .agent-row-arrow.is-next{right:calc(var(--panel) + 36px)}
-.three-office.is-board .stage-layout{bottom:28px}
-@media(max-width:720px){.stage-layout{left:16px;right:16px;bottom:88px}.three-office.is-board .stage-layout{bottom:16px}}
+/* The stage stops at the rail and at the summary panel, so agents never slide under the panel; its side edges fade out */
+@media(min-width:721px){
+.reference-board .three-office,.reference-board .has-panel .three-office,.reference-board .intro-pending .three-office{inset:0 calc(var(--panel) + var(--sp-12)) 0 var(--rail);width:auto;height:auto;border:0;border-radius:0;box-shadow:none}
+.reference-board .three-office::after{display:none}
+.reference-board .three-office canvas{-webkit-mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,transparent,#000 48px,#000 calc(100% - 48px),transparent)}
+.reference-board .agent-dock,.agent-dock-caption{left:var(--sp-6);right:var(--sp-6)}
+.agent-row-arrow{top:calc(46% + 56px)}
+.agent-row-arrow.is-prev{left:var(--sp-6)}
+.agent-row-arrow.is-next{right:var(--sp-6)}
+}
 html body .bot-label svg{display:block}
 html body .bot-name-actions{display:flex;align-items:center;gap:8px}
 html body .bot-name-actions .bot-settings-button{width:32px;height:32px;min-height:0;padding:0;display:grid;place-items:center;border-radius:50%;opacity:0;pointer-events:none}

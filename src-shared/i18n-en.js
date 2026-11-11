@@ -1,6 +1,8 @@
 // zh-TW → English UI strings, keyed by the exact Chinese text the pages render.
 // Generated from the product pages (src-shared, account, dashboard, chat, apps, capabilities, organization).
 export default {
+"橫列": "Row",
+"Agent 辦公室": "Agent office",
 "任務": "Task",
 "使用紀錄": "Usage",
 "使用者": "User",
