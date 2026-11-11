@@ -10,7 +10,7 @@
 .catalog-bar .manage-tabs{flex:0 1 auto;min-width:0;display:inline-flex;gap:4px;margin:0;padding:0;border:0;border-radius:var(--r);background:var(--surface);overflow-x:auto;scrollbar-width:none}
 .catalog-bar .manage-tabs button{flex:none;height:var(--control);gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);white-space:nowrap}
 .catalog-bar .manage-tabs button:hover{background:var(--surface-2)}
-.catalog-bar .manage-tabs button.active{background:var(--action);color:var(--on-ink)}
+html body .catalog-bar nav.button-tabs>button.active,html body .catalog-bar nav.button-tabs>button[aria-pressed=true],html body .catalog-bar nav.button-tabs>button.active:hover,html body .catalog-bar nav.button-tabs>button[aria-pressed=true]:hover{background:var(--action);color:var(--on-ink)}
 /* Second level: text tabs under the bar, the active one underlined */
 .management .manage-subnav{display:flex;gap:var(--sp-6);margin:0 0 var(--sp-6);padding:0;border-bottom:1px solid var(--line-strong)}
 .management .manage-subnav button{height:var(--control);margin-bottom:-1px;padding:0;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;font:var(--t-label);font-weight:500;color:var(--ink-2)}
@@ -102,7 +102,7 @@ html body .catalog-bar>.primary{margin-left:auto}
 
 .button-tabs{display:inline-flex;gap:4px;margin:0 0 var(--sp-6);padding:0;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
 .button-tabs button{height:var(--control);margin:0;padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);white-space:nowrap;cursor:pointer}
-html body nav.button-tabs>button.active{background:var(--action);color:var(--on-ink)}
+html body nav.button-tabs>button.active,html body nav.button-tabs>button[aria-pressed=true],html body nav.button-tabs>button.active:hover,html body nav.button-tabs>button[aria-pressed=true]:hover{background:var(--action);color:var(--on-ink)}
 .button-tabs button:disabled,.button-tabs button.active:disabled{background:none;color:var(--ink-3);cursor:not-allowed}
 .mcp-list{display:grid;gap:var(--sp-4)}
 .mcp-card{padding:var(--sp-6);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
