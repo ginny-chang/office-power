@@ -74,11 +74,13 @@ export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],layo
  const settle=useCallback(index=>{const agent=agents[index];if(agent)setFocusId(agent.id)},[agents]);
  // The row sits a little below the middle of the stage, closer to the dock, instead of riding high under the toolbar
  const rowFrame=(w,h)=>{const base=props.frame?.(w,h)||{};return window.innerWidth>720?{...base,bottom:(base.bottom??0)-112}:base};
+ // The office has no dock under it, so it centres in the space below the toolbar rather than in the whole stage
+ const boardFrame=(w,h)=>{const base=props.frame?.(w,h)||{};return window.innerWidth>720?{...base,top:156,bottom:36}:{...base,bottom:Math.min(base.bottom??0,88)}};
  const glProps={antialias:true,powerPreference:'high-performance'};
  const onCreated=({gl})=>{gl.shadowMap.type=THREE.PCFSoftShadowMap;gl.toneMapping=THREE.ACESFilmicToneMapping;gl.toneMappingExposure=1.05};
  return <div className={`three-office${board?' is-board':''}${stageHover?' is-hover':''}`} aria-label={board?'Agent 辦公室':'可左右瀏覽的 Agent 工作桌'} onMouseEnter={()=>setStageHover(true)} onMouseLeave={()=>setStageHover(false)}>
   {board
-   ?<OriginalBoard {...props} visible={visible} agents={agents} read={read} onSelect={onSelect} onSettings={onSettings} frame={(w,h)=>{const base=props.frame?.(w,h)||{};return {...base,bottom:Math.min(base.bottom??0,window.innerWidth>720?96:88)}}}/>
+   ?<OriginalBoard {...props} visible={visible} agents={agents} read={read} onSelect={onSelect} onSettings={onSettings} frame={boardFrame}/>
    :<Canvas key="row" shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[2,1.08,9.4],fov:42,near:.1,far:90}} gl={glProps} onCreated={onCreated}><RowScene {...props} frame={rowFrame} agents={agents} focusId={focus?.id} focusIndex={focusIndex} onSelect={onSelect} onSettle={settle} read={read}/></Canvas>}
   {!board&&<button type="button" className="agent-row-arrow is-prev" aria-label="往左看" disabled={focusIndex<=0} onClick={()=>agents[focusIndex-1]&&choose(agents[focusIndex-1].id)}><ChevronLeft size={22}/></button>}
   {!board&&<button type="button" className="agent-row-arrow is-next" aria-label="往右看" disabled={focusIndex>=agents.length-1} onClick={()=>agents[focusIndex+1]&&choose(agents[focusIndex+1].id)}><ChevronRight size={22}/></button>}

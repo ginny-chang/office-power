@@ -626,5 +626,7 @@ html body .board-toolbar .agent-search{flex:1 1 0;width:auto;min-width:0}
 }
 html body .bot-label svg{display:block}
 html body .bot-name-actions{display:flex;align-items:center;gap:8px}
-html body .bot-name-actions .bot-settings-button{width:32px;height:32px;min-height:0;padding:0;display:grid;place-items:center;border-radius:50%;opacity:0;pointer-events:none}
+html body .bot-name-actions .bot-settings-button{width:32px;height:32px;min-height:0;padding:0;display:grid;place-items:center;border:0;border-radius:50%;background:#121214;color:#fff;box-shadow:none;opacity:0;pointer-events:none}
+/* Same dark round button as the settings control on the row's avatars */
+html body .bot-name-actions .bot-settings-button:hover{background:#2c2c30;color:#fff}
 html body .bot-name-actions:hover .bot-settings-button,html body .bot-name-actions:focus-within .bot-settings-button,html body .bot-name-actions[data-hovered="true"] .bot-settings-button{opacity:1;pointer-events:auto}
