@@ -1,10 +1,8 @@
 # BCT website (Dev)
 
-Design token 與 Design system，接在 BCT Taipei 官網底下。
+Dashboard（https://ginny-chang.github.io/office-power/dashboard.html）的 Design token 與 Design system。
 
-- 網站：`npm run dev`（http://localhost:3000）
-- Storybook：`npm run storybook`（http://localhost:6006）
-  - **Design token**：顏色、字級、圓角
-  - **Design system**：Button、Input、Dialog、Dropdown
+- `npm run dev`：網站
+- `npm run storybook`：Storybook，裡面有 **Design token** 和 **Design system**
 
-Token 對齊上層 repo 的 `bct-system.css` 與 `DESIGN.md`。元件行為用 Radix primitives，樣式用 Tailwind。
+元件行為用 Radix primitives，樣式用 Tailwind。數值對齊 Dashboard 上量到的 canvas、ink、lime、12px 圓角和 44px 控制項。

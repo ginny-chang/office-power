@@ -3,15 +3,15 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "BCT Design System",
-  description: "Design tokens and components for the BCT Taipei website.",
+  title: "Dashboard design system",
+  description: "Design tokens and components taken from the Office Power dashboard.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="zh-Hant">
       <head>
-        <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;600&display=swap" />
       </head>
       <body>{children}</body>
     </html>

@@ -1,48 +1,45 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "General Sans", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, "PingFang TC", "Noto Sans TC", sans-serif;
-  --color-paper: #f7f4ef;
-  --color-ink: #1a1a1a;
-  --color-blue: #0a7bc4;
-  --color-blue-deep: #0b5a91;
-  --color-muted: #5d6673;
-  --color-nav: #4a5462;
-  --color-line: #e6e1d8;
-  --color-clay-terracotta: #e8996b;
-  --color-clay-gold: #e3c065;
-  --color-clay-lavender: #9b8ecf;
-  --color-clay-sky: #7fb4d9;
-  --radius-card: 20px;
+  --font-sans: Manrope, "Noto Sans TC", "PingFang TC", -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-canvas: #eeeef2;
+  --color-frame: #f7f7f9;
+  --color-surface: #ffffff;
+  --color-surface-2: #f4f4f6;
+  --color-surface-3: #ebebef;
+  --color-ink: #121214;
+  --color-on-ink: #ffffff;
+  --color-ink-2: #6e6e78;
+  --color-ink-3: #a3a3ad;
+  --color-line: #ececf0;
+  --color-line-strong: #dcdce2;
+  --color-lime: #e5f68c;
+  --color-lime-ink: #3d4a00;
+  --color-danger: #d93036;
+  --color-danger-soft: #fdeeee;
+  --color-mint: #cfe7de;
+  --color-mint-ink: #1f6b5f;
   --radius-control: 12px;
-  --text-h1: 40px;
-  --text-h1--line-height: 1.15;
-  --text-h2: 30px;
-  --text-h2--line-height: 1.2;
-  --text-h3: 22px;
-  --text-h3--line-height: 1.3;
-  --text-body: 16px;
-  --text-body--line-height: 1.6;
+  --text-display: 40px;
+  --text-display--line-height: 48px;
+  --text-title: 17px;
+  --text-title--line-height: 24px;
+  --text-body: 14px;
+  --text-body--line-height: 22px;
 }
 
 :root {
-  --bct-blue: #0a7bc4;
-  --bct-blue-deep: #0b5a91;
-  --bct-ink: #1a1a1a;
-  --bct-paper: #f7f4ef;
-  --bct-muted: #5d6673;
-  --bct-nav-text: #4a5462;
-  --bct-line: #e6e1d8;
-  --bct-gutter: 6vw;
-  --bct-body-size: 16px;
-  --bct-body-lh: 1.6;
-  --bct-radius-card: 20px;
-  --bct-radius-control: 12px;
+  --op-canvas: #eeeef2;
+  --op-ink: #121214;
+  --op-action: #121214;
+  --op-lime: #e5f68c;
+  --op-surface: #ffffff;
+  --op-surface-2: #f4f4f6;
+  --op-radius: 12px;
+  --op-control: 44px;
 }
 
-html, body { background: var(--bct-paper); color: var(--bct-ink); }
-body { font-family: var(--font-sans); font-size: var(--bct-body-size); line-height: var(--bct-body-lh); }
-h1 { font-size: 40px; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; }
-h2 { font-size: 30px; line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; }
-h3 { font-size: 22px; line-height: 1.3; font-weight: 600; }
-.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #aaa; }
+html, body { background: var(--op-canvas); color: var(--op-ink); }
+body { font-family: var(--font-sans); font-size: 14px; line-height: 22px; font-weight: 400; }
+h1 { font-size: 40px; line-height: 48px; font-weight: 400; letter-spacing: -0.02em; }
+h2 { font-size: 17px; line-height: 24px; font-weight: 500; }
