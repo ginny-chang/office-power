@@ -19,6 +19,8 @@ export default defineConfig({
         capabilities: fileURLToPath(new URL('./capabilities.html', import.meta.url)),
         account: fileURLToPath(new URL('./account.html', import.meta.url)),
         organization: fileURLToPath(new URL('./organization.html', import.meta.url)),
+        projects: fileURLToPath(new URL('./projects.html', import.meta.url)),
+        connections: fileURLToPath(new URL('./connections.html', import.meta.url)),
         calmAgent: fileURLToPath(new URL('./calm-agent.html', import.meta.url)),
       },
     },
