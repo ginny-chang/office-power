@@ -102,7 +102,7 @@ html body .catalog-bar>.primary{margin-left:auto}
 
 .button-tabs{display:inline-flex;gap:4px;margin:0 0 var(--sp-6);padding:0;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
 .button-tabs button{height:var(--control);margin:0;padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);white-space:nowrap;cursor:pointer}
-.button-tabs button.active{background:var(--action);color:var(--on-ink)}
+html body nav.button-tabs>button.active{background:var(--action);color:var(--on-ink)}
 .button-tabs button:disabled,.button-tabs button.active:disabled{background:none;color:var(--ink-3);cursor:not-allowed}
 .mcp-list{display:grid;gap:var(--sp-4)}
 .mcp-card{padding:var(--sp-6);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
