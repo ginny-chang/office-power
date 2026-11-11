@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Manrope, "Noto Sans TC", "PingFang TC", -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-canvas: #eeeef2;
+  --color-frame: #f7f7f9;
+  --color-surface: #ffffff;
+  --color-surface-2: #f4f4f6;
+  --color-surface-3: #ebebef;
+  --color-ink: #121214;
+  --color-on-ink: #ffffff;
+  --color-ink-2: #6e6e78;
+  --color-ink-3: #a3a3ad;
+  --color-line: #ececf0;
+  --color-line-strong: #dcdce2;
+  --color-lime: #e5f68c;
+  --color-lime-ink: #3d4a00;
+  --color-danger: #d93036;
+  --color-danger-soft: #fdeeee;
+  --color-mint: #cfe7de;
+  --color-mint-ink: #1f6b5f;
+  --radius-control: 12px;
+  --text-display: 40px;
+  --text-display--line-height: 48px;
+  --text-title: 17px;
+  --text-title--line-height: 24px;
+  --text-body: 14px;
+  --text-body--line-height: 22px;
+}
+
+:root {
+  --op-canvas: #eeeef2;
+  --op-ink: #121214;
+  --op-action: #121214;
+  --op-lime: #e5f68c;
+  --op-surface: #ffffff;
+  --op-surface-2: #f4f4f6;
+  --op-radius: 12px;
+  --op-control: 44px;
+}
+
+html, body { background: var(--op-canvas); color: var(--op-ink); }
+body { font-family: var(--font-sans); font-size: 14px; line-height: 22px; font-weight: 400; }
+h1 { font-size: 40px; line-height: 48px; font-weight: 400; letter-spacing: -0.02em; }
+h2 { font-size: 17px; line-height: 24px; font-weight: 500; }
