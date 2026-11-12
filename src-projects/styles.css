@@ -29,7 +29,9 @@ html .connection-card .op-button.text-button:hover,html .connection-form .op-but
 .saved-connection:hover{box-shadow:var(--shadow-float)}
 .provider-tile,.manage-grid.connection-grid .manage-card:first-child .tile.provider-tile{display:grid;place-items:center;background:var(--surface-2);color:inherit}
 .provider-tile .provider-logo{width:22px;height:22px}
-.connection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.connection-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1100px){.management .connection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.management .connection-grid{grid-template-columns:1fr}}
 .connection-grid .manage-meta{flex-wrap:wrap}
 .connection-meta{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4) var(--sp-6);width:100%}
 .connection-meta small{display:block;margin-bottom:4px;color:var(--ink-3);font:var(--t-meta)}

@@ -33,14 +33,15 @@ const seedApps={
 };
 const oauthNote='更新權限（例如新增 scope）時請按重新連接，不要刪除後重建；重建會讓既有專案的儲存庫失去連線。';
 const seedConnections=[
- {id:'gh1',provider:'github',title:'github · github.com/bct-tpe',url:'https://github.com/',auth:'存取權杖',account:'不適用',linkStatus:'有效',credential:'已設定（尚不代表測試成功）',maintainer:'BCT-Ramble',expires:'2027-02-03T00:00:00.000Z',note:'GitHub 僅支援 github.com。PAT 請選擇專案程式庫，授予 Contents 與 Pull requests 讀寫、Metadata 讀取權限。測試僅驗證讀取。'},
- {id:'gl1',provider:'gitlab',title:'gitlab · gitlab.com/bct-taipei',url:'https://gitlab.com/',auth:'OAuth',account:'BCT-Ramble',linkStatus:'有效',credential:'已設定（尚不代表測試成功）',maintainer:'BCT-Ramble',expires:'',note:oauthNote},
- {id:'jira1',provider:'jira',title:'jira · dt360.atlassian.net',url:'https://api.atlassian.com/ex/jira/0e1e0801-fa4b-4e05-ab54-6c591bb070d5/',auth:'OAuth',account:'Ramble Lo',linkStatus:'有效',credential:'已設定（尚不代表測試成功）',maintainer:'Ramble Lo',expires:'',note:oauthNote},
+ {id:'gh1',provider:'github',title:'github.com/bct-tpe',url:'https://github.com/',auth:'存取權杖',account:'不適用',linkStatus:'有效',credential:'已設定（尚不代表測試成功）',maintainer:'BCT-Ramble',expires:'2027-02-03T00:00:00.000Z',note:'GitHub 僅支援 github.com。PAT 請選擇專案程式庫，授予 Contents 與 Pull requests 讀寫、Metadata 讀取權限。測試僅驗證讀取。'},
+ {id:'gl1',provider:'gitlab',title:'gitlab.com/bct-taipei',url:'https://gitlab.com/',auth:'OAuth',account:'BCT-Ramble',linkStatus:'有效',credential:'已設定（尚不代表測試成功）',maintainer:'BCT-Ramble',expires:'',note:oauthNote},
+ {id:'jira1',provider:'jira',title:'dt360.atlassian.net',url:'https://api.atlassian.com/ex/jira/0e1e0801-fa4b-4e05-ab54-6c591bb070d5/',auth:'OAuth',account:'Ramble Lo',linkStatus:'有效',credential:'已設定（尚不代表測試成功）',maintainer:'Ramble Lo',expires:'',note:oauthNote},
 ];
 const blankProject=()=>({name:'',code:'',access:'all',jira:'',note:'',connection:'none',skills:0,members:[],repos:[]});
 const accessLabel=id=>groups.find(([value])=>value===id)?.[1]||id;
 const publishLabel=project=>project.status==='published'?(project.enabled?'已發佈':'未啟用'):'草稿';
 const providerLogos={github:githubLogo,gitlab:gitlabLogo,jira:jiraLogo};
+const linkTitle=item=>item.title.replace(/^(github|gitlab|jira|atlassian)\s*[·•|-]\s*/i,'');
 function ProviderLogo({id}){return <img className="provider-logo" src={providerLogos[id]||jiraLogo} alt="" width={22} height={22}/>}
 const sections=[['overview','概覽'],['members','成員'],['repos','程式庫'],['skills','技能'],['jira','Jira 資料檢查'],['library','知識庫']];
 const knowledgeFiles={
@@ -197,7 +198,7 @@ function SavedLinkDialog({link,onClose,onSave,onDelete,onTest}){
 
 function App(){
  const [projects,setProjects]=useLocalData('office-projects-v3',seedProjects);
- const [connections,setConnections]=useLocalData('office-project-connections-v3',seedConnections);
+ const [connections,setConnections]=useLocalData('office-project-connections-v4',seedConnections);
  const [apps,setApps]=useLocalData('office-connection-apps-v1',seedApps);
  const [tab,setTab]=useState(()=>location.pathname.endsWith('connections.html')?'connections':'projects');
  const [creating,setCreating]=useState(false);
@@ -215,7 +216,7 @@ function App(){
   <nav className="manage-tabs button-tabs project-tabs" aria-label="專案 Agent 分類"><button type="button" className={tab==='projects'?'active':''} aria-pressed={tab==='projects'} onClick={()=>setTab('projects')}>專案</button><button type="button" className={tab==='connections'?'active':''} aria-pressed={tab==='connections'} onClick={()=>setTab('connections')}>連線</button></nav>
   {notice&&<p role="status" className="manage-alert">{notice}</p>}
   {tab==='projects'&&<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>名稱</th><th>Jira 專案代碼</th><th>狀態</th><th>發佈對象</th><th>程式庫數量</th></tr></thead><tbody>{projects.map(item=><tr key={item.id}><td><button type="button" className="table-title" onClick={()=>setSelected(item.id)}>{item.name}</button></td><td>{item.jira||'—'}</td><td>{publishLabel(item)}</td><td>{accessLabel(item.access)}</td><td>{item.repos.length}</td></tr>)}</tbody></table></div>}
-  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="setup-grid">{services.map(service=>{const app=apps[service.id]||{};return <button type="button" className="setup-card" key={service.id} onClick={()=>setAdding({service:service.id,...app})}><span className="saved-connection-head"><ProviderLogo id={service.id}/><span className="setup-title">{service.name}</span></span><span className="setup-kind">{service.kind}</span><small>{app.hasCredential?'憑證已設定':'尚未設定憑證'}{app.site?` · ${app.site}`:''}</small></button>})}</div></section><section><h2>已設定的連線</h2><div className="manage-grid connection-grid">{connections.map(item=><article className="manage-card clickable" key={item.id} role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter')setLinkEditor(item)}}><header><span className="tile provider-tile"><ProviderLogo id={item.provider}/></span><h3>{item.title}</h3></header><div className="manage-meta"><span className="manage-tag">存取方式 · {item.auth}</span><span className="manage-tag">維護人 · {item.maintainer}</span></div></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
+  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="setup-grid">{services.map(service=>{const app=apps[service.id]||{};return <button type="button" className="setup-card" key={service.id} onClick={()=>setAdding({service:service.id,...app})}><span className="saved-connection-head"><ProviderLogo id={service.id}/><span className="setup-title">{service.name}</span></span><span className="setup-kind">{service.kind}</span><small>{app.hasCredential?'憑證已設定':'尚未設定憑證'}{app.site?` · ${app.site}`:''}</small></button>})}</div></section><section><h2>已設定的連線</h2><div className="manage-grid connection-grid">{connections.map(item=><article className="manage-card clickable" key={item.id} role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter')setLinkEditor(item)}}><header><span className="tile provider-tile"><ProviderLogo id={item.provider}/></span><h3>{linkTitle(item)}</h3></header><div className="manage-meta"><span className="manage-tag">存取方式 · {item.auth}</span><span className="manage-tag">維護人 · {item.maintainer}</span></div></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
  </main>}
  {creating&&<ProjectForm initial={blankProject()} connections={connections} onClose={()=>setCreating(false)} onSave={saveProject}/>}
  {editing&&<ProjectForm initial={editing} connections={connections} onClose={()=>setEditing(null)} onSave={project=>{saveProject(project);setSelected(project.id)}}/>}
