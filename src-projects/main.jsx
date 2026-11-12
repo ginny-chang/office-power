@@ -2,7 +2,9 @@ import {AdminOnly} from '../src-shared/UserRole.jsx';
 import React,{useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {ChevronDown,ChevronLeft,ChevronRight,Info,Plus,RefreshCw} from 'lucide-react';
-import {IconBrandGithub,IconBrandGitlab,IconBrandJira} from '@tabler/icons-react';
+import githubLogo from './logos/github.svg';
+import gitlabLogo from './logos/gitlab.svg';
+import jiraLogo from './logos/jira.svg';
 import {Button,Dialog,Input} from '../src-shared/ui/index.jsx';
 import WorkspaceRail from '../src-shared/WorkspaceRail.jsx';
 import useLocalData from '../src-shared/useLocalData.js';
@@ -38,8 +40,8 @@ const seedConnections=[
 const blankProject=()=>({name:'',code:'',access:'all',jira:'',note:'',connection:'none',skills:0,members:[],repos:[]});
 const accessLabel=id=>groups.find(([value])=>value===id)?.[1]||id;
 const publishLabel=project=>project.status==='published'?(project.enabled?'已發佈':'未啟用'):'草稿';
-const providerLogos={github:IconBrandGithub,gitlab:IconBrandGitlab,jira:IconBrandJira};
-function ProviderLogo({id,size=22}){const Logo=providerLogos[id]||IconBrandJira;return <span className={`provider-logo provider-${id}`} aria-hidden="true"><Logo size={size}/></span>}
+const providerLogos={github:githubLogo,gitlab:gitlabLogo,jira:jiraLogo};
+function ProviderLogo({id}){return <img className="provider-logo" src={providerLogos[id]||jiraLogo} alt="" width={22} height={22}/>}
 const sections=[['overview','概覽'],['members','成員'],['repos','程式庫'],['skills','技能'],['jira','Jira 資料檢查'],['library','知識庫']];
 const skillPacks=[
  {name:'project-assistant',meta:'手動授予 · 必選'},

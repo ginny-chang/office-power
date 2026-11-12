@@ -27,10 +27,7 @@ html .connection-card .op-button.text-button:hover,html .connection-form .op-but
 .saved-connection-head{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
 .saved-connection h3{margin:0;font:var(--t-title)}
 .saved-connection:hover{box-shadow:var(--shadow-float)}
-.provider-logo{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;flex:none;border-radius:var(--r);background:var(--surface-2)}
-.provider-github{color:#181717}
-.provider-gitlab{color:#e24329}
-.provider-jira{color:#2684ff}
+.provider-logo{width:22px;height:22px;flex:none;display:block}
 .connection-meta{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4) var(--sp-6);width:100%}
 .connection-meta small{display:block;margin-bottom:4px;color:var(--ink-3);font:var(--t-meta)}
 .connection-meta strong{font:var(--t-label);font-weight:500;color:var(--ink)}
