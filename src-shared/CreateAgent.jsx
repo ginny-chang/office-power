@@ -1,4 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
+import AgentAvatar from './AgentAvatar.jsx';
 import {AppWindow,ArrowRight,Bot,Check,ChevronDown,ChevronLeft,ChevronRight,CircleHelp,FileText,LayoutTemplate,ListChecks,MessageSquareText,Plus,Puzzle,Sparkles} from 'lucide-react';
 import {agentModels} from './ModelPicker.jsx';
 import {readLocal} from './useLocalData.js';
@@ -135,7 +136,7 @@ export default function CreateAgent({onClose,onCreate,onOpen,backLabel='My Board
     {spec&&<div className={`agent-blueprint${phase==='revising'?' updating':''}`}>
      <header><small>BLUEPRINT · REVISION {revision}</small><h3>{spec.name}</h3><p>{spec.description}</p><div className="agent-blueprint-tags"><span>{spec.skills.length} 個技能</span><span>{spec.starters.length} 個開場問句</span><span>1 個 NOVA App</span><span>{spec.pending.length} 個待確認</span></div></header>
      <Section icon={FileText} title="需求與假設"><p>{need}</p><ul>{spec.assumptions.map(item=><li key={item}>{item}</li>)}</ul></Section>
-     <Section icon={Bot} title="Agent 規格"><div className="agent-blueprint-identity"><i aria-hidden="true">{spec.emoji}</i><span><strong>{spec.name}</strong><small>{spec.role}</small></span></div>
+     <Section icon={Bot} title="Agent 規格"><div className="agent-blueprint-identity"><i aria-hidden="true"><AgentAvatar agent={{name:spec.name,role:spec.role}} fill/></i><span><strong>{spec.name}</strong><small>{spec.role}</small></span></div>
       <dl><div><dt>System Prompt</dt><dd className="prompt">{spec.prompt}</dd></div><div><dt>開場建議問句</dt><dd><ul>{spec.starters.map(item=><li key={item}>{item}</li>)}</ul></dd></div><div><dt>模型</dt><dd>{agentModels.find(model=>model.value===spec.model)?.name}</dd></div>{spec.palette&&<div><dt>視覺風格</dt><dd className="palette"><span className="agent-interview-swatches" aria-hidden="true">{spec.palette.colors.map(color=><i key={color} style={{background:color}}/>)}</span>{spec.palette.name}</dd></div>}</dl></Section>
      <Section icon={AppWindow} title="NOVA App"><div className="agent-blueprint-identity"><span><strong>{spec.app.name}</strong><small>{spec.app.category}</small></span></div><p>{spec.app.description}</p>{spec.app.items.length>0&&<ul>{spec.app.items.map(item=><li key={item}>{item}</li>)}</ul>}</Section>
      <Section icon={Puzzle} title={`擴充技能 · ${spec.skills.length}`}>{spec.skills.length?<ul>{spec.skills.map(item=><li key={item}>{item}</li>)}</ul>:<p>此 Blueprint 不需要額外技能。</p>}</Section>

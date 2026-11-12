@@ -1,4 +1,5 @@
 import React,{useState} from 'react';
+import AgentAvatar from '../src-shared/AgentAvatar.jsx';
 import {ArrowDownLeft,ArrowDownRight,ArrowUpRight,ChevronRight,Download,Layers,MessagesSquare,Receipt,Search,Settings,SquareActivity,Wallet,X} from 'lucide-react';
 import {PageTitle,Button} from '../src-shared/ui/index.jsx';
 import {csv,download} from '../src-shared/Management';
@@ -130,7 +131,7 @@ export default function UsagePanel(){
    {shown.length?<div className="usage-table"><table><thead><tr><th>Agent</th><th>Token（輸入 / 輸出）</th><th>對話次數</th><th>費用（USD）</th><th>占比</th><th>較上期</th><th><span className="usage-sr">操作</span></th></tr></thead><tbody>{shown.map(agent=>{
     const share=totalCost?agent.cost/totalCost*100:0,idle=agent.requests===0,expanded=open===agent.id,total=agent.input+agent.output;
     return <React.Fragment key={agent.id}><tr className={`usage-row${expanded?' expanded':''}`} onClick={()=>setOpen(expanded?null:agent.id)}>
-     <td><button type="button" className="usage-agent" aria-expanded={expanded} onClick={event=>{event.stopPropagation();setOpen(expanded?null:agent.id)}}><ChevronRight size={16}/><i aria-hidden="true">{agent.emoji}</i><span><strong>{agent.name}</strong><small>{agent.role}</small></span></button></td>
+     <td><button type="button" className="usage-agent" aria-expanded={expanded} onClick={event=>{event.stopPropagation();setOpen(expanded?null:agent.id)}}><ChevronRight size={16}/><i aria-hidden="true"><AgentAvatar agent={agent} fill/></i><span><strong>{agent.name}</strong><small>{agent.role}</small></span></button></td>
      <td>{compact(total)}<small>{compact(agent.input)} / {compact(agent.output)}</small></td>
      <td>{agent.requests}</td>
      <td><strong>{money(agent.cost)}</strong></td>

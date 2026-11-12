@@ -48,3 +48,5 @@ export function botVariantFor(agent = {}) {
   const match = rules.find(([rule]) => rule.test(text));
   return match ? match[1] : 'life';
 }
+
+export {agentRoleFor} from '../src-shared/agent-role.js';

@@ -1,4 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
+import AgentAvatar from '../src-shared/AgentAvatar.jsx';
 import {CalendarDays,History,Inbox,Share2,X} from 'lucide-react';
 import {Button} from '../src-shared/ui/index.jsx';
 import {initialSchedules,scheduleLabel} from '../src-dashboard/ScheduleSettings.jsx';
@@ -23,7 +24,7 @@ export default function AgentMonitor({agent,scheduleAgent,month,onClose}){
  const log=usageLog(agent,month),schedules=initialSchedules.filter(item=>item.agent===scheduleAgent);
  const heading={usage:['使用紀錄','每次使用一筆，顯示這段期間最近的紀錄。'],delegation:['委派狀態','這位 Agent 收到的 Slack 委派。'],schedules:['指定的排程任務','唯讀清單，要修改請到排程任務管理。']}[tab];
  return <dialog ref={ref} className="agent-settings agent-detail agent-settings-modal agent-monitor" aria-labelledby="agent-monitor-title" onCancel={onClose}>
-  <header className="agent-page-head"><div className="agent-page-title"><div className="agent-settings-identity"><span aria-hidden="true">{agent.emoji}</span><div><h2 id="agent-monitor-title">{agent.name}</h2><p>監控紀錄 · {agent.role}</p></div></div><Button variant="ghost" iconOnly aria-label="關閉" onClick={onClose}><X size={20}/></Button></div></header>
+  <header className="agent-page-head"><div className="agent-page-title"><div className="agent-settings-identity"><span aria-hidden="true"><AgentAvatar agent={agent} fill/></span><div><h2 id="agent-monitor-title">{agent.name}</h2><p>監控紀錄 · {agent.role}</p></div></div><Button variant="ghost" iconOnly aria-label="關閉" onClick={onClose}><X size={20}/></Button></div></header>
   <div className="agent-settings-body"><nav aria-label="監控紀錄分類">{sections.map(([id,label,Icon])=><Button variant="ghost" type="button" key={id} aria-pressed={tab===id} aria-controls="agent-monitor-panel" onClick={()=>setTab(id)}><Icon size={16}/>{label}</Button>)}</nav>
    <section id="agent-monitor-panel" className="agent-settings-content" aria-labelledby="agent-monitor-section" key={tab}><div className="agent-section-heading"><h3 id="agent-monitor-section">{heading[0]}</h3><p>{heading[1]}</p></div>
     {tab==='usage'&&<><section className="usage-stats" aria-label="本期用量"><article><header><small>本期呼叫</small></header><strong>{agent.requests.toLocaleString('en-US')}</strong></article><article><header><small>本期 Token</small></header><strong>{(agent.input+agent.output).toLocaleString('en-US')}</strong></article></section>

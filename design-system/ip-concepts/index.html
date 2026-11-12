@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Office Power 角色 IP 概念</title>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:32px;background:#ecebf0;color:#121214;font-family:Archivo,"Noto Sans TC","PingFang TC",sans-serif}
+h1{margin:0 0 4px;font-size:28px;font-weight:600}
+.lead{margin:0 0 24px;font-size:14px;line-height:22px;color:#55555f}
+.sheet{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3.6fr);gap:16px;max-width:1500px}
+.agents{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.card{display:flex;flex-direction:column;border-radius:20px;background:#fff;overflow:hidden;box-shadow:0 8px 24px rgba(18,18,20,.06)}
+.card img{display:block;width:100%;aspect-ratio:1;object-fit:cover;background:#f4f3f7}
+.hero img{flex:1;aspect-ratio:auto;min-height:0}
+.card div{padding:14px 16px 16px}
+.card strong{display:block;font-size:16px;line-height:24px;font-weight:600}
+.card span{display:block;font-size:13px;line-height:20px;color:#55555f}
+.card small{display:block;margin-top:6px;font-size:12px;line-height:18px;color:#8a8a94}
+.hero strong{font-size:22px;line-height:30px}
+.tag{display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:8px;background:#e5f68c;color:#3d4a00;font-size:12px;line-height:18px;font-weight:600}
+</style>
+</head>
+<body>
+<h1>Office Power 角色 IP 概念</h1>
+<p class="lead">NOVA 維持原本的白色機器人。其他 Agent 共用十種固定角色：同一類的 Agent 造型與顏色相同，顏色固定、不跟著主題換色。</p>
+<div class="sheet"><div class="card hero" id="hero"></div><div class="agents" id="agents"></div></div>
+<script type="module" src="./main.js"></script>
+</body>
+</html>

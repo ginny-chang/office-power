@@ -4,10 +4,11 @@ import {Canvas,useFrame,useThree} from '@react-three/fiber';
 import {RoundedBox,Html,OrbitControls} from '@react-three/drei';
 import * as THREE from 'three';
 import {createRobotShell} from '../src/components/robot-shell.js';
-import AgentIcon from '../src-shared/AgentIcon.jsx';
-import {renderToStaticMarkup} from 'react-dom/server';
+import {agentAvatarSrc} from '../src-shared/agent-role.js';
 import {Settings} from 'lucide-react';
 import {officeLayout} from './office-layout.js';
+import {AgentCharacter} from './office-bots.jsx';
+import {agentRoleFor,isAgentAlert} from './bot-variants.js';
 // Desk and robot geometry adapted from the landing page's reservation scene.
 const C = { shell: '#e7eefb', metal: '#a6b8d4', ink: '#203c86', floor: '#a8bfe5', wall: '#dce7f8', light: '#ffffff' };
 function Box({ at=[0,0,0], size=[1,1,1], color=C.shell, radius=.035, metal=.15, ...props }) {
@@ -16,7 +17,7 @@ function Box({ at=[0,0,0], size=[1,1,1], color=C.shell, radius=.035, metal=.15, 
 function Sphere({at,size,color=C.metal}) {
   return <mesh position={at} scale={size} castShadow><sphereGeometry args={[1,20,12]}/><meshStandardMaterial color={color} roughness={.45} metalness={.3}/></mesh>;
 }
-function Screen({at,size=[.95,.58],variant=0,alarm=false,agent,emoji}) {
+function Screen({at,size=[.95,.58],variant=0,alarm=false,agent,avatar}) {
   const texture = useMemo(() => {
     const canvas=document.createElement('canvas'); canvas.width=512;canvas.height=320;
     const ctx=canvas.getContext('2d');
@@ -26,9 +27,9 @@ function Screen({at,size=[.95,.58],variant=0,alarm=false,agent,emoji}) {
     for(let i=0;i<4;i++){ctx.fillStyle='#2c3746';ctx.fillRect(26,110+i*40,460,28);ctx.fillStyle='#93a8c3';ctx.fillRect(40,120+i*40,130+i*28,6);ctx.fillStyle='#c5d2e1';ctx.fillRect(390,118+i*40,65,10);}
     if(alarm){ctx.fillStyle='#c71936';ctx.fillRect(0,0,512,320);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='bold 72px sans-serif';ctx.fillText('ERROR',256,157);ctx.font='22px sans-serif';ctx.fillText('BUDGET LIMIT REACHED',256,210);ctx.font='16px sans-serif';ctx.fillText('AGENT PAUSED',256,262);}
     const map=new THREE.CanvasTexture(canvas);map.colorSpace=THREE.SRGBColorSpace;
-    if(agent){ctx.fillStyle='#233b59';ctx.fillRect(0,0,512,320);const img=new Image();img.onload=()=>{ctx.drawImage(img,166,50,180,180);ctx.fillStyle='#adc6e8';ctx.textAlign='center';ctx.font='18px sans-serif';ctx.fillText('NOVA / '+agent.toUpperCase(),256,277);map.needsUpdate=true};img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(renderToStaticMarkup(<AgentIcon agent={agent} emoji={emoji} size={180} color="#e8f3ff" xmlns="http://www.w3.org/2000/svg"/>));}
+    if(agent){ctx.fillStyle='#233b59';ctx.fillRect(0,0,512,320);const img=new Image();img.onload=()=>{ctx.drawImage(img,166,50,180,180);ctx.fillStyle='#adc6e8';ctx.textAlign='center';ctx.font='18px sans-serif';ctx.fillText('NOVA / '+agent.toUpperCase(),256,277);map.needsUpdate=true};img.src=avatar;}
     return map;
-  },[variant,alarm,agent,emoji]);
+  },[variant,alarm,agent,avatar]);
   useEffect(()=>()=>texture.dispose(),[texture]);
   return <mesh position={at}><planeGeometry args={size}/><meshBasicMaterial map={texture} toneMapped={false}/></mesh>;
 }
@@ -91,14 +92,15 @@ function Station({agent,index,onSelect,onSettings,read,reduced}){
       <Box at={[.2,1.13,.38]} size={[.88,.68,.07]} color="#b4bfd0" radius={.04}/>
       <Box at={[.2,.83,.38]} size={[.055,.28,.06]} color="#a8b5c9"/>
       <Box at={[.2,.78,.3]} size={[.36,.035,.26]} color="#a8b5c9"/>
-      <group position={[.2,1.13,.335]} rotation={[0,Math.PI,0]}><Screen at={[0,0,0]} size={[.78,.57]} agent={agent.id} emoji={agent.emoji}/></group>
-      <Screen at={[.2,1.13,.422]} size={[.78,.57]} agent={agent.id} emoji={agent.emoji}/>
+      <group position={[.2,1.13,.335]} rotation={[0,Math.PI,0]}><Screen at={[0,0,0]} size={[.78,.57]} agent={agent.id} avatar={agentAvatarSrc(agent)}/></group>
+      <Screen at={[.2,1.13,.422]} size={[.78,.57]} agent={agent.id} avatar={agentAvatarSrc(agent)}/>
       <Box at={[-.1,.77,-.10]} size={[.63,.045,.20]} color="#bcc7d7"/>
       {Array.from({length:8},(_,i)=><Box key={i} at={[-.365+i*.075,.797,-.10]} size={[.04,.008,.13]} color="#919fb3" radius={.002}/>)}
       <Sphere at={[.57,.79,-.09]} size={[.07,.026,.10]} color="#c4cddb"/>
     </group>
- <Agent at={[-.22,.31,-.38]} index={index} reduced={reduced} hovered={hovered} onHover={e=>{e.stopPropagation();setHovered(true)}} onLeave={()=>setHovered(false)} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>
- <Html position={[.18,.47,1.24]} center zIndexRange={[5,1]}><div className="bot-name-actions" {...hoverProps} data-hovered={hovered}><Button variant="plain" type="button" data-agent={agent.id} data-hovered={hovered} className="bot-label" style={{padding:'7px 11px',borderRadius:12,fontSize:12,color:agent.color,background:'#fcfdff',boxShadow:'0 3px 10px #66779920'}} onClick={()=>onSelect(agent.id)}><AgentIcon agent={agent.id} emoji={agent.emoji} size={21}/>{agent.name}</Button>{onSettings&&<Button variant="plain" type="button" className="bot-settings-button" aria-label={`設定 ${agent.name}`} title="設定" onClick={e=>{e.stopPropagation();onSettings(agent.id)}}><Settings size={16}/></Button>}</div></Html>
+ {agentRoleFor(agent)!=='nova'?<AgentCharacter role={agentRoleFor(agent)} position={[-.22,.31,-.38]} scale={1.02} rest={.42} index={index} reduced={reduced} hovered={hovered} alert={isAgentAlert(agent)} fresh={!!(agent.event&&agent.published!==false&&!read.includes(agent.id))} shadow={false} ownLight onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>:
+ <Agent at={[-.22,.31,-.38]} index={index} reduced={reduced} hovered={hovered} onHover={e=>{e.stopPropagation();setHovered(true)}} onLeave={()=>setHovered(false)} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>}
+ <Html position={[.18,.47,1.24]} center zIndexRange={[5,1]}><div className="bot-name-actions" {...hoverProps} data-hovered={hovered}><Button variant="plain" type="button" data-agent={agent.id} data-hovered={hovered} className="bot-label" style={{padding:'7px 11px',borderRadius:12,fontSize:12,color:agent.color,background:'#fcfdff',boxShadow:'0 3px 10px #66779920'}} onClick={()=>onSelect(agent.id)}>{agent.name}</Button>{onSettings&&<Button variant="plain" type="button" className="bot-settings-button" aria-label={`設定 ${agent.name}`} title="設定" onClick={e=>{e.stopPropagation();onSettings(agent.id)}}><Settings size={16}/></Button>}</div></Html>
  {agent.event&&agent.published!==false&&!read.includes(agent.id)&&<Html position={[0,3.15,.1]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" {...hoverProps} className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
  </group>
 }

@@ -1,4 +1,5 @@
 import React,{useState} from 'react';
+import AgentAvatar from '../src-shared/AgentAvatar.jsx';
 import {CheckCircle2,ChevronDown,MessageCircle,RotateCw,Settings} from 'lucide-react';
 import {Button,Card,PageTitle} from '../src-shared/ui/index.jsx';
 import useLocalData,{readLocal} from '../src-shared/useLocalData.js';
@@ -32,7 +33,7 @@ export default function Runtime(){
     <details className="runtime-specs"><summary>規格與能力詳細<ChevronDown size={16} aria-hidden="true"/></summary>
      <dl><div><dt>健康狀態</dt><dd>正常</dd></div><div><dt>執行器類型</dt><dd>OpenShell / Session Sandbox</dd></div><div><dt>能力</dt><dd>{capabilities.map(item=><span key={item} className="usage-tag">{item}</span>)}</dd></div></dl></details></Card>
    <Card as="section" className="settings-card"><CardHeading title={<>使用此 Runtime 的 Agent<span className="runtime-count">{agents.length}</span></>} copy="點選 Agent 開啟它的 Agent 設定。"/>
-    <div className="runtime-agents-wrap"><div className="runtime-agents">{agents.map(agent=><button type="button" key={agent.id} title={agent.name} aria-label={`${agent.name} 的 Agent 設定`} onClick={()=>setSelected(agent)}>{agent.emoji&&<span className="runtime-agent-emoji" aria-hidden="true">{agent.emoji}</span>}<span className="runtime-agent-name">{agent.name}</span><Settings size={16} aria-hidden="true"/></button>)}</div></div></Card>
+    <div className="runtime-agents-wrap"><div className="runtime-agents">{agents.map(agent=><button type="button" key={agent.id} title={agent.name} aria-label={`${agent.name} 的 Agent 設定`} onClick={()=>setSelected(agent)}><AgentAvatar agent={agent} size={20} round/><span className="runtime-agent-name">{agent.name}</span><Settings size={16} aria-hidden="true"/></button>)}</div></div></Card>
    <Card as="section" className="settings-card"><CardHeading title="Slack Socket Mode Workers" copy="平台自建出站 WebSocket 連線至 Slack，免公網 URL 接收事件，完整經過平台治理（權限/用量/防護/稽核/計量）。"/>
     <ul className="runtime-workers">{connected.map(({agent,worker})=><li key={agent.id}><MessageCircle size={20} aria-hidden="true"/><span><strong>{agent.name}</strong><small>{worker}</small></span><span className="usage-tag good">已連線</span><Button size="medium" onClick={()=>setSelected(agent)}><Settings size={16}/>Agent 設定</Button></li>)}</ul></Card>
   </div>

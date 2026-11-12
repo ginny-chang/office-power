@@ -11,7 +11,7 @@ const questions={
  'Sales 助理':['整理本週客戶跟進','幫我準備拜訪摘要','建立客戶追蹤 App'],
  'Nova 報帳助理':['差旅費怎麼報銷？','整理本月費用','建立費用追蹤 App']
 };
-export function Welcome({agent,onSend}){const suggestions=(agent.starters?.length?agent.starters:null)||questions[agent.agent]||['可以先幫我整理今天的待辦嗎？','你能協助我完成哪些工作？','請依照你的職責給我一個建議'];return <div className="chat-welcome"><span className="welcome-icon" style={{color:agent.color}}><AgentIcon agent={agent.agent} emoji={agent.emoji} size={24}/></span><h2>和「{agent.agent}」開始對話吧。</h2><p>{agent.role}{agent.agent==='大腦總管 NOVA'?' · 會自動調度專責 Agent':' · 你的專屬 AI 工作夥伴'}</p><div className="suggestions">{suggestions.map(q=><Button variant="secondary" type="button" key={q} onClick={()=>onSend(q)}><span>{q}</span><ArrowRight size={16}/></Button>)}</div></div>}
+export function Welcome({agent,onSend}){const suggestions=(agent.starters?.length?agent.starters:null)||questions[agent.agent]||['可以先幫我整理今天的待辦嗎？','你能協助我完成哪些工作？','請依照你的職責給我一個建議'];return <div className="chat-welcome"><span className="welcome-icon" style={{color:agent.color}}><AgentIcon agent={agent.agentId||agent.agent} name={agent.agent} role={agent.role} character={agent.character} size={56}/></span><h2>和「{agent.agent}」開始對話吧。</h2><p>{agent.role}{agent.agent==='大腦總管 NOVA'?' · 會自動調度專責 Agent':' · 你的專屬 AI 工作夥伴'}</p><div className="suggestions">{suggestions.map(q=><Button variant="secondary" type="button" key={q} onClick={()=>onSend(q)}><span>{q}</span><ArrowRight size={16}/></Button>)}</div></div>}
 
 function useChoice(){const [picked,setPicked]=useState('');return [picked,setPicked]}
 export function RichReply({lead,data}){

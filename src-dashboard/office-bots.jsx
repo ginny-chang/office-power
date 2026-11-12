@@ -7,6 +7,7 @@ import {ExtrudeGeometry, Shape, PMREMGenerator, CanvasTexture, SRGBColorSpace} f
 import * as THREE from 'three';
 import {createRobotShell} from '../src/components/robot-shell.js';
 import {BOT_VARIANTS, botVariantFor} from './bot-variants.js';
+import {buildAgent} from './agent-characters.js';
 
 export {botVariantFor};
 
@@ -191,7 +192,7 @@ function GroundShadow() {
   </mesh>;
 }
 
-export function OfficeBot({variant = 'life', reduced = false, hovered = false, selected = false, rest = 0.2, index = 0, alert = false, onSelect, ...props}) {
+export function OfficeBot({variant = 'life', tool = true, reduced = false, hovered = false, selected = false, rest = 0.2, index = 0, alert = false, onSelect, ...props}) {
   const spec = BOT_VARIANTS[variant] || BOT_VARIANTS.life;
   const Tool = tools[spec.tool];
   const root = useRef();
@@ -218,8 +219,93 @@ export function OfficeBot({variant = 'life', reduced = false, hovered = false, s
   return <group {...props}>
     <group ref={root} rotation={[0, rest, 0]} onClick={onSelect}>
       <GroundShadow/>
-      <group position={[-0.42, 0, 0]}><RobotBody eyes={eyes} arm={arm}/></group>
-      <group position={[0.92, 0, 0.02]} scale={1.38}><Tool/></group>
+      <group position={[tool ? -0.42 : 0, 0, 0]}><RobotBody eyes={eyes} arm={arm}/></group>
+      {tool && <group position={[0.92, 0, 0.02]} scale={1.38}><Tool/></group>}
+    </group>
+  </group>;
+}
+
+// The row lights its agents with a room environment. A scene without one (the office view) borrows the same environment
+// per material, so a character has the same colour depth in both views.
+const roomByRenderer = new WeakMap();
+const litByMaterial = new WeakMap();
+function roomEnvironment(gl) {
+  if (!roomByRenderer.has(gl)) {
+    const pmrem = new PMREMGenerator(gl), room = new RoomEnvironment();
+    roomByRenderer.set(gl, pmrem.fromScene(room, 0.05).texture);
+    pmrem.dispose();
+  }
+  return roomByRenderer.get(gl);
+}
+function lightLikeRow(model, gl) {
+  const envMap = roomEnvironment(gl);
+  model.traverse(obj => {
+    if (!obj.isMesh || !obj.material.isMeshStandardMaterial) return;
+    if (!litByMaterial.has(obj.material)) {
+      const lit = obj.material.clone();
+      lit.envMap = envMap;
+      lit.envMapIntensity = (obj.material.envMapIntensity ?? 1) * 0.5;
+      litByMaterial.set(obj.material, lit);
+    }
+    obj.material = litByMaterial.get(obj.material);
+  });
+  return model;
+}
+
+// One of the ten soft characters. Motion: breathing, blinking, turning to face you, a wave (or a nod when the hands are full),
+// a squash when selected, one hop when there is news, and a small action from the prop while hovered.
+export function AgentCharacter({role = 'general', reduced = false, hovered = false, selected = false, alert = false, fresh = false, rest = 0.2, index = 0, shadow = true, ownLight = false, onSelect, ...props}) {
+  const gl = useThree(state => state.gl);
+  const model = useMemo(() => ownLight ? lightLikeRow(buildAgent(role), gl) : buildAgent(role), [role, ownLight, gl]);
+  const parts = useMemo(() => {
+    const find = name => model.getObjectByName(name);
+    const held = find('clipboard') || find('calculator');
+    return {body: find('body'), eyes: [find('eye0'), find('eye1')], arm: find('arm1'), minute: find('minute'), hour: find('hour'), gear: find('gear'), sprout: find('sprout'), pencil: find('pencil'), held, pencilY: find('pencil')?.position.y, heldZ: held?.rotation.z};
+  }, [model]);
+  const root = useRef();
+  const lift = useRef();
+  const motion = useRef({bounce: 0, hop: fresh ? 1 : 0, selected, fresh});
+  const world = useMemo(() => new THREE.Vector3(), []);
+  useFrame(({clock, camera}, delta) => {
+    const group = root.current;
+    if (!group) return;
+    const m = motion.current, t = clock.elapsedTime + index * 0.9, k = reduced ? 1 : 1 - Math.exp(-delta * 7);
+    const look = hovered || selected;
+    group.getWorldPosition(world);
+    const facing = look ? Math.atan2(camera.position.x - world.x, camera.position.z - world.z) : rest;
+    group.rotation.y += (THREE.MathUtils.euclideanModulo(facing - group.rotation.y + Math.PI, Math.PI * 2) - Math.PI) * k;
+    if (selected && !m.selected) m.bounce = 1;
+    if (fresh && !m.fresh) m.hop = 1;
+    m.selected = selected;
+    m.fresh = fresh;
+    m.bounce = Math.max(0, m.bounce - delta * 2.4);
+    m.hop = Math.max(0, m.hop - delta * 1.5);
+    const breath = reduced ? 0 : Math.sin(t * 1.6) * 0.012;
+    const squash = reduced ? 0 : Math.sin(m.bounce * Math.PI * 2) * m.bounce * 0.09;
+    parts.body.scale.set(1 - breath * 0.6 + squash * 0.6, 1 + breath - squash, 1 - breath * 0.6 + squash * 0.6);
+    if (lift.current) lift.current.position.y = reduced ? 0 : Math.sin((1 - m.hop) * Math.PI) * 0.24;
+    const blink = reduced || look ? 1 : t % 4.8 < 0.1 ? 0.14 : 1;
+    parts.eyes.forEach(eye => {if (eye) eye.scale.y = blink;});
+    const greet = (hovered || alert) && !reduced;
+    if (parts.arm && !parts.arm.userData.fixed) {
+      const target = greet ? 2.35 + Math.sin(t * 8) * 0.35 : parts.arm.userData.rest;
+      parts.arm.rotation.z += (target - parts.arm.rotation.z) * k;
+    } else {
+      // Hands are full, so it nods instead of waving
+      const nod = greet ? 0.07 + Math.sin(t * 6) * 0.05 : 0;
+      parts.body.rotation.x += (nod - parts.body.rotation.x) * k;
+    }
+    const busy = hovered && !reduced;
+    if (parts.minute && busy) {parts.minute.rotation.z -= delta * 6; parts.hour.rotation.z -= delta * 0.5;}
+    if (parts.gear && busy) parts.gear.rotation.z += delta * 2.6;
+    if (parts.sprout) parts.sprout.rotation.z += ((busy ? Math.sin(t * 9) * 0.28 : 0) - parts.sprout.rotation.z) * k;
+    if (parts.pencil) parts.pencil.position.y = parts.pencilY + (busy ? Math.abs(Math.sin(t * 10)) * 0.05 : 0);
+    if (parts.held) parts.held.rotation.z += (parts.heldZ + (busy ? Math.sin(t * 8) * 0.09 : 0) - parts.held.rotation.z) * k;
+  });
+  return <group {...props}>
+    <group ref={root} rotation={[0, rest, 0]} onClick={onSelect}>
+      {shadow && <GroundShadow/>}
+      <group ref={lift}><primitive object={model}/></group>
     </group>
   </group>;
 }
