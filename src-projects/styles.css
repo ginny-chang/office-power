@@ -12,9 +12,26 @@
 .connection-card>label,.connection-card>p{width:100%}
 .connection-head{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);width:100%}
 .connection-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:var(--sp-2);width:auto}
-html .connection-card .op-button.text-button,html .connection-card .op-button.guide-chip{width:auto;min-height:var(--control-sm);height:var(--control-sm);padding:0 var(--sp-2);border:0;background:none;box-shadow:none;color:var(--ink);font:var(--t-label);font-weight:500}
-html .connection-card .op-button.guide-chip{padding:0;gap:6px}
-html .connection-card .op-button.text-button:hover,html .connection-card .op-button.guide-chip:hover{border:0;background:none;color:var(--ink)}
+html .connection-card .op-button.text-button,html .connection-form .op-button.text-button,html .connection-card .op-button.guide-chip,html .connection-form .op-button.guide-chip{width:auto;min-height:var(--control-sm);height:var(--control-sm);padding:0 var(--sp-2);border:0;background:none;box-shadow:none;color:var(--ink);font:var(--t-label);font-weight:500}
+html .connection-card .op-button.guide-chip,html .connection-form .op-button.guide-chip{padding:0;gap:6px}
+html .connection-card .op-button.text-button:hover,html .connection-form .op-button.text-button:hover,html .connection-card .op-button.guide-chip:hover,html .connection-form .op-button.guide-chip:hover{border:0;background:none;color:var(--ink)}
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4)}
+.setup-card{display:grid;gap:6px;width:100%;padding:var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card);text-align:left;cursor:pointer}
+.setup-title{font:var(--t-title);color:var(--ink)}
+.setup-kind{font:var(--t-label);color:var(--ink-2)}
+.setup-card small{font:var(--t-meta);color:var(--ink-3)}
+.setup-card:hover{box-shadow:var(--shadow-float)}
+.connection-page{display:grid;gap:var(--sp-8)}
+.connection-page h2{margin:0 0 var(--sp-4);font:var(--t-title)}
+.saved-connection{display:grid;gap:var(--sp-4);width:100%;padding:var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card);text-align:left;cursor:pointer}
+.saved-connection h3{margin:0;font:var(--t-title)}
+.saved-connection p{margin:0;font:var(--t-label);color:var(--ink-2);overflow-wrap:anywhere}
+.saved-connection:hover{box-shadow:var(--shadow-float)}
+.connection-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4) var(--sp-6);width:100%}
+.connection-meta small{display:block;margin-bottom:4px;color:var(--ink-3);font:var(--t-meta)}
+.connection-meta strong{font:var(--t-label);font-weight:500;color:var(--ink)}
+.table-title{padding:0;border:0;background:none;font:inherit;font-weight:600;color:var(--ink);cursor:pointer}
+.table-title:hover{text-decoration:underline;text-underline-offset:3px}
 html .connection-actions>.op-button{width:auto;flex:none}
 .detail-block{display:grid;gap:var(--sp-4)}
 .detail-block.project-form>.connection-actions,.detail-block.project-form>.detail-disclosure{justify-self:start;width:auto}
@@ -35,4 +52,4 @@ html .connection-actions>.op-button{width:auto;flex:none}
 .project-overview strong{font:var(--t-body-strong)}
 .guide-steps{margin:0;padding-left:1.2em;display:grid;gap:var(--sp-4);font:var(--t-body);color:var(--ink)}
 .manage-card small{display:block;margin-top:var(--sp-2);color:var(--ink-3);font:var(--t-meta)}
-@media(max-width:720px){.project-pair,.repo-row{grid-template-columns:1fr}}
+@media(max-width:720px){.project-pair,.repo-row,.setup-grid,.connection-meta{grid-template-columns:1fr}}
