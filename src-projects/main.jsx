@@ -1,11 +1,11 @@
 import {AdminOnly} from '../src-shared/UserRole.jsx';
 import React,{useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {ChevronDown,ChevronLeft,ChevronRight,Info,Plus,RefreshCw} from 'lucide-react';
+import {ChevronLeft,Folder,Info,Plus,RefreshCw} from 'lucide-react';
 import githubLogo from './logos/github.svg';
 import gitlabLogo from './logos/gitlab.svg';
 import jiraLogo from './logos/jira.svg';
-import {Button,Dialog,Input} from '../src-shared/ui/index.jsx';
+import {Button,Dialog,Input,SearchBar} from '../src-shared/ui/index.jsx';
 import WorkspaceRail from '../src-shared/WorkspaceRail.jsx';
 import useLocalData from '../src-shared/useLocalData.js';
 import '../src-shared/tokens.css';
@@ -43,17 +43,6 @@ const publishLabel=project=>project.status==='published'?(project.enabled?'已�
 const providerLogos={github:githubLogo,gitlab:gitlabLogo,jira:jiraLogo};
 function ProviderLogo({id}){return <img className="provider-logo" src={providerLogos[id]||jiraLogo} alt="" width={22} height={22}/>}
 const sections=[['overview','概覽'],['members','成員'],['repos','程式庫'],['skills','技能'],['jira','Jira 資料檢查'],['library','知識庫']];
-const skillPacks=[
- {name:'project-assistant',meta:'手動授予 · 必選'},
- {name:'bct-code-standards',meta:'整個 plugin · 3'},
- {name:'bct-debug-skills',meta:'整個 plugin · 7'},
- {name:'bct-dev-workflow-skills',meta:'整個 plugin · 34'},
- {name:'bct-qa-skills',meta:'整個 plugin · 31'},
- {name:'bct-tools',meta:'整個 plugin · 1'},
- {name:'bct-report-skills',meta:'整個 plugin · 3'},
- {name:'bct-devops-skills',meta:'整個 plugin · 13'},
- {name:'bct-design-skills',meta:'整個 plugin · 4'},
-];
 const knowledgeFiles={
  flir:[
   {id:'flir-spec',name:'FLIR 產品規格',kind:'PDF',source:'專案交付',updated:'2026/11/08 下午03:12',summary:'熱像儀產品規格、解析度與工作溫度範圍，供現場安裝與客服回答引用。',tags:['#規格','#FLIR']},
@@ -68,16 +57,20 @@ const knowledgeFiles={
  p3:[{id:'nhi-scope',name:'健保署範圍備忘',kind:'MD',source:'專案交付',updated:'2026/10/12 下午05:10',summary:'草稿專案目前納入的資料範圍與尚未開放的項目。',tags:['#範圍']}],
  p4:[{id:'nhi-v2-note',name:'健保署 v2 交付紀錄',kind:'PDF',source:'Web',updated:'2026/11/04 上午08:55',summary:'第二版上線後的交付檔案與已知差異。',tags:['#交付']}],
 };
-const packsFor=project=>project.id==='flir'?skillPacks:skillPacks.slice(0,Math.max(2,Math.min(skillPacks.length,Math.ceil((project.skills||2)/8))));
 const filesFor=project=>knowledgeFiles[project.id]||[{id:`${project.id}-note`,name:`${project.name} 工作說明`,kind:'MD',source:'專案交付',updated:'2026/11/01 上午09:00',summary:`${project.name} 的專案範圍、資料來源與 Agent 可以引用的文件。`,tags:['#專案']}];
-const issuesFor=(project,limit)=>{
+const librariesFor=project=>{
+ const files=filesFor(project);
+ if(project.id==='flir')return [
+  {id:'flir-product',name:'FLIR 產品文件',description:'規格與韌體說明，供現場安裝與客服回答引用。',files:files.filter(file=>file.id!=='flir-site')},
+  {id:'flir-site',name:'現場紀錄',description:'最近的現場安裝與未完成事項。',files:files.filter(file=>file.id==='flir-site')},
+ ];
+ return [{id:`${project.id}-lib`,name:project.name,description:files[0]?.summary||'專案交付檔案。',files}];
+};
+const issuesFor=project=>{
  const code=project.jira||'DEMO';
  const people=project.members?.length?project.members:['未指派'];
- return [
-  {key:`${code}-128`,summary:'欄位對應與權限需要再確認',status:'進行中',assignee:people[0]},
-  {key:`${code}-121`,summary:'搜尋條件沒有帶回預期議題',status:'待辦',assignee:people[1]||people[0]},
-  {key:`${code}-117`,summary:'草稿回覆缺少專案範圍',status:'已完成',assignee:people[0]},
- ].slice(0,Math.max(1,Math.min(3,Number(limit)||3)));
+ const summaries=['欄位對應與權限需要再確認','搜尋條件沒有帶回預期議題','草稿回覆缺少專案範圍','附件沒有跟著議題一起讀到','狀態流轉後負責人沒有更新','客製欄位的選項與專案設定不一致','權限不足時沒有回傳明確錯誤','重複議題需要合併後再檢查'];
+ return summaries.map((summary,index)=>({key:`${code}-${128-index}`,summary,status:['進行中','待辦','已完成'][index%3],assignee:people[index%people.length]}));
 };
 
 function ProjectForm({initial,connections,onClose,onSave}){
@@ -111,33 +104,27 @@ function ProjectForm({initial,connections,onClose,onSave}){
  </Dialog>;
 }
 
-function ProjectDetail({project,onBack,onEdit,onConnections}){
+function ProjectDetail({project,onBack,onEdit}){
  const [section,setSection]=useState('overview');
- const [editingSkills,setEditingSkills]=useState(false);
- const [mode,setMode]=useState('search');
+ const [query,setQuery]=useState('');
  const [limit,setLimit]=useState('10');
- const [advanced,setAdvanced]=useState(false);
- const [jql,setJql]=useState('');
- const [checked,setChecked]=useState(null);
  const [issue,setIssue]=useState(null);
  const [file,setFile]=useState(null);
  const [member,setMember]=useState(null);
  const [repo,setRepo]=useState(null);
- const [libraryNote,setLibraryNote]=useState('');
- const packs=packsFor(project);
- const files=filesFor(project);
- const openFile=item=>{setFile(item)};
+ const [library,setLibrary]=useState(null);
+ const libraries=librariesFor(project);
+ const issues=issuesFor(project).filter(item=>`${item.key} ${item.summary} ${item.assignee}`.toLowerCase().includes(query.trim().toLowerCase())).slice(0,Number(limit)||10);
  return <main>
   <button type="button" className="project-back" onClick={onBack}><ChevronLeft size={16}/>專案 Agent</button>
-  <header className="page-heading project-detail-head"><div><h1>{project.name}</h1><p>{project.code} · {project.status} · {project.enabled?'已啟用':'未啟用'}</p></div><div className="heading-actions"><Button onClick={onEdit}>編輯專案</Button><a className="op-button op-button--secondary" href="./dashboard.html">Agent 設定</a></div></header>
+  <header className="page-heading project-detail-head"><div><h1>{project.name}</h1><p>{project.code} · {publishLabel(project)}</p></div><div className="heading-actions"><Button onClick={onEdit}>編輯專案</Button><a className="op-button op-button--secondary" href="./dashboard.html">Agent 設定</a></div></header>
   <nav className="manage-tabs button-tabs" aria-label="專案內容">{sections.map(([id,label])=><button key={id} type="button" className={section===id?'active':''} aria-pressed={section===id} onClick={()=>setSection(id)}>{label}</button>)}</nav>
-  {section==='overview'&&<section className="project-overview"><div className="project-pair"><div><small>存取群組</small><strong>{accessLabel(project.access)}</strong></div><div><small>Jira 專案代碼</small><strong>{project.jira||'—'}</strong></div></div><div><small>技能</small><strong>指定 · 安裝 {project.skills||0} 個 skill（下一回合生效）</strong></div><div><small>程式庫</small><strong>{project.repos.length?project.repos.map(item=>item.name).join('、'):'尚未加入'}</strong></div><div><small>成員</small><strong>{project.members?.length?project.members.join('、'):'尚未指定'}</strong></div><div><small>知識庫</small><strong>{files.length} 個檔案</strong></div><div><small>備註</small><strong>{project.note||'尚無備註'}</strong></div><p className="field-hint">儲存專案不會發佈 Agent。請至 Agent 設定選擇模型、確認權限與發佈。</p><div className="connection-actions"><Button onClick={onConnections}>管理共用連線</Button></div></section>}
-  {section==='members'&&<section className="detail-block">{project.members?.length?<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>成員</th><th>角色</th><th>存取群組</th></tr></thead><tbody>{project.members.map(name=><tr key={name} className="is-clickable" tabIndex={0} onClick={()=>setMember(name)} onKeyDown={event=>{if(event.key==='Enter')setMember(name)}}><td>{name}</td><td>{name==='Ginny'?'管理員':'一般用戶'}</td><td>{accessLabel(project.access)}</td></tr>)}</tbody></table></div>:<p className="manage-empty">這個專案還沒有指定成員。</p>}</section>}
+  {section==='overview'&&<article className="overview-card"><div className="manage-meta"><span className="manage-tag">{accessLabel(project.access)}</span><span className="manage-tag">Jira {project.jira||'未設定'}</span><span className="manage-tag">{project.repos.length} 個程式庫</span><span className="manage-tag">{project.skills||0} 個 skill 生效</span>{project.note&&<span className="manage-tag">{project.note}</span>}</div></article>}
+  {section==='members'&&<section className="detail-block">{project.access==='all'?<p className="member-note">此專案開放給所有員工使用，不需要管理成員。若要限制使用者，請編輯專案並改選特定群組。</p>:project.members?.length?<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>成員</th><th>角色</th><th>存取群組</th></tr></thead><tbody>{project.members.map(name=><tr key={name} className="is-clickable" tabIndex={0} onClick={()=>setMember(name)} onKeyDown={event=>{if(event.key==='Enter')setMember(name)}}><td>{name}</td><td>{name==='Ginny'?'管理員':'一般用戶'}</td><td>{accessLabel(project.access)}</td></tr>)}</tbody></table></div>:<p className="manage-empty">這個專案還沒有指定成員。</p>}</section>}
   {section==='repos'&&<section className="detail-block">{project.repos.length?<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>程式庫</th><th>預設分支</th><th>權限</th></tr></thead><tbody>{project.repos.map(item=><tr key={item.id} className="is-clickable" tabIndex={0} onClick={()=>setRepo(item)} onKeyDown={event=>{if(event.key==='Enter')setRepo(item)}}><td>{item.name}</td><td>{item.branch}</td><td>讀取</td></tr>)}</tbody></table></div>:<p className="manage-empty">還沒有程式庫。</p>}<p className="field-hint">Agent 可讀取任意分支、tag 或 commit；未指定時使用程式庫的預設分支。</p></section>}
-  {section==='skills'&&<section className="detail-block"><div className="detail-line"><strong>指定 · 安裝 {project.skills||packs.length} 個 skill（下一回合生效）</strong><Button onClick={()=>setEditingSkills(true)}>編輯技能</Button></div><div>{packs.map(item=><div className="skill-line" key={item.name}><span>{item.name}</span><small>{item.meta}</small></div>)}</div></section>}
-  {section==='jira'&&<section className="detail-block project-form"><p>直接檢查此專案範圍內的 Jira 資料，可用於草稿 Agent。此結果不代表 MCP、模型或通道已驗證。</p><p>範圍 {project.jira||'尚未填寫'}</p><div className="connection-actions"><Button onClick={onConnections}>管理 Jira 連線</Button></div><label>檢查方式<Input as="select" value={mode} onChange={event=>setMode(event.target.value)}><option value="search">搜尋議題</option><option value="fields">欄位檢查</option><option value="access">權限檢查</option></Input></label><label>結果筆數<Input type="number" min="1" max="50" value={limit} onChange={event=>setLimit(event.target.value)}/></label><button type="button" className="detail-disclosure" aria-expanded={advanced} onClick={()=>setAdvanced(open=>!open)}>{advanced?<ChevronDown size={16}/>:<ChevronRight size={16}/>}進階搜尋</button>{advanced&&<label>JQL<Input as="textarea" rows={3} value={jql} onChange={event=>setJql(event.target.value)} placeholder={project.jira?`project = ${project.jira}`:'project = DEMO'}/></label>}<div className="connection-actions"><Button variant="primary" onClick={()=>setChecked(issuesFor(project,limit))}>檢查 Jira 資料</Button></div>{checked&&<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>議題</th><th>摘要</th><th>狀態</th><th>負責人</th></tr></thead><tbody>{checked.map(item=><tr key={item.key} className="is-clickable" tabIndex={0} onClick={()=>setIssue(item)} onKeyDown={event=>{if(event.key==='Enter')setIssue(item)}}><td>{item.key}</td><td>{item.summary}</td><td>{item.status}</td><td>{item.assignee}</td></tr>)}</tbody></table></div>}{mode!=='search'&&checked&&<p className="field-hint">{mode==='fields'?'欄位檢查：摘要、狀態、負責人都可以讀取。':'權限檢查：目前連線可以讀取這個範圍的議題。'}</p>}</section>}
-  {section==='library'&&<section className="detail-block"><div className="connection-actions"><Button onClick={()=>setLibraryNote('已重新整理知識庫')}><RefreshCw size={16}/>重新整理</Button><a className="op-button op-button--secondary" href="./capabilities.html">管理知識庫檔案</a></div>{libraryNote&&<p role="status" className="manage-alert">{libraryNote}</p>}<p>Web 與 Teams 對話產出的交付檔案會自動存入此專案知識庫。同名檔案會分別保留，原始檔案可供專案成員下載。</p><h3 className="detail-title">{project.name}</h3><div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>檔案</th><th>類型</th><th>來源</th><th>更新</th></tr></thead><tbody>{files.map(item=><tr key={item.id} className="is-clickable" tabIndex={0} onClick={()=>openFile(item)} onKeyDown={event=>{if(event.key==='Enter')openFile(item)}}><td>{item.name}</td><td>{item.kind}</td><td>{item.source}</td><td>{item.updated}</td></tr>)}</tbody></table></div></section>}
-  {editingSkills&&<Dialog title="編輯技能" description="指定與安裝會在下一回合生效，不會改到正在進行的對話。" onClose={()=>setEditingSkills(false)} footer={<><a className="op-button op-button--secondary" href="./capabilities.html">到能力中心</a><Button variant="primary" onClick={()=>setEditingSkills(false)}>完成</Button></>}><div>{packs.map(item=><div className="skill-line" key={item.name}><span>{item.name}</span><small>{item.meta}</small></div>)}</div></Dialog>}
+  {section==='skills'&&<section className="detail-block"><div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>技能</th><th>生效數量</th></tr></thead><tbody><tr><td>已安裝 skill</td><td>{project.skills||0}</td></tr></tbody></table></div></section>}
+  {section==='jira'&&<section className="detail-block"><div className="jira-toolbar"><SearchBar label="搜尋議題" placeholder="搜尋議題" value={query} onChange={event=>setQuery(event.target.value)}/><label className="jira-limit">結果筆數<Input as="select" aria-label="結果筆數" value={limit} onChange={event=>setLimit(event.target.value)}><option value="5">5</option><option value="10">10</option><option value="20">20</option></Input></label></div><div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>議題</th><th>摘要</th><th>狀態</th><th>負責人</th></tr></thead><tbody>{issues.map(item=><tr key={item.key} className="is-clickable" tabIndex={0} onClick={()=>setIssue(item)} onKeyDown={event=>{if(event.key==='Enter')setIssue(item)}}><td>{item.key}</td><td>{item.summary}</td><td>{item.status}</td><td>{item.assignee}</td></tr>)}{!issues.length&&<tr><td colSpan={4}>沒有符合的議題</td></tr>}</tbody></table></div></section>}
+  {section==='library'&&<section className="detail-block">{library?<><button type="button" className="project-back" onClick={()=>setLibrary(null)}><ChevronLeft size={16}/>知識庫</button><header className="library-detail-head"><h2>{library.name}</h2><p>{library.description}</p></header><div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>檔案</th><th>類型</th><th>來源</th><th>更新</th></tr></thead><tbody>{library.files.map(item=><tr key={item.id} className="is-clickable" tabIndex={0} onClick={()=>setFile(item)} onKeyDown={event=>{if(event.key==='Enter')setFile(item)}}><td>{item.name}</td><td>{item.kind}</td><td>{item.source}</td><td>{item.updated}</td></tr>)}</tbody></table></div></>:<div className="manage-grid">{libraries.map(item=><article key={item.id} className="manage-card clickable" role="button" tabIndex={0} onClick={()=>setLibrary(item)} onKeyDown={event=>{if(event.key==='Enter')setLibrary(item)}}><header><span className="tile"><Folder size={20}/></span><h3>{item.name}</h3></header><p>{item.description}</p><div className="manage-meta">{item.files.length} 個檔案</div></article>)}{!libraries.length&&<p className="manage-empty">這個專案還沒有知識庫。</p>}</div>}</section>}
   {issue&&<Dialog title={issue.key} description={issue.status} onClose={()=>setIssue(null)} footer={<Button variant="primary" onClick={()=>setIssue(null)}>關閉</Button>}><p>{issue.summary}</p><p className="field-hint">負責人 {issue.assignee} · 範圍 {project.jira||'未設定'}</p></Dialog>}
   {file&&<Dialog title={file.name} description={`${file.kind} · ${file.source} · ${file.updated}`} onClose={()=>setFile(null)} footer={<Button variant="primary" onClick={()=>setFile(null)}>關閉</Button>}><p>{file.summary}</p><p className="kb-tags">關聯標籤：{file.tags.map(tag=><span key={tag}>{tag}</span>)}</p></Dialog>}
   {member&&<Dialog title={member} description={accessLabel(project.access)} onClose={()=>setMember(null)} footer={<Button variant="primary" onClick={()=>setMember(null)}>關閉</Button>}><p>{member==='Ginny'?'管理員':'一般用戶'}可以在這個專案使用 Agent，並下載知識庫的原始檔案。</p></Dialog>}
@@ -223,7 +210,7 @@ function App(){
  const project=projects.find(item=>item.id===selected);
  const refresh=()=>setNotice(tab==='projects'?'已重新整理專案':'已重新整理連線');
  const saveProject=next=>{setProjects(list=>list.some(item=>item.id===next.id)?list.map(item=>item.id===next.id?next:item):[...list,{...next,id:crypto.randomUUID(),status:'draft',enabled:false}]);setCreating(false);setEditing(null);setNotice(`已儲存 ${next.name}`)};
- return <div className="market-shell management"><WorkspaceRail active="專案 Agent"/>{project?<ProjectDetail project={project} onBack={()=>setSelected(null)} onEdit={()=>setEditing(project)} onConnections={()=>{setSelected(null);setTab('connections')}}/>:<main>
+ return <div className="market-shell management"><WorkspaceRail active="專案 Agent"/>{project?<ProjectDetail project={project} onBack={()=>setSelected(null)} onEdit={()=>setEditing(project)}/>:<main>
   <header className="page-heading"><div><h1>專案 Agent</h1><p>建立專案、管理成員與資料來源，並檢查連線狀態。</p></div><div className="heading-actions"><Button onClick={refresh}><RefreshCw size={16}/>重新整理</Button>{tab==='projects'&&<Button variant="primary" onClick={()=>setCreating(true)}><Plus size={16}/>建立專案</Button>}</div></header>
   <nav className="manage-tabs button-tabs project-tabs" aria-label="專案 Agent 分類"><button type="button" className={tab==='projects'?'active':''} aria-pressed={tab==='projects'} onClick={()=>setTab('projects')}>專案</button><button type="button" className={tab==='connections'?'active':''} aria-pressed={tab==='connections'} onClick={()=>setTab('connections')}>連線</button></nav>
   {notice&&<p role="status" className="manage-alert">{notice}</p>}
