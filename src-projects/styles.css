@@ -37,6 +37,12 @@ html body .management .manage-grid.connection-grid{grid-template-columns:repeat(
 .callback-row label{flex:1;min-width:0}
 .mcp-card.clickable{cursor:pointer}
 .mcp-card.clickable:hover{box-shadow:var(--shadow-float)}
+.service-limit{margin:var(--sp-2) 0 0;font:var(--t-meta);color:var(--ink-3)}
+.connection-grid .saved-link{cursor:pointer}
+.connection-grid .manage-card{display:flex;flex-direction:column;align-items:flex-start}
+html .connection-grid .op-button.link-test{width:auto;margin-top:var(--sp-4)}
+html .op-dialog-footer>.op-button.link-delete{margin-right:auto;border-color:var(--danger);background:var(--surface);color:var(--danger)}
+html .op-dialog-footer>.op-button.link-delete:hover{border-color:var(--danger);background:var(--danger-soft);color:var(--danger)}
 .connection-grid .manage-meta{flex-wrap:wrap}
 .connection-meta{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4) var(--sp-6);width:100%}
 .connection-meta small{display:block;margin-bottom:4px;color:var(--ink-3);font:var(--t-meta)}

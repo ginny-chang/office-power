@@ -14,8 +14,8 @@ import './styles.css';
 
 const codePattern=/^[a-z][a-z0-9-]{1,31}$/;
 const services=[
- {id:'jira',name:'Atlassian (Jira Cloud)',kind:'OAuth App 設定',redirect:'https://op.bct-tw.org/api/project-agent-connections/oauth/atlassian/callback',guide:['到 Atlassian Developer Console 建立 OAuth 2.0 (3LO) App。','把這個頁面的 Callback URL 貼到 Authorization callback URL。','在 Permissions 加入讀取 Jira 專案與議題的範圍。','回到這裡確認 Client ID，再按連接 Atlassian。Secret 只在更新設定時輸入，送出後不會保留。']},
- {id:'gitlab',name:'GitLab.com',kind:'OAuth App 設定',redirect:'https://op.bct-tw.org/api/project-agent-connections/oauth/gitlab/callback',guide:['到 GitLab.com → Preferences → Applications。','建立應用，Redirect URI 貼上這個頁面的 Callback URL。','勾選 read_api 與 read_repository。','回到這裡確認 Application ID。Secret 只在更新設定時輸入，送出後不會保留。']},
+ {id:'jira',name:'Atlassian (Jira Cloud)',kind:'OAuth App 設定',redirect:'https://op.bct-tw.org/api/project-agent-connections/oauth/atlassian/callback',limit:'Jira 檢視 jira-user、jira-work，更新 jira-work。Confluence 檢視 confluence-content.all、confluence-content.summary、Page，搜尋 confluence。',guide:['到 Atlassian Developer Console 建立 OAuth 2.0 (3LO) App。','把這個頁面的 Callback URL 貼到 Authorization callback URL。','在 Permissions 加入讀取 Jira 專案與議題的範圍。','回到這裡確認 Client ID，再按連接 Atlassian。Secret 只在更新設定時輸入，送出後不會保留。']},
+ {id:'gitlab',name:'GitLab.com',kind:'OAuth App 設定',redirect:'https://op.bct-tw.org/api/project-agent-connections/oauth/gitlab/callback',limit:'Scopes：api、read_api、read_user、read_repository、write_repository。',guide:['到 GitLab.com → Preferences → Applications。','建立應用，Redirect URI 貼上這個頁面的 Callback URL。','勾選 read_api 與 read_repository。','回到這裡確認 Application ID。Secret 只在更新設定時輸入，送出後不會保留。']},
 ];
 const groups=[['all','所有員工'],['nhi','健保署']];
 const seedProjects=[
@@ -171,7 +171,7 @@ function ConnectionForm({initial,onClose,onSave,onGuide,onConnect}){
  </Dialog>;
 }
 
-function SavedLinkDialog({link,onClose,onSave,onDelete,onTest}){
+function SavedLinkDialog({link,onClose,onSave,onDelete}){
  const [draft,setDraft]=useState(link);
  const [error,setError]=useState('');
  const set=patch=>setDraft(value=>({...value,...patch}));
@@ -179,8 +179,7 @@ function SavedLinkDialog({link,onClose,onSave,onDelete,onTest}){
   if(!draft.title.trim()||!draft.url.trim()||!draft.maintainer.trim()){setError('請填寫名稱、網址與維護人。');return}
   onSave({...draft,title:draft.title.trim(),url:draft.url.trim(),maintainer:draft.maintainer.trim()});
  };
- const test=()=>{const next={...draft,linkStatus:'有效',credential:'已設定（測試讀取成功）'};setDraft(next);onTest(next)};
- return <Dialog title="編輯連線" description={draft.title} size="wide" onClose={onClose} footer={<><Button variant="danger" onClick={()=>onDelete(draft.id)}>刪除</Button><Button onClick={test}>測試連線</Button><Button onClick={onClose}>取消</Button><Button variant="primary" onClick={save}>儲存</Button></>}>
+ return <Dialog title="編輯連線" description={draft.title} size="wide" onClose={onClose} footer={<><Button className="link-delete" onClick={()=>onDelete(draft.id)}>刪除</Button><Button variant="primary" onClick={save}>儲存</Button></>}>
   <div className="project-form">
    <label>名稱<Input value={draft.title} onChange={event=>set({title:event.target.value})}/></label>
    <label>網址<Input value={draft.url} onChange={event=>set({url:event.target.value})}/></label>
@@ -216,18 +215,19 @@ function App(){
  const [notice,setNotice]=useState('');
  const project=projects.find(item=>item.id===selected);
  const refresh=()=>setNotice(tab==='projects'?'已重新整理專案':'已重新整理連線');
+ const testLink=item=>{setConnections(list=>list.map(entry=>entry.id===item.id?{...entry,linkStatus:'有效',credential:'已設定（測試讀取成功）'}:entry));setNotice(`已測試 ${linkTitle(item)}：連線有效。這是示範流程。`)};
  const saveProject=next=>{setProjects(list=>list.some(item=>item.id===next.id)?list.map(item=>item.id===next.id?next:item):[...list,{...next,id:crypto.randomUUID(),status:'draft',enabled:false}]);setCreating(false);setEditing(null);setNotice(`已儲存 ${next.name}`)};
  return <div className="market-shell management"><WorkspaceRail active="專案 Agent"/>{project?<ProjectDetail project={project} onBack={()=>setSelected(null)} onEdit={()=>setEditing(project)}/>:<main>
   <header className="page-heading"><div><h1>專案 Agent</h1><p>建立專案、管理成員與資料來源，並檢查連線狀態。</p></div><div className="heading-actions"><Button onClick={refresh}><RefreshCw size={16}/>重新整理</Button>{tab==='projects'&&<Button variant="primary" onClick={()=>setCreating(true)}><Plus size={16}/>建立專案</Button>}</div></header>
   <nav className="manage-tabs button-tabs project-tabs" aria-label="專案 Agent 分類"><button type="button" className={tab==='projects'?'active':''} aria-pressed={tab==='projects'} onClick={()=>setTab('projects')}>專案</button><button type="button" className={tab==='connections'?'active':''} aria-pressed={tab==='connections'} onClick={()=>setTab('connections')}>連線</button></nav>
   {notice&&<p role="status" className="manage-alert">{notice}</p>}
   {tab==='projects'&&<div className="dataset-table-wrap"><table className="dataset-table project-table"><thead><tr><th>名稱</th><th>Jira 專案代碼</th><th>狀態</th><th>發佈對象</th><th>程式庫數量</th></tr></thead><tbody>{projects.map(item=><tr key={item.id}><td><button type="button" className="table-title" onClick={()=>setSelected(item.id)}>{item.name}</button></td><td>{item.jira||'—'}</td><td>{publishLabel(item)}</td><td>{accessLabel(item.access)}</td><td>{item.repos.length}</td></tr>)}</tbody></table></div>}
-  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="mcp-list">{services.map(service=>{const app=apps[service.id]||{};return <article className="mcp-card clickable" key={service.id} role="button" tabIndex={0} onClick={()=>setAdding({service:service.id,...app})} onKeyDown={event=>{if(event.key==='Enter')setAdding({service:service.id,...app})}}><header><span className="tile provider-tile"><ProviderLogo id={service.id}/></span><div><h3>{service.name}</h3><div className="mcp-chips"><span>OAuth</span><span className={app.hasCredential?'mcp-status ok':''}>{app.hasCredential?'憑證已設定':'尚未設定'}</span></div></div></header><p className="mcp-url">{service.redirect}</p><p>{service.kind}{app.site?` · ${app.site}`:''}</p></article>})}</div></section><section><h2>已設定的連線</h2><div className="manage-grid connection-grid">{connections.map(item=><article className="manage-card clickable" key={item.id} role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter')setLinkEditor(item)}}><header><span className="tile provider-tile"><ProviderLogo id={item.provider}/></span><h3>{linkTitle(item)}</h3></header><div className="manage-meta"><span className="manage-tag">存取方式 · {item.auth}</span><span className="manage-tag">維護人 · {item.maintainer}</span></div></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
+  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="mcp-list">{services.map(service=>{const app=apps[service.id]||{};return <article className="mcp-card clickable" key={service.id} role="button" tabIndex={0} onClick={()=>setAdding({service:service.id,...app})} onKeyDown={event=>{if(event.key==='Enter')setAdding({service:service.id,...app})}}><header><span className="tile provider-tile"><ProviderLogo id={service.id}/></span><div><h3>{service.name}</h3><div className="mcp-chips"><span>OAuth</span><span className={app.hasCredential?'mcp-status ok':''}>{app.hasCredential?'憑證已設定':'尚未設定'}</span></div></div></header><p className="mcp-url">{service.redirect}</p><p>{service.kind}{app.site?` · ${app.site}`:''}</p><p className="service-limit">{service.limit}</p></article>})}</div></section><section><h2>已設定的連線</h2><div className="manage-grid connection-grid">{connections.map(item=><article className="manage-card" key={item.id}><div className="saved-link" role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();setLinkEditor(item)}}}><header><span className="tile provider-tile"><ProviderLogo id={item.provider}/></span><h3>{linkTitle(item)}</h3></header><div className="manage-meta"><span className="manage-tag">存取方式 · {item.auth}</span><span className="manage-tag">維護人 · {item.maintainer}</span></div></div><Button className="link-test" onClick={()=>testLink(item)}>測試連線</Button></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
  </main>}
  {creating&&<ProjectForm initial={blankProject()} connections={connections} onClose={()=>setCreating(false)} onSave={saveProject}/>}
  {editing&&<ProjectForm initial={editing} connections={connections} onClose={()=>setEditing(null)} onSave={project=>{saveProject(project);setSelected(project.id)}}/>}
  {adding&&<ConnectionForm initial={adding} onGuide={()=>setGuide(services.find(item=>item.id===adding.service))} onConnect={()=>setNotice(`這是示範流程，尚未真正連到 ${services.find(item=>item.id===adding.service).name}。`)} onClose={()=>setAdding(null)} onSave={item=>{setApps(current=>({...current,[item.service]:{clientId:item.clientId,site:item.site,maintainer:item.maintainer,expires:item.expires,hasCredential:true}}));setAdding(null);setNotice(`已儲存 ${item.serviceName}`)}}/>}
- {linkEditor&&<SavedLinkDialog link={linkEditor} onClose={()=>setLinkEditor(null)} onSave={item=>{setConnections(list=>list.map(entry=>entry.id===item.id?item:entry));setLinkEditor(null);setNotice(`已儲存 ${item.title}`)}} onDelete={id=>{setConnections(list=>list.filter(entry=>entry.id!==id));setLinkEditor(null);setNotice('已刪除連線')}} onTest={item=>{setConnections(list=>list.map(entry=>entry.id===item.id?item:entry));setNotice(`已測試 ${item.title}：連線有效。這是示範流程。`)}}/>}
+ {linkEditor&&<SavedLinkDialog link={linkEditor} onClose={()=>setLinkEditor(null)} onSave={item=>{setConnections(list=>list.map(entry=>entry.id===item.id?item:entry));setLinkEditor(null);setNotice(`已儲存 ${item.title}`)}} onDelete={id=>{setConnections(list=>list.filter(entry=>entry.id!==id));setLinkEditor(null);setNotice('已刪除連線')}}/>}
  {guide&&<Dialog title={`${guide.name} 註冊教學`} description={guide.kind} onClose={()=>setGuide(null)} footer={<Button variant="primary" onClick={()=>setGuide(null)}>知道了</Button>}><ol className="guide-steps">{guide.guide.map(step=><li key={step}>{step}</li>)}</ol></Dialog>}
  </div>;
 }
