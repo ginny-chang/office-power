@@ -24,10 +24,14 @@ html .connection-card .op-button.text-button:hover,html .connection-form .op-but
 .connection-page{display:grid;gap:var(--sp-8)}
 .connection-page h2{margin:0 0 var(--sp-4);font:var(--t-title)}
 .saved-connection{display:grid;gap:var(--sp-4);width:100%;padding:var(--sp-6);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card);text-align:left;cursor:pointer}
+.saved-connection-head{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
 .saved-connection h3{margin:0;font:var(--t-title)}
-.saved-connection p{margin:0;font:var(--t-label);color:var(--ink-2);overflow-wrap:anywhere}
 .saved-connection:hover{box-shadow:var(--shadow-float)}
-.connection-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-4) var(--sp-6);width:100%}
+.provider-logo{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;flex:none;border-radius:var(--r);background:var(--surface-2)}
+.provider-github{color:#181717}
+.provider-gitlab{color:#e24329}
+.provider-jira{color:#2684ff}
+.connection-meta{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4) var(--sp-6);width:100%}
 .connection-meta small{display:block;margin-bottom:4px;color:var(--ink-3);font:var(--t-meta)}
 .connection-meta strong{font:var(--t-label);font-weight:500;color:var(--ink)}
 .table-title{padding:0;border:0;background:none;font:inherit;font-weight:600;color:var(--ink);cursor:pointer}

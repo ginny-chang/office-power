@@ -2,6 +2,7 @@ import {AdminOnly} from '../src-shared/UserRole.jsx';
 import React,{useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {ChevronDown,ChevronLeft,ChevronRight,Info,Plus,RefreshCw} from 'lucide-react';
+import {IconBrandGithub,IconBrandGitlab,IconBrandJira} from '@tabler/icons-react';
 import {Button,Dialog,Input} from '../src-shared/ui/index.jsx';
 import WorkspaceRail from '../src-shared/WorkspaceRail.jsx';
 import useLocalData from '../src-shared/useLocalData.js';
@@ -37,6 +38,8 @@ const seedConnections=[
 const blankProject=()=>({name:'',code:'',access:'all',jira:'',note:'',connection:'none',skills:0,members:[],repos:[]});
 const accessLabel=id=>groups.find(([value])=>value===id)?.[1]||id;
 const publishLabel=project=>project.status==='published'?(project.enabled?'已發佈':'未啟用'):'草稿';
+const providerLogos={github:IconBrandGithub,gitlab:IconBrandGitlab,jira:IconBrandJira};
+function ProviderLogo({id,size=22}){const Logo=providerLogos[id]||IconBrandJira;return <span className={`provider-logo provider-${id}`} aria-hidden="true"><Logo size={size}/></span>}
 const sections=[['overview','概覽'],['members','成員'],['repos','程式庫'],['skills','技能'],['jira','Jira 資料檢查'],['library','知識庫']];
 const skillPacks=[
  {name:'project-assistant',meta:'手動授予 · 必選'},
@@ -223,7 +226,7 @@ function App(){
   <nav className="manage-tabs button-tabs project-tabs" aria-label="專案 Agent 分類"><button type="button" className={tab==='projects'?'active':''} aria-pressed={tab==='projects'} onClick={()=>setTab('projects')}>專案</button><button type="button" className={tab==='connections'?'active':''} aria-pressed={tab==='connections'} onClick={()=>setTab('connections')}>連線</button></nav>
   {notice&&<p role="status" className="manage-alert">{notice}</p>}
   {tab==='projects'&&<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>名稱</th><th>Jira 專案代碼</th><th>狀態</th><th>發佈對象</th><th>程式庫數量</th></tr></thead><tbody>{projects.map(item=><tr key={item.id}><td><button type="button" className="table-title" onClick={()=>setSelected(item.id)}>{item.name}</button></td><td>{item.jira||'—'}</td><td>{publishLabel(item)}</td><td>{accessLabel(item.access)}</td><td>{item.repos.length}</td></tr>)}</tbody></table></div>}
-  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="setup-grid">{services.map(service=>{const app=apps[service.id]||{};return <button type="button" className="setup-card" key={service.id} onClick={()=>setAdding({service:service.id,...app})}><span className="setup-title">{service.name}</span><span className="setup-kind">{service.kind}</span><small>{app.hasCredential?'憑證已設定':'尚未設定憑證'}{app.site?` · ${app.site}`:''}</small></button>})}</div></section><section><h2>已設定的連線</h2><div className="project-list">{connections.map(item=><article className="saved-connection" key={item.id} role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter')setLinkEditor(item)}}><h3>{item.title}</h3><p>{item.url}</p><div className="connection-meta"><div><small>授權方式</small><strong>{item.auth}</strong></div><div><small>{item.auth==='存取權杖'?'存取權杖':'授權帳號'}</small><strong>{item.auth==='存取權杖'?item.credential:item.account}</strong></div><div><small>連線狀態</small><strong>{item.linkStatus}</strong></div><div><small>憑證狀態</small><strong>{item.credential}</strong></div><div><small>維護人</small><strong>{item.maintainer}</strong></div><div><small>到期日</small><strong>{item.expires||'—'}</strong></div></div><p className="field-hint">{item.note}</p></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
+  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="setup-grid">{services.map(service=>{const app=apps[service.id]||{};return <button type="button" className="setup-card" key={service.id} onClick={()=>setAdding({service:service.id,...app})}><span className="saved-connection-head"><ProviderLogo id={service.id}/><span className="setup-title">{service.name}</span></span><span className="setup-kind">{service.kind}</span><small>{app.hasCredential?'憑證已設定':'尚未設定憑證'}{app.site?` · ${app.site}`:''}</small></button>})}</div></section><section><h2>已設定的連線</h2><div className="project-list">{connections.map(item=><article className="saved-connection" key={item.id} role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter')setLinkEditor(item)}}><header className="saved-connection-head"><ProviderLogo id={item.provider}/><h3>{item.title}</h3></header><div className="connection-meta"><div><small>存取方式</small><strong>{item.auth}</strong></div><div><small>維護人</small><strong>{item.maintainer}</strong></div></div></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
  </main>}
  {creating&&<ProjectForm initial={blankProject()} connections={connections} onClose={()=>setCreating(false)} onSave={saveProject}/>}
  {editing&&<ProjectForm initial={editing} connections={connections} onClose={()=>setEditing(null)} onSave={project=>{saveProject(project);setSelected(project.id)}}/>}
