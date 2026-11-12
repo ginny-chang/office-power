@@ -379,3 +379,7 @@ html body .conversation .suggestions .op-button span{min-width:0}
 .alert-reply ul{margin:0;padding-left:18px}
 .alert-reply li{font:var(--t-label);color:var(--ink)}
 .alert-reply li+li{margin-top:4px}
+
+/* Agent tiles show the character portrait edge to edge */
+.agent-app-icon{overflow:hidden;padding:0}
+.chat-welcome .welcome-icon{overflow:hidden;background:none}

@@ -2,6 +2,9 @@ import {AdminOnly} from '../src-shared/UserRole.jsx';
 import React,{useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {ChevronDown,ChevronLeft,ChevronRight,Info,Plus,RefreshCw} from 'lucide-react';
+import githubLogo from './logos/github.svg';
+import gitlabLogo from './logos/gitlab.svg';
+import jiraLogo from './logos/jira.svg';
 import {Button,Dialog,Input} from '../src-shared/ui/index.jsx';
 import WorkspaceRail from '../src-shared/WorkspaceRail.jsx';
 import useLocalData from '../src-shared/useLocalData.js';
@@ -18,18 +21,27 @@ const services=[
 ];
 const groups=[['all','所有員工'],['nhi','健保署']];
 const seedProjects=[
- {id:'flir',name:'FLIR',code:'flir',status:'published',enabled:true,access:'all',jira:'FM',note:'',connection:'c1',skills:97,members:['Ginny','King'],repos:[{id:'fr1',name:'flir-firmware',branch:'main'},{id:'fr2',name:'flir-cloud',branch:'main'}]},
+ {id:'flir',name:'FLIR',code:'flir',status:'published',enabled:true,access:'all',jira:'FM',note:'',connection:'jira1',skills:97,members:['Ginny','King'],repos:[{id:'fr1',name:'flir-firmware',branch:'main'},{id:'fr2',name:'flir-cloud',branch:'main'}]},
  {id:'p1',name:'giant-bpm',code:'gbpm',status:'published',enabled:true,access:'all',jira:'DEMO',note:'',connection:'none',skills:12,members:['Ginny'],repos:[{id:'r1',name:'giant-bpm',branch:'main'},{id:'r2',name:'giant-bpm-web',branch:'main'}]},
  {id:'p2',name:'捷安特中台',code:'gmp',status:'published',enabled:true,access:'all',jira:'OPS',note:'',connection:'none',skills:8,members:['Alison'],repos:[{id:'r3',name:'gmp-api',branch:'main'},{id:'r4',name:'gmp-web',branch:'main'}]},
  {id:'p3',name:'健保署',code:'nhi',status:'draft',enabled:false,access:'nhi',jira:'NHI',note:'',connection:'none',skills:4,members:['Dylan'],repos:[{id:'r5',name:'nhi-portal',branch:'main'}]},
- {id:'p4',name:'健保署',code:'nhi-v2',status:'published',enabled:true,access:'all',jira:'NHI',note:'',connection:'c1',skills:6,members:['Ginny','Ramble'],repos:[{id:'r6',name:'nhi-v2',branch:'main'}]},
+ {id:'p4',name:'健保署',code:'nhi-v2',status:'published',enabled:true,access:'all',jira:'NHI',note:'',connection:'jira1',skills:6,members:['Ginny','Ramble'],repos:[{id:'r6',name:'nhi-v2',branch:'main'}]},
 ];
+const seedApps={
+ jira:{clientId:'ZtnqwBRU0CnarJoXxU5xclyBUntHofkx',site:'dt360.atlassian.net',maintainer:'Ramble Lo',expires:'',hasCredential:true},
+ gitlab:{clientId:'bct-office-power',site:'gitlab.com',maintainer:'BCT-Ramble',expires:'',hasCredential:true},
+};
+const oauthNote='更新權限（例如新增 scope）時請按重新連接，不要刪除後重建；重建會讓既有專案的儲存庫失去連線。';
 const seedConnections=[
- {id:'c1',service:'jira',serviceName:'Atlassian (Jira Cloud) · OAuth App 設定',clientId:'ZtnqwBRU0CnarJoXxU5xclyBUntHofkx',redirectUri:services[0].redirect,site:'dt360.atlassian.net',hasCredential:true,maintainer:'ginny@example.com',expires:''},
- {id:'c2',service:'gitlab',serviceName:'GitLab.com · OAuth App 設定',clientId:'bct-office-power',redirectUri:services[1].redirect,site:'gitlab.com',hasCredential:true,maintainer:'ginny@example.com',expires:''},
+ {id:'gh1',provider:'github',title:'github · github.com/bct-tpe',url:'https://github.com/',auth:'存取權杖',account:'不適用',linkStatus:'有效',credential:'已設定（尚不代表測試成功）',maintainer:'BCT-Ramble',expires:'2027-02-03T00:00:00.000Z',note:'GitHub 僅支援 github.com。PAT 請選擇專案程式庫，授予 Contents 與 Pull requests 讀寫、Metadata 讀取權限。測試僅驗證讀取。'},
+ {id:'gl1',provider:'gitlab',title:'gitlab · gitlab.com/bct-taipei',url:'https://gitlab.com/',auth:'OAuth',account:'BCT-Ramble',linkStatus:'有效',credential:'已設定（尚不代表測試成功）',maintainer:'BCT-Ramble',expires:'',note:oauthNote},
+ {id:'jira1',provider:'jira',title:'jira · dt360.atlassian.net',url:'https://api.atlassian.com/ex/jira/0e1e0801-fa4b-4e05-ab54-6c591bb070d5/',auth:'OAuth',account:'Ramble Lo',linkStatus:'有效',credential:'已設定（尚不代表測試成功）',maintainer:'Ramble Lo',expires:'',note:oauthNote},
 ];
 const blankProject=()=>({name:'',code:'',access:'all',jira:'',note:'',connection:'none',skills:0,members:[],repos:[]});
 const accessLabel=id=>groups.find(([value])=>value===id)?.[1]||id;
+const publishLabel=project=>project.status==='published'?(project.enabled?'已發佈':'未啟用'):'草稿';
+const providerLogos={github:githubLogo,gitlab:gitlabLogo,jira:jiraLogo};
+function ProviderLogo({id}){return <img className="provider-logo" src={providerLogos[id]||jiraLogo} alt="" width={22} height={22}/>}
 const sections=[['overview','概覽'],['members','成員'],['repos','程式庫'],['skills','技能'],['jira','Jira 資料檢查'],['library','知識庫']];
 const skillPacks=[
  {name:'project-assistant',meta:'手動授予 · 必選'},
@@ -87,7 +99,7 @@ function ProjectForm({initial,connections,onClose,onSave}){
    <label>存取群組<Input as="select" value={draft.access} onChange={e=>set({access:e.target.value})}>{groups.map(([value,label])=><option key={value} value={value}>{label}</option>)}</Input><p className="field-hint">{draft.access==='all'?'所有員工都可以使用此專案的 Agent，不需要管理成員。':'只有這個群組的成員可以使用此專案的 Agent。'}</p></label>
    <label>Jira 專案代碼<Input value={draft.jira} onChange={e=>set({jira:e.target.value})} placeholder="DEMO, OPS"/><p className="field-hint">以逗號分隔，例如 DEMO, OPS</p></label>
    <label>備註<Input as="textarea" rows={3} value={draft.note} onChange={e=>set({note:e.target.value})} placeholder="尚無備註"/></label>
-   <label>連線<Input as="select" value={draft.connection} onChange={e=>set({connection:e.target.value})}><option value="none">不使用</option>{connections.map(item=><option key={item.id} value={item.id}>{item.serviceName}</option>)}</Input><p className="field-hint">專案的 sandbox 以此連線的權限使用 gh 與 git。</p></label>
+   <label>連線<Input as="select" value={draft.connection} onChange={e=>set({connection:e.target.value})}><option value="none">不使用</option>{connections.map(item=><option key={item.id} value={item.id}>{item.title||item.serviceName}</option>)}</Input><p className="field-hint">專案的 sandbox 以此連線的權限使用 gh 與 git。</p></label>
    <section>
     <h3>程式庫</h3>
     <p className="field-hint">Agent 可讀取任意分支、tag 或 commit；未指定時使用程式庫的預設分支。</p>
@@ -133,7 +145,7 @@ function ProjectDetail({project,onBack,onEdit,onConnections}){
  </main>;
 }
 
-function ConnectionForm({initial,onClose,onSave}){
+function ConnectionForm({initial,onClose,onSave,onGuide}){
  const [service,setService]=useState(initial?.service||'jira');
  const [clientId,setClientId]=useState(initial?.clientId||'');
  const [secret,setSecret]=useState('');
@@ -141,10 +153,11 @@ function ConnectionForm({initial,onClose,onSave}){
  const [maintainer,setMaintainer]=useState(initial?.maintainer||'');
  const [expires,setExpires]=useState(initial?.expires||'');
  const [error,setError]=useState('');
+ const [copied,setCopied]=useState(false);
  const current=services.find(item=>item.id===service);
  const close=()=>{setSecret('');onClose()};
  const save=()=>{
-  if(!clientId.trim()||!maintainer.trim()||(!initial&&!secret.trim())){setError('請填寫用戶端識別、維護人，以及這次要更新的憑證。');return}
+  if(!clientId.trim()||!maintainer.trim()||(!initial?.hasCredential&&!secret.trim())){setError('請填寫用戶端識別、維護人，以及這次要更新的憑證。');return}
   onSave({id:initial?.id||crypto.randomUUID(),service,serviceName:`${current.name} · ${current.kind}`,clientId:clientId.trim(),redirectUri:current.redirect,site:site.trim(),maintainer:maintainer.trim(),expires,hasCredential:true});
   setSecret('');
  };
@@ -152,6 +165,7 @@ function ConnectionForm({initial,onClose,onSave}){
   <div className="project-form connection-form">
    <label>服務<Input as="select" value={service} disabled={!!initial} onChange={e=>setService(e.target.value)}>{services.map(item=><option key={item.id} value={item.id}>{item.name} · {item.kind}</option>)}</Input></label>
    <label>{service==='jira'?'OAuth Client ID':'Application ID'}<Input value={clientId} onChange={e=>setClientId(e.target.value)}/></label>
+   <div className="connection-actions"><Button variant="ghost" className="guide-chip" onClick={onGuide}><Info size={14} aria-hidden="true"/>註冊教學</Button><Button variant="ghost" className="text-button" onClick={()=>navigator.clipboard?.writeText(current.redirect).then(()=>setCopied(true)).catch(()=>setError('這個瀏覽器無法複製'))}>{copied?'已複製':'複製網址'}</Button></div>
    <p className="field-hint">Callback URL 建立後固定：{current.redirect}</p>
    <label>{service==='jira'?'Jira 網站':'GitLab 網站'}<Input value={site} onChange={e=>setSite(e.target.value)} placeholder={service==='jira'?'your-domain.atlassian.net':'gitlab.com'}/></label>
    <label>憑證維護人<Input value={maintainer} onChange={e=>setMaintainer(e.target.value)} placeholder="name@example.com"/></label>
@@ -163,29 +177,63 @@ function ConnectionForm({initial,onClose,onSave}){
  </Dialog>;
 }
 
+function SavedLinkDialog({link,onClose,onSave,onDelete,onTest}){
+ const [draft,setDraft]=useState(link);
+ const [error,setError]=useState('');
+ const set=patch=>setDraft(value=>({...value,...patch}));
+ const save=()=>{
+  if(!draft.title.trim()||!draft.url.trim()||!draft.maintainer.trim()){setError('請填寫名稱、網址與維護人。');return}
+  onSave({...draft,title:draft.title.trim(),url:draft.url.trim(),maintainer:draft.maintainer.trim()});
+ };
+ const test=()=>{const next={...draft,linkStatus:'有效',credential:'已設定（測試讀取成功）'};setDraft(next);onTest(next)};
+ return <Dialog title="編輯連線" description={draft.title} size="wide" onClose={onClose} footer={<><Button variant="danger" onClick={()=>onDelete(draft.id)}>刪除</Button><Button onClick={test}>測試連線</Button><Button onClick={onClose}>取消</Button><Button variant="primary" onClick={save}>儲存</Button></>}>
+  <div className="project-form">
+   <label>名稱<Input value={draft.title} onChange={event=>set({title:event.target.value})}/></label>
+   <label>網址<Input value={draft.url} onChange={event=>set({url:event.target.value})}/></label>
+   <div className="project-pair">
+    <label>授權方式<Input as="select" value={draft.auth} onChange={event=>set({auth:event.target.value})}><option>OAuth</option><option>存取權杖</option></Input></label>
+    <label>授權帳號<Input value={draft.account} onChange={event=>set({account:event.target.value})}/></label>
+   </div>
+   <div className="project-pair">
+    <label>連線狀態<Input value={draft.linkStatus} readOnly/></label>
+    <label>憑證狀態<Input value={draft.credential} readOnly/></label>
+   </div>
+   <div className="project-pair">
+    <label>維護人<Input value={draft.maintainer} onChange={event=>set({maintainer:event.target.value})}/></label>
+    <label>到期日<Input value={draft.expires} onChange={event=>set({expires:event.target.value})} placeholder="選填"/></label>
+   </div>
+   <p className="field-hint">{draft.note}</p>
+   {error&&<p className="mcp-error" role="alert">{error}</p>}
+  </div>
+ </Dialog>;
+}
+
 function App(){
- const [projects,setProjects]=useLocalData('office-projects-v2',seedProjects);
- const [connections,setConnections]=useLocalData('office-project-connections-v2',seedConnections);
+ const [projects,setProjects]=useLocalData('office-projects-v3',seedProjects);
+ const [connections,setConnections]=useLocalData('office-project-connections-v3',seedConnections);
+ const [apps,setApps]=useLocalData('office-connection-apps-v1',seedApps);
  const [tab,setTab]=useState(()=>location.pathname.endsWith('connections.html')?'connections':'projects');
  const [creating,setCreating]=useState(false);
  const [editing,setEditing]=useState(null);
  const [selected,setSelected]=useState(null);
  const [adding,setAdding]=useState(null);
+ const [linkEditor,setLinkEditor]=useState(null);
  const [guide,setGuide]=useState(null);
  const [notice,setNotice]=useState('');
  const project=projects.find(item=>item.id===selected);
  const refresh=()=>setNotice(tab==='projects'?'已重新整理專案':'已重新整理連線');
  const saveProject=next=>{setProjects(list=>list.some(item=>item.id===next.id)?list.map(item=>item.id===next.id?next:item):[...list,{...next,id:crypto.randomUUID(),status:'draft',enabled:false}]);setCreating(false);setEditing(null);setNotice(`已儲存 ${next.name}`)};
  return <div className="market-shell management"><WorkspaceRail active="專案 Agent"/>{project?<ProjectDetail project={project} onBack={()=>setSelected(null)} onEdit={()=>setEditing(project)} onConnections={()=>{setSelected(null);setTab('connections')}}/>:<main>
-  <header className="page-heading"><div><h1>專案 Agent</h1><p>建立專案、管理成員與資料來源，並檢查連線狀態。</p></div><div className="heading-actions"><Button onClick={refresh}><RefreshCw size={16}/>重新整理</Button>{tab==='projects'?<Button variant="primary" onClick={()=>setCreating(true)}><Plus size={16}/>建立專案</Button>:<Button variant="primary" onClick={()=>setAdding({})}>新增連線</Button>}</div></header>
+  <header className="page-heading"><div><h1>專案 Agent</h1><p>建立專案、管理成員與資料來源，並檢查連線狀態。</p></div><div className="heading-actions"><Button onClick={refresh}><RefreshCw size={16}/>重新整理</Button>{tab==='projects'&&<Button variant="primary" onClick={()=>setCreating(true)}><Plus size={16}/>建立專案</Button>}</div></header>
   <nav className="manage-tabs button-tabs project-tabs" aria-label="專案 Agent 分類"><button type="button" className={tab==='projects'?'active':''} aria-pressed={tab==='projects'} onClick={()=>setTab('projects')}>專案</button><button type="button" className={tab==='connections'?'active':''} aria-pressed={tab==='connections'} onClick={()=>setTab('connections')}>連線</button></nav>
   {notice&&<p role="status" className="manage-alert">{notice}</p>}
-  {tab==='projects'&&<div className="manage-grid">{projects.map(item=><article key={item.id} className="manage-card clickable" role="button" tabIndex={0} onClick={()=>setSelected(item.id)} onKeyDown={event=>{if(event.key==='Enter')setSelected(item.id)}}><h3>{item.name}</h3><p>{item.code} · {item.status} · {accessLabel(item.access)}</p><small>程式庫 {item.repos.length}</small></article>)}</div>}
-  {tab==='connections'&&<div className="project-list">{connections.map(item=>{const service=services.find(entry=>entry.id===item.service);const copy=()=>navigator.clipboard?.writeText(item.redirectUri).then(()=>setNotice('已複製 Callback URL')).catch(()=>setNotice('這個瀏覽器無法複製'));return <article className="connection-card" key={item.id}><header className="connection-head"><h3>{item.serviceName}</h3><Button variant="ghost" className="text-button" onClick={copy}>複製網址</Button></header><Button variant="ghost" className="guide-chip" onClick={()=>setGuide(service)}><Info size={14} aria-hidden="true"/>註冊教學</Button><label>Callback URL<Input readOnly value={item.redirectUri}/></label><p>Client ID: {item.clientId}</p><p>{item.hasCredential?'Secret 已設定':'Secret 尚未設定'}</p><label>{item.service==='jira'?'Jira 網站':'GitLab 網站'}<Input value={item.site} readOnly/></label><div className="connection-actions"><Button onClick={()=>setAdding(item)}>更新設定</Button><Button variant="primary" onClick={()=>setNotice(`這是示範流程，尚未真正連到 ${service.name}。`)}>連接 {item.service==='jira'?'Atlassian':'GitLab'}</Button></div></article>})}</div>}
+  {tab==='projects'&&<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>名稱</th><th>Jira 專案代碼</th><th>狀態</th><th>發佈對象</th><th>程式庫數量</th></tr></thead><tbody>{projects.map(item=><tr key={item.id}><td><button type="button" className="table-title" onClick={()=>setSelected(item.id)}>{item.name}</button></td><td>{item.jira||'—'}</td><td>{publishLabel(item)}</td><td>{accessLabel(item.access)}</td><td>{item.repos.length}</td></tr>)}</tbody></table></div>}
+  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="setup-grid">{services.map(service=>{const app=apps[service.id]||{};return <button type="button" className="setup-card" key={service.id} onClick={()=>setAdding({service:service.id,...app})}><span className="saved-connection-head"><ProviderLogo id={service.id}/><span className="setup-title">{service.name}</span></span><span className="setup-kind">{service.kind}</span><small>{app.hasCredential?'憑證已設定':'尚未設定憑證'}{app.site?` · ${app.site}`:''}</small></button>})}</div></section><section><h2>已設定的連線</h2><div className="manage-grid connection-grid">{connections.map(item=><article className="manage-card clickable" key={item.id} role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter')setLinkEditor(item)}}><header><span className="tile provider-tile"><ProviderLogo id={item.provider}/></span><h3>{item.title}</h3></header><div className="manage-meta"><span className="manage-tag">存取方式 · {item.auth}</span><span className="manage-tag">維護人 · {item.maintainer}</span></div></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
  </main>}
  {creating&&<ProjectForm initial={blankProject()} connections={connections} onClose={()=>setCreating(false)} onSave={saveProject}/>}
  {editing&&<ProjectForm initial={editing} connections={connections} onClose={()=>setEditing(null)} onSave={project=>{saveProject(project);setSelected(project.id)}}/>}
- {adding&&<ConnectionForm initial={adding.id?adding:null} onClose={()=>setAdding(null)} onSave={item=>{setConnections(list=>list.some(entry=>entry.id===item.id)?list.map(entry=>entry.id===item.id?item:entry):[...list,item]);setAdding(null);setNotice(`已儲存 ${item.serviceName}`)}}/>}
+ {adding&&<ConnectionForm initial={adding} onGuide={()=>setGuide(services.find(item=>item.id===adding.service))} onClose={()=>setAdding(null)} onSave={item=>{setApps(current=>({...current,[item.service]:{clientId:item.clientId,site:item.site,maintainer:item.maintainer,expires:item.expires,hasCredential:true}}));setAdding(null);setNotice(`已儲存 ${item.serviceName}`)}}/>}
+ {linkEditor&&<SavedLinkDialog link={linkEditor} onClose={()=>setLinkEditor(null)} onSave={item=>{setConnections(list=>list.map(entry=>entry.id===item.id?item:entry));setLinkEditor(null);setNotice(`已儲存 ${item.title}`)}} onDelete={id=>{setConnections(list=>list.filter(entry=>entry.id!==id));setLinkEditor(null);setNotice('已刪除連線')}} onTest={item=>{setConnections(list=>list.map(entry=>entry.id===item.id?item:entry));setNotice(`已測試 ${item.title}：連線有效。這是示範流程。`)}}/>}
  {guide&&<Dialog title={`${guide.name} 註冊教學`} description={guide.kind} onClose={()=>setGuide(null)} footer={<Button variant="primary" onClick={()=>setGuide(null)}>知道了</Button>}><ol className="guide-steps">{guide.guide.map(step=><li key={step}>{step}</li>)}</ol></Dialog>}
  </div>;
 }
