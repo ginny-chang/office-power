@@ -52,6 +52,7 @@ html .connection-actions>.op-button{width:auto;flex:none}
 .skill-line span{font:var(--t-label);color:var(--ink)}
 .skill-line small{color:var(--ink-3);font:var(--t-meta)}
 .detail-disclosure{display:inline-flex;align-items:center;gap:6px;padding:0;border:0;background:none;font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
+.dataset-table tbody tr:hover td{background:var(--frame)}
 .dataset-table tbody tr:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
 .project-tabs{margin:0 0 var(--sp-6)}
 .heading-actions{display:flex;gap:var(--sp-2);align-items:center}
@@ -60,10 +61,17 @@ html .connection-actions>.op-button{width:auto;flex:none}
 .project-detail-head{align-items:flex-start}
 .project-detail-head .overview-card{margin-top:var(--sp-4);padding:0;background:none;box-shadow:none}
 .overview-card .manage-meta{margin:0;flex-wrap:wrap}
-.member-note{max-width:640px;margin:0;font:var(--t-body);color:var(--ink-2)}
+.member-card{max-width:640px;padding:var(--sp-6);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
+.member-card h3{margin:0 0 var(--sp-2);font:var(--t-title)}
+.member-card p{margin:0;font:var(--t-body);color:var(--ink-2)}
+.overview-card .manage-tag.tag-access{background:var(--type-mint-tile);color:var(--type-mint-ink)}
+.overview-card .manage-tag.tag-jira{background:var(--type-aqua-tile);color:var(--type-aqua-ink)}
+.overview-card .manage-tag.tag-repo{background:var(--type-lavender-tile);color:var(--type-lavender-ink)}
+.overview-card .manage-tag.tag-skill{background:var(--type-lime-tile);color:var(--type-lime-ink)}
+.overview-card .manage-tag.tag-note{background:var(--type-peach-tile);color:var(--type-peach-ink)}
 .jira-toolbar{display:flex;align-items:center;gap:var(--sp-4)}
 .jira-toolbar .op-search{flex:none;width:280px;background:var(--surface)}
-.jira-toolbar .jira-limit{width:180px;flex:none}
+html body .jira-toolbar select.op-input.jira-limit:not([type=checkbox]){width:fit-content;max-width:none;field-sizing:content}
 .library-detail-head h2{margin:0;font:var(--t-title)}
 .library-detail-head p{margin:var(--sp-2) 0 0;font:var(--t-label);color:var(--ink-2)}
 .guide-steps{margin:0;padding-left:1.2em;display:grid;gap:var(--sp-4);font:var(--t-body);color:var(--ink)}
