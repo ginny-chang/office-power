@@ -58,12 +58,12 @@ html .connection-actions>.op-button{width:auto;flex:none}
 .project-back{border:0;width:auto;height:var(--control-sm);display:inline-flex;align-items:center;gap:4px;margin:0 0 var(--sp-6) -4px;padding:0 var(--sp-2) 0 0;background:none;font:var(--t-label);font-weight:500;color:var(--ink-2);cursor:pointer}
 .project-back:hover{color:var(--ink)}
 .project-detail-head{align-items:flex-start}
-.overview-card{padding:var(--sp-4) var(--sp-6);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
+.project-detail-head .overview-card{margin-top:var(--sp-4);padding:0;background:none;box-shadow:none}
 .overview-card .manage-meta{margin:0;flex-wrap:wrap}
 .member-note{max-width:640px;margin:0;font:var(--t-body);color:var(--ink-2)}
-.jira-toolbar{display:flex;align-items:center;gap:var(--sp-4);width:100%}
-.jira-toolbar .op-search{flex:1;min-width:0;background:var(--surface)}
-.jira-limit{display:grid;gap:6px;width:140px;flex:none;font:var(--t-label);color:var(--ink-2)}
+.jira-toolbar{display:flex;align-items:center;gap:var(--sp-4)}
+.jira-toolbar .op-search{flex:none;width:280px;background:var(--surface)}
+.jira-toolbar .jira-limit{width:180px;flex:none}
 .library-detail-head h2{margin:0;font:var(--t-title)}
 .library-detail-head p{margin:var(--sp-2) 0 0;font:var(--t-label);color:var(--ink-2)}
 .guide-steps{margin:0;padding-left:1.2em;display:grid;gap:var(--sp-4);font:var(--t-body);color:var(--ink)}
