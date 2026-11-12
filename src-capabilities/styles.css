@@ -7,10 +7,7 @@
 /* Layout follows NOVA Apps: search in the heading over the third column (rules come from src-apps/styles.css),
    then one bar with the segmented tabs on the left and the primary action on the right. */
 .catalog-bar .bar-group{display:flex;gap:var(--sp-2);min-width:0}
-.catalog-bar .manage-tabs{flex:0 1 auto;min-width:0;display:inline-flex;gap:4px;margin:0;padding:0;border:0;border-radius:var(--r);background:var(--surface);overflow-x:auto;scrollbar-width:none}
-.catalog-bar .manage-tabs button{flex:none;height:var(--control);gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);white-space:nowrap}
-.catalog-bar .manage-tabs button:hover{background:var(--surface-2)}
-html body .catalog-bar nav.button-tabs>button.active,html body .catalog-bar nav.button-tabs>button[aria-pressed=true],html body .catalog-bar nav.button-tabs>button.active:hover,html body .catalog-bar nav.button-tabs>button[aria-pressed=true]:hover{background:var(--action);color:var(--on-ink)}
+.catalog-bar nav.button-tabs{display:inline-flex;flex:0 1 auto;min-width:0;margin:0}
 /* Second level: text tabs under the bar, the active one underlined */
 .management .manage-subnav{display:flex;gap:var(--sp-6);margin:0 0 var(--sp-6);padding:0;border-bottom:1px solid var(--line-strong)}
 .management .manage-subnav button{height:var(--control);margin-bottom:-1px;padding:0;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;font:var(--t-label);font-weight:500;color:var(--ink-2)}
@@ -101,7 +98,7 @@ html body .catalog-bar>.primary{margin-left:auto}
 @media(max-width:700px){.library-list-toolbar,.library-header-actions{flex-wrap:wrap}.library-file-row{flex-wrap:wrap}.library-file-row>div{flex-basis:calc(100% - 40px)}}
 
 .button-tabs{display:inline-flex;gap:4px;margin:0 0 var(--sp-6);padding:0;border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
-.button-tabs button{height:var(--control);margin:0;padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);white-space:nowrap;cursor:pointer}
+.button-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);height:var(--control);margin:0;padding:0 var(--sp-4);border:0;border-radius:var(--r);background:none;font:var(--t-label);font-weight:500;color:var(--ink);white-space:nowrap;cursor:pointer}
 html body nav.button-tabs>button.active,html body nav.button-tabs>button[aria-pressed=true],html body nav.button-tabs>button.active:hover,html body nav.button-tabs>button[aria-pressed=true]:hover{background:var(--action);color:var(--on-ink)}
 .button-tabs button:disabled,.button-tabs button.active:disabled{background:none;color:var(--ink-3);cursor:not-allowed}
 .mcp-list{display:grid;gap:var(--sp-4)}
@@ -144,8 +141,11 @@ html body nav.button-tabs>button.active,html body nav.button-tabs>button[aria-pr
 .dataset-table{width:100%;border-collapse:collapse;text-align:left}
 .dataset-table th,.dataset-table td{padding:14px 18px;border-bottom:1px solid var(--line);font:var(--t-label);color:var(--ink)}
 .dataset-table th{font:var(--t-meta);color:var(--ink-2);font-weight:500}
-.dataset-table tbody tr{cursor:pointer}
-.dataset-table tbody tr:hover td{background:var(--frame)}
+.dataset-table tbody tr.is-clickable{cursor:pointer}
+.dataset-table tbody tr.is-clickable:hover td{background:var(--frame)}
+.dataset-table tbody tr.is-clickable>td:first-child{font-weight:600}
+.dataset-table tbody tr.is-clickable:hover>td:first-child{text-decoration:underline;text-underline-offset:3px}
+.dataset-table tbody tr.is-clickable:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
 .dataset-table .skill-switch,.dataset-table .preview-delete{height:32px}
 .skill-lock{font:var(--t-meta);color:var(--ink-2)}
 .folder-import{display:grid;justify-items:center;gap:8px;padding:24px;border-radius:var(--r);background:var(--frame);text-align:center}

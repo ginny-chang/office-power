@@ -99,6 +99,7 @@ i.cost,i.input{background:var(--ink)}
 .usage-row:hover .usage-agent>i,.usage-row.expanded .usage-agent>i{background:var(--surface)}
 .usage-agent>span{display:grid;gap:2px;min-width:0}
 .usage-agent small{font:var(--t-meta);color:var(--ink-2)}
+.usage-row:hover .usage-agent strong{text-decoration:underline;text-underline-offset:3px}
 .usage-share{width:160px}
 .usage-share-bar{display:block;height:4px;margin-top:4px;border-radius:2px;background:var(--surface-3);overflow:hidden}
 .usage-share-bar i{display:block;height:100%;border-radius:2px;background:var(--ink)}
