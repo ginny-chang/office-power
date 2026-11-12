@@ -3,7 +3,7 @@ import {Canvas,useFrame,useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {ChevronLeft,ChevronRight,Plus,Settings} from 'lucide-react';
 import {BotLighting} from './office-bots.jsx';
-import {botVariantFor,isAgentAlert} from './bot-variants.js';
+import {agentRoleFor,isAgentAlert} from './bot-variants.js';
 import {RobotRow,ROW_PITCH} from './office-desk.jsx';
 import {OriginalBoard} from './office-original.jsx';
 import {AgentPortrait,AlertPoint} from './bot-avatar.jsx';
@@ -14,7 +14,7 @@ function AgentDock({agents,activeId,read,onFocus,onSettings,onAdd}){
   const selected=agent.id===activeId;
   const label=[agent.name,fresh?'有新動態':null,alert?'等待你':null].filter(Boolean).join('，');
   return <div key={agent.id} className={`agent-dock-item${selected?' is-selected':''}${fresh?' has-update':''}`} role="presentation">
-   <button type="button" role="option" aria-selected={selected} className="agent-dock-avatar" aria-label={label} onClick={()=>onFocus(agent.id)}><AgentPortrait variant={botVariantFor(agent)}/></button>
+   <button type="button" role="option" aria-selected={selected} className="agent-dock-avatar" aria-label={label} onClick={()=>onFocus(agent.id)}><AgentPortrait role={agentRoleFor(agent)}/></button>
    {alert&&<AlertPoint/>}
    {onSettings&&<button type="button" className="agent-dock-settings" aria-label={`設定 ${agent.name}`} onClick={()=>onSettings(agent.id)}><Settings size={16}/></button>}
   </div>;
@@ -72,8 +72,8 @@ export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],layo
  const focusIndex=Math.max(0,agents.findIndex(agent=>agent.id===focus?.id));
  const choose=useCallback(id=>setFocusId(id),[]);
  const settle=useCallback(index=>{const agent=agents[index];if(agent)setFocusId(agent.id)},[agents]);
- // The row sits a little below the middle of the stage, closer to the dock, instead of riding high under the toolbar
- const rowFrame=(w,h)=>{const base=props.frame?.(w,h)||{};return window.innerWidth>720?{...base,bottom:(base.bottom??0)-112}:base};
+ // The row leaves room under each agent for its card, between the toolbar and the dock
+ const rowFrame=(w,h)=>{const base=props.frame?.(w,h)||{};return window.innerWidth>720?{...base,bottom:(base.bottom??0)-24}:base};
  // The office has no dock under it, so it centres in the space below the toolbar rather than in the whole stage
  const boardFrame=(w,h)=>{const base=props.frame?.(w,h)||{};return window.innerWidth>720?{...base,top:156,bottom:36}:{...base,bottom:Math.min(base.bottom??0,88)}};
  const glProps={antialias:true,powerPreference:'high-performance'};
@@ -84,7 +84,6 @@ export default function Office({agents=[],onSelect,onSettings,onAdd,read=[],layo
    :<Canvas key="row" shadows dpr={[1,1.5]} frameloop={!visible?'never':props.reduced?'demand':'always'} camera={{position:[2,1.08,9.4],fov:42,near:.1,far:90}} gl={glProps} onCreated={onCreated}><RowScene {...props} frame={rowFrame} agents={agents} focusId={focus?.id} focusIndex={focusIndex} onSelect={onSelect} onSettle={settle} read={read}/></Canvas>}
   {!board&&<button type="button" className="agent-row-arrow is-prev" aria-label="往左看" disabled={focusIndex<=0} onClick={()=>agents[focusIndex-1]&&choose(agents[focusIndex-1].id)}><ChevronLeft size={22}/></button>}
   {!board&&<button type="button" className="agent-row-arrow is-next" aria-label="往右看" disabled={focusIndex>=agents.length-1} onClick={()=>agents[focusIndex+1]&&choose(agents[focusIndex+1].id)}><ChevronRight size={22}/></button>}
-  {!board&&focus&&<p className="agent-dock-caption"><strong>{focus.name}</strong><span>{focus.role}</span></p>}
   {!board&&<AgentDock agents={agents} activeId={focus?.id} read={read} onFocus={choose} onSettings={onSettings} onAdd={onAdd}/>}
  </div>;
 }

@@ -198,6 +198,11 @@ html .create-agent-icons{display:grid;grid-template-columns:repeat(12,minmax(0,1
 html .create-agent-icons button{height:var(--control);padding:0;border:0;border-radius:var(--r);background:var(--surface);box-shadow:inset 0 0 0 1px var(--line-strong);font-size:20px;line-height:1;cursor:pointer}
 html .create-agent-icons button:hover{background:var(--surface-2)}
 html .create-agent-icons button[aria-pressed=true]{background:var(--surface);box-shadow:inset 0 0 0 1px var(--ink)}
+/* The choices are character portraits: square tiles, so the whole character shows */
+html .create-agent-icons{display:flex;flex-wrap:wrap;gap:var(--sp-2)}
+html .create-agent-icons button{flex:none;width:56px;height:56px;overflow:hidden;padding:3px}
+html .create-agent-icons button[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--ink)}
+.agent-settings-identity>span,.agent-blueprint-identity>i,.usage-agent>i{overflow:hidden}
 html .create-agent-employees{display:grid;gap:var(--sp-2);margin-top:var(--sp-2);padding:var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2)}
 html .create-agent-employees>header{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2)}
 html .create-agent-employees>header strong{font:var(--t-body-strong);color:var(--ink)}
