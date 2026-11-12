@@ -103,6 +103,8 @@ html body nav.button-tabs>button.active,html body nav.button-tabs>button[aria-pr
 .button-tabs button:disabled,.button-tabs button.active:disabled{background:none;color:var(--ink-3);cursor:not-allowed}
 .mcp-list{display:grid;gap:var(--sp-4)}
 .mcp-card{padding:var(--sp-6);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-card)}
+.provider-tile,.mcp-card .provider-tile{width:48px;height:48px;display:grid;place-items:center;flex:none;border-radius:var(--r);background:var(--surface-2)}
+.provider-tile .provider-logo{width:22px;height:22px;display:block}
 .mcp-card header{display:flex;align-items:flex-start;gap:var(--sp-4)}
 .mcp-card h3{margin:0;font:var(--t-title)}
 .mcp-card header>div:first-of-type{flex:1;min-width:0}

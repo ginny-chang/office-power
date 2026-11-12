@@ -2,9 +2,7 @@ import {AdminOnly} from '../src-shared/UserRole.jsx';
 import React,{useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {ChevronLeft,Folder,Info,Plus,RefreshCw} from 'lucide-react';
-import githubLogo from './logos/github.svg';
-import gitlabLogo from './logos/gitlab.svg';
-import jiraLogo from './logos/jira.svg';
+import ProviderLogo from '../src-shared/ProviderLogo.jsx';
 import {Button,Dialog,Input,SearchBar} from '../src-shared/ui/index.jsx';
 import WorkspaceRail from '../src-shared/WorkspaceRail.jsx';
 import useLocalData from '../src-shared/useLocalData.js';
@@ -40,9 +38,7 @@ const seedConnections=[
 const blankProject=()=>({name:'',code:'',access:'all',jira:'',note:'',connection:'none',skills:0,members:[],repos:[]});
 const accessLabel=id=>groups.find(([value])=>value===id)?.[1]||id;
 const publishLabel=project=>project.status==='published'?(project.enabled?'已發佈':'未啟用'):'草稿';
-const providerLogos={github:githubLogo,gitlab:gitlabLogo,jira:jiraLogo};
 const linkTitle=item=>item.title.replace(/^(github|gitlab|jira|atlassian)\s*[·•|-]\s*/i,'');
-function ProviderLogo({id}){return <img className="provider-logo" src={providerLogos[id]||jiraLogo} alt="" width={22} height={22}/>}
 const sections=[['overview','概覽'],['members','成員'],['repos','程式庫'],['skills','技能'],['jira','Jira 資料檢查'],['library','知識庫']];
 const knowledgeFiles={
  flir:[
@@ -144,22 +140,21 @@ function ConnectionForm({initial,onClose,onSave,onGuide,onConnect}){
  const [copied,setCopied]=useState(false);
  const current=services.find(item=>item.id===service);
  const close=()=>{setSecret('');onClose()};
- const save=()=>{
+ const connectLabel=service==='jira'?'連接 Atlassian':'連接 GitLab';
+ const connect=()=>{
   if(!clientId.trim()){setError(service==='jira'?'請填寫 Client ID。':'請填寫 Application ID。');return}
   onSave({id:initial?.id||crypto.randomUUID(),service,serviceName:`${current.name} · ${current.kind}`,clientId:clientId.trim(),redirectUri:current.redirect,site:site.trim(),maintainer:maintainer.trim(),expires,hasCredential:true});
   setSecret('');
+  onConnect?.();
  };
- const connectLabel=service==='jira'?'連接 Atlassian':'連接 GitLab';
- return <Dialog title={`${current.name} · ${current.kind}`} size="wide" onClose={close} headerAction={<Button variant="ghost" className="guide-chip" onClick={onGuide}><Info size={14} aria-hidden="true"/>註冊教學</Button>}>
+ return <Dialog title={`${current.name} · ${current.kind}`} size="wide" onClose={close} headerAction={<Button variant="primary" onClick={onGuide}><Info size={16} aria-hidden="true"/>註冊教學</Button>}>
   <div className="project-form connection-form">
-   <label>Callback URL<Input readOnly value={current.redirect}/></label>
-   <div className="connection-actions"><Button onClick={()=>navigator.clipboard?.writeText(current.redirect).then(()=>setCopied(true)).catch(()=>setError('這個瀏覽器無法複製'))}>{copied?'已複製':'複製網址'}</Button></div>
+   <div className="callback-row"><label>Callback URL<Input readOnly value={current.redirect}/></label><Button variant="ghost" className="text-button" onClick={()=>navigator.clipboard?.writeText(current.redirect).then(()=>setCopied(true)).catch(()=>setError('這個瀏覽器無法複製'))}>{copied?'已複製':'複製網址'}</Button></div>
    <label>{service==='jira'?'Client ID':'Application ID'}<Input value={clientId} onChange={e=>setClientId(e.target.value)}/></label>
    <label>{service==='jira'?'Client Secret':'Secret'}<Input type="password" value={secret} onChange={e=>setSecret(e.target.value)} autoComplete="off"/></label>
    <p className="field-hint">留空可保留現有 Secret。提交或關閉時會清空輸入。</p>
-   <div className="connection-actions"><Button variant="primary" onClick={save}>儲存 App 設定</Button><Button onClick={close}>取消</Button></div>
    <label>{service==='jira'?'Jira 網站':'GitLab 網站'}<Input value={site} onChange={e=>setSite(e.target.value)} placeholder={service==='jira'?'your-domain.atlassian.net':'gitlab.com'}/></label>
-   <div className="connection-actions"><Button variant="primary" onClick={onConnect}>{connectLabel}</Button></div>
+   <div className="connection-actions"><Button variant="primary" onClick={connect}>{connectLabel}</Button></div>
    {error&&<p className="mcp-error" role="alert">{error}</p>}
   </div>
  </Dialog>;
@@ -216,7 +211,7 @@ function App(){
   <nav className="manage-tabs button-tabs project-tabs" aria-label="專案 Agent 分類"><button type="button" className={tab==='projects'?'active':''} aria-pressed={tab==='projects'} onClick={()=>setTab('projects')}>專案</button><button type="button" className={tab==='connections'?'active':''} aria-pressed={tab==='connections'} onClick={()=>setTab('connections')}>連線</button></nav>
   {notice&&<p role="status" className="manage-alert">{notice}</p>}
   {tab==='projects'&&<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>名稱</th><th>Jira 專案代碼</th><th>狀態</th><th>發佈對象</th><th>程式庫數量</th></tr></thead><tbody>{projects.map(item=><tr key={item.id}><td><button type="button" className="table-title" onClick={()=>setSelected(item.id)}>{item.name}</button></td><td>{item.jira||'—'}</td><td>{publishLabel(item)}</td><td>{accessLabel(item.access)}</td><td>{item.repos.length}</td></tr>)}</tbody></table></div>}
-  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="setup-grid">{services.map(service=>{const app=apps[service.id]||{};return <button type="button" className="setup-card" key={service.id} onClick={()=>setAdding({service:service.id,...app})}><span className="saved-connection-head"><span className="tile provider-tile"><ProviderLogo id={service.id}/></span><span className="setup-title">{service.name}</span></span><span className="setup-kind">{service.kind}</span><small>{app.hasCredential?'憑證已設定':'尚未設定憑證'}{app.site?` · ${app.site}`:''}</small></button>})}</div></section><section><h2>已設定的連線</h2><div className="manage-grid connection-grid">{connections.map(item=><article className="manage-card clickable" key={item.id} role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter')setLinkEditor(item)}}><header><span className="tile provider-tile"><ProviderLogo id={item.provider}/></span><h3>{linkTitle(item)}</h3></header><div className="manage-meta"><span className="manage-tag">存取方式 · {item.auth}</span><span className="manage-tag">維護人 · {item.maintainer}</span></div></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
+  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="mcp-list">{services.map(service=>{const app=apps[service.id]||{};return <article className="mcp-card clickable" key={service.id} role="button" tabIndex={0} onClick={()=>setAdding({service:service.id,...app})} onKeyDown={event=>{if(event.key==='Enter')setAdding({service:service.id,...app})}}><header><span className="tile provider-tile"><ProviderLogo id={service.id}/></span><div><h3>{service.name}</h3><div className="mcp-chips"><span>OAuth</span><span className={app.hasCredential?'mcp-status ok':''}>{app.hasCredential?'憑證已設定':'尚未設定'}</span></div></div></header><p className="mcp-url">{service.redirect}</p><p>{service.kind}{app.site?` · ${app.site}`:''}</p></article>})}</div></section><section><h2>已設定的連線</h2><div className="manage-grid connection-grid">{connections.map(item=><article className="manage-card clickable" key={item.id} role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter')setLinkEditor(item)}}><header><span className="tile provider-tile"><ProviderLogo id={item.provider}/></span><h3>{linkTitle(item)}</h3></header><div className="manage-meta"><span className="manage-tag">存取方式 · {item.auth}</span><span className="manage-tag">維護人 · {item.maintainer}</span></div></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
  </main>}
  {creating&&<ProjectForm initial={blankProject()} connections={connections} onClose={()=>setCreating(false)} onSave={saveProject}/>}
  {editing&&<ProjectForm initial={editing} connections={connections} onClose={()=>setEditing(null)} onSave={project=>{saveProject(project);setSelected(project.id)}}/>}
