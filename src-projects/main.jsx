@@ -133,7 +133,7 @@ function ProjectDetail({project,onBack,onEdit}){
  </main>;
 }
 
-function ConnectionForm({initial,onClose,onSave,onGuide}){
+function ConnectionForm({initial,onClose,onSave,onGuide,onConnect}){
  const [service,setService]=useState(initial?.service||'jira');
  const [clientId,setClientId]=useState(initial?.clientId||'');
  const [secret,setSecret]=useState('');
@@ -145,21 +145,21 @@ function ConnectionForm({initial,onClose,onSave,onGuide}){
  const current=services.find(item=>item.id===service);
  const close=()=>{setSecret('');onClose()};
  const save=()=>{
-  if(!clientId.trim()||!maintainer.trim()||(!initial?.hasCredential&&!secret.trim())){setError('請填寫用戶端識別、維護人，以及這次要更新的憑證。');return}
+  if(!clientId.trim()){setError(service==='jira'?'請填寫 Client ID。':'請填寫 Application ID。');return}
   onSave({id:initial?.id||crypto.randomUUID(),service,serviceName:`${current.name} · ${current.kind}`,clientId:clientId.trim(),redirectUri:current.redirect,site:site.trim(),maintainer:maintainer.trim(),expires,hasCredential:true});
   setSecret('');
  };
- return <Dialog title={initial?'更新設定':'新增連線'} description="連線資訊由所有專案共用。憑證輸入會在提交或關閉時清除。" size="wide" onClose={close} footer={<><Button onClick={close}>取消</Button><Button variant="primary" onClick={save}>儲存連線</Button></>}>
+ const connectLabel=service==='jira'?'連接 Atlassian':'連接 GitLab';
+ return <Dialog title={`${current.name} · ${current.kind}`} size="wide" onClose={close} headerAction={<Button variant="ghost" className="guide-chip" onClick={onGuide}><Info size={14} aria-hidden="true"/>註冊教學</Button>}>
   <div className="project-form connection-form">
-   <label>服務<Input as="select" value={service} disabled={!!initial} onChange={e=>setService(e.target.value)}>{services.map(item=><option key={item.id} value={item.id}>{item.name} · {item.kind}</option>)}</Input></label>
-   <label>{service==='jira'?'OAuth Client ID':'Application ID'}<Input value={clientId} onChange={e=>setClientId(e.target.value)}/></label>
-   <div className="connection-actions"><Button variant="ghost" className="guide-chip" onClick={onGuide}><Info size={14} aria-hidden="true"/>註冊教學</Button><Button variant="ghost" className="text-button" onClick={()=>navigator.clipboard?.writeText(current.redirect).then(()=>setCopied(true)).catch(()=>setError('這個瀏覽器無法複製'))}>{copied?'已複製':'複製網址'}</Button></div>
-   <p className="field-hint">Callback URL 建立後固定：{current.redirect}</p>
+   <label>Callback URL<Input readOnly value={current.redirect}/></label>
+   <div className="connection-actions"><Button onClick={()=>navigator.clipboard?.writeText(current.redirect).then(()=>setCopied(true)).catch(()=>setError('這個瀏覽器無法複製'))}>{copied?'已複製':'複製網址'}</Button></div>
+   <label>{service==='jira'?'Client ID':'Application ID'}<Input value={clientId} onChange={e=>setClientId(e.target.value)}/></label>
+   <label>{service==='jira'?'Client Secret':'Secret'}<Input type="password" value={secret} onChange={e=>setSecret(e.target.value)} autoComplete="off"/></label>
+   <p className="field-hint">留空可保留現有 Secret。提交或關閉時會清空輸入。</p>
+   <div className="connection-actions"><Button variant="primary" onClick={save}>儲存 App 設定</Button><Button onClick={close}>取消</Button></div>
    <label>{service==='jira'?'Jira 網站':'GitLab 網站'}<Input value={site} onChange={e=>setSite(e.target.value)} placeholder={service==='jira'?'your-domain.atlassian.net':'gitlab.com'}/></label>
-   <label>憑證維護人<Input value={maintainer} onChange={e=>setMaintainer(e.target.value)} placeholder="name@example.com"/></label>
-   <label>憑證到期日（選填）<Input type="date" value={expires} onChange={e=>setExpires(e.target.value)}/></label>
-   <label>{service==='jira'?'Client secret':'Secret'}<Input type="password" value={secret} onChange={e=>setSecret(e.target.value)} autoComplete="off" placeholder={initial?'留空代表不更換已設定的 Secret':''}/></label>
-   <p className="field-hint">若儲存失敗，請重新輸入憑證。其他欄位會保留。</p>
+   <div className="connection-actions"><Button variant="primary" onClick={onConnect}>{connectLabel}</Button></div>
    {error&&<p className="mcp-error" role="alert">{error}</p>}
   </div>
  </Dialog>;
@@ -216,11 +216,11 @@ function App(){
   <nav className="manage-tabs button-tabs project-tabs" aria-label="專案 Agent 分類"><button type="button" className={tab==='projects'?'active':''} aria-pressed={tab==='projects'} onClick={()=>setTab('projects')}>專案</button><button type="button" className={tab==='connections'?'active':''} aria-pressed={tab==='connections'} onClick={()=>setTab('connections')}>連線</button></nav>
   {notice&&<p role="status" className="manage-alert">{notice}</p>}
   {tab==='projects'&&<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>名稱</th><th>Jira 專案代碼</th><th>狀態</th><th>發佈對象</th><th>程式庫數量</th></tr></thead><tbody>{projects.map(item=><tr key={item.id}><td><button type="button" className="table-title" onClick={()=>setSelected(item.id)}>{item.name}</button></td><td>{item.jira||'—'}</td><td>{publishLabel(item)}</td><td>{accessLabel(item.access)}</td><td>{item.repos.length}</td></tr>)}</tbody></table></div>}
-  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="setup-grid">{services.map(service=>{const app=apps[service.id]||{};return <button type="button" className="setup-card" key={service.id} onClick={()=>setAdding({service:service.id,...app})}><span className="saved-connection-head"><ProviderLogo id={service.id}/><span className="setup-title">{service.name}</span></span><span className="setup-kind">{service.kind}</span><small>{app.hasCredential?'憑證已設定':'尚未設定憑證'}{app.site?` · ${app.site}`:''}</small></button>})}</div></section><section><h2>已設定的連線</h2><div className="manage-grid connection-grid">{connections.map(item=><article className="manage-card clickable" key={item.id} role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter')setLinkEditor(item)}}><header><span className="tile provider-tile"><ProviderLogo id={item.provider}/></span><h3>{linkTitle(item)}</h3></header><div className="manage-meta"><span className="manage-tag">存取方式 · {item.auth}</span><span className="manage-tag">維護人 · {item.maintainer}</span></div></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
+  {tab==='connections'&&<div className="connection-page"><section><h2>服務設定</h2><div className="setup-grid">{services.map(service=>{const app=apps[service.id]||{};return <button type="button" className="setup-card" key={service.id} onClick={()=>setAdding({service:service.id,...app})}><span className="saved-connection-head"><span className="tile provider-tile"><ProviderLogo id={service.id}/></span><span className="setup-title">{service.name}</span></span><span className="setup-kind">{service.kind}</span><small>{app.hasCredential?'憑證已設定':'尚未設定憑證'}{app.site?` · ${app.site}`:''}</small></button>})}</div></section><section><h2>已設定的連線</h2><div className="manage-grid connection-grid">{connections.map(item=><article className="manage-card clickable" key={item.id} role="button" tabIndex={0} onClick={()=>setLinkEditor(item)} onKeyDown={event=>{if(event.key==='Enter')setLinkEditor(item)}}><header><span className="tile provider-tile"><ProviderLogo id={item.provider}/></span><h3>{linkTitle(item)}</h3></header><div className="manage-meta"><span className="manage-tag">存取方式 · {item.auth}</span><span className="manage-tag">維護人 · {item.maintainer}</span></div></article>)}{!connections.length&&<p className="manage-empty">還沒有已設定的連線。</p>}</div></section></div>}
  </main>}
  {creating&&<ProjectForm initial={blankProject()} connections={connections} onClose={()=>setCreating(false)} onSave={saveProject}/>}
  {editing&&<ProjectForm initial={editing} connections={connections} onClose={()=>setEditing(null)} onSave={project=>{saveProject(project);setSelected(project.id)}}/>}
- {adding&&<ConnectionForm initial={adding} onGuide={()=>setGuide(services.find(item=>item.id===adding.service))} onClose={()=>setAdding(null)} onSave={item=>{setApps(current=>({...current,[item.service]:{clientId:item.clientId,site:item.site,maintainer:item.maintainer,expires:item.expires,hasCredential:true}}));setAdding(null);setNotice(`已儲存 ${item.serviceName}`)}}/>}
+ {adding&&<ConnectionForm initial={adding} onGuide={()=>setGuide(services.find(item=>item.id===adding.service))} onConnect={()=>setNotice(`這是示範流程，尚未真正連到 ${services.find(item=>item.id===adding.service).name}。`)} onClose={()=>setAdding(null)} onSave={item=>{setApps(current=>({...current,[item.service]:{clientId:item.clientId,site:item.site,maintainer:item.maintainer,expires:item.expires,hasCredential:true}}));setAdding(null);setNotice(`已儲存 ${item.serviceName}`)}}/>}
  {linkEditor&&<SavedLinkDialog link={linkEditor} onClose={()=>setLinkEditor(null)} onSave={item=>{setConnections(list=>list.map(entry=>entry.id===item.id?item:entry));setLinkEditor(null);setNotice(`已儲存 ${item.title}`)}} onDelete={id=>{setConnections(list=>list.filter(entry=>entry.id!==id));setLinkEditor(null);setNotice('已刪除連線')}} onTest={item=>{setConnections(list=>list.map(entry=>entry.id===item.id?item:entry));setNotice(`已測試 ${item.title}：連線有效。這是示範流程。`)}}/>}
  {guide&&<Dialog title={`${guide.name} 註冊教學`} description={guide.kind} onClose={()=>setGuide(null)} footer={<Button variant="primary" onClick={()=>setGuide(null)}>知道了</Button>}><ol className="guide-steps">{guide.guide.map(step=><li key={step}>{step}</li>)}</ol></Dialog>}
  </div>;
