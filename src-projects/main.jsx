@@ -1,0 +1,192 @@
+import {AdminOnly} from '../src-shared/UserRole.jsx';
+import React,{useState} from 'react';
+import {createRoot} from 'react-dom/client';
+import {ChevronDown,ChevronLeft,ChevronRight,Info,Plus,RefreshCw} from 'lucide-react';
+import {Button,Dialog,Input} from '../src-shared/ui/index.jsx';
+import WorkspaceRail from '../src-shared/WorkspaceRail.jsx';
+import useLocalData from '../src-shared/useLocalData.js';
+import '../src-shared/tokens.css';
+import '../src-apps/styles.css';
+import '../src-shared/management.css';
+import '../src-capabilities/styles.css';
+import './styles.css';
+
+const codePattern=/^[a-z][a-z0-9-]{1,31}$/;
+const services=[
+ {id:'jira',name:'Atlassian (Jira Cloud)',kind:'OAuth App 設定',redirect:'https://op.bct-tw.org/api/project-agent-connections/oauth/atlassian/callback',guide:['到 Atlassian Developer Console 建立 OAuth 2.0 (3LO) App。','把這個頁面的 Callback URL 貼到 Authorization callback URL。','在 Permissions 加入讀取 Jira 專案與議題的範圍。','回到這裡確認 Client ID，再按連接 Atlassian。Secret 只在更新設定時輸入，送出後不會保留。']},
+ {id:'gitlab',name:'GitLab.com',kind:'OAuth App 設定',redirect:'https://op.bct-tw.org/api/project-agent-connections/oauth/gitlab/callback',guide:['到 GitLab.com → Preferences → Applications。','建立應用，Redirect URI 貼上這個頁面的 Callback URL。','勾選 read_api 與 read_repository。','回到這裡確認 Application ID。Secret 只在更新設定時輸入，送出後不會保留。']},
+];
+const groups=[['all','所有員工'],['nhi','健保署']];
+const seedProjects=[
+ {id:'flir',name:'FLIR',code:'flir',status:'published',enabled:true,access:'all',jira:'FM',note:'',connection:'c1',skills:97,members:['Ginny','King'],repos:[{id:'fr1',name:'flir-firmware',branch:'main'},{id:'fr2',name:'flir-cloud',branch:'main'}]},
+ {id:'p1',name:'giant-bpm',code:'gbpm',status:'published',enabled:true,access:'all',jira:'DEMO',note:'',connection:'none',skills:12,members:['Ginny'],repos:[{id:'r1',name:'giant-bpm',branch:'main'},{id:'r2',name:'giant-bpm-web',branch:'main'}]},
+ {id:'p2',name:'捷安特中台',code:'gmp',status:'published',enabled:true,access:'all',jira:'OPS',note:'',connection:'none',skills:8,members:['Alison'],repos:[{id:'r3',name:'gmp-api',branch:'main'},{id:'r4',name:'gmp-web',branch:'main'}]},
+ {id:'p3',name:'健保署',code:'nhi',status:'draft',enabled:false,access:'nhi',jira:'NHI',note:'',connection:'none',skills:4,members:['Dylan'],repos:[{id:'r5',name:'nhi-portal',branch:'main'}]},
+ {id:'p4',name:'健保署',code:'nhi-v2',status:'published',enabled:true,access:'all',jira:'NHI',note:'',connection:'c1',skills:6,members:['Ginny','Ramble'],repos:[{id:'r6',name:'nhi-v2',branch:'main'}]},
+];
+const seedConnections=[
+ {id:'c1',service:'jira',serviceName:'Atlassian (Jira Cloud) · OAuth App 設定',clientId:'ZtnqwBRU0CnarJoXxU5xclyBUntHofkx',redirectUri:services[0].redirect,site:'dt360.atlassian.net',hasCredential:true,maintainer:'ginny@example.com',expires:''},
+ {id:'c2',service:'gitlab',serviceName:'GitLab.com · OAuth App 設定',clientId:'bct-office-power',redirectUri:services[1].redirect,site:'gitlab.com',hasCredential:true,maintainer:'ginny@example.com',expires:''},
+];
+const blankProject=()=>({name:'',code:'',access:'all',jira:'',note:'',connection:'none',skills:0,members:[],repos:[]});
+const accessLabel=id=>groups.find(([value])=>value===id)?.[1]||id;
+const sections=[['overview','概覽'],['members','成員'],['repos','程式庫'],['skills','技能'],['jira','Jira 資料檢查'],['library','知識庫']];
+const skillPacks=[
+ {name:'project-assistant',meta:'手動授予 · 必選'},
+ {name:'bct-code-standards',meta:'整個 plugin · 3'},
+ {name:'bct-debug-skills',meta:'整個 plugin · 7'},
+ {name:'bct-dev-workflow-skills',meta:'整個 plugin · 34'},
+ {name:'bct-qa-skills',meta:'整個 plugin · 31'},
+ {name:'bct-tools',meta:'整個 plugin · 1'},
+ {name:'bct-report-skills',meta:'整個 plugin · 3'},
+ {name:'bct-devops-skills',meta:'整個 plugin · 13'},
+ {name:'bct-design-skills',meta:'整個 plugin · 4'},
+];
+const knowledgeFiles={
+ flir:[
+  {id:'flir-spec',name:'FLIR 產品規格',kind:'PDF',source:'專案交付',updated:'2026/11/08 下午03:12',summary:'熱像儀產品規格、解析度與工作溫度範圍，供現場安裝與客服回答引用。',tags:['#規格','#FLIR']},
+  {id:'flir-fw',name:'韌體更新說明',kind:'MD',source:'Web',updated:'2026/11/06 上午10:20',summary:'韌體 2.4 的更新步驟、已知問題與回復方式。',tags:['#韌體']},
+  {id:'flir-site',name:'現場安裝紀錄',kind:'DOCX',source:'Teams',updated:'2026/11/02 下午04:48',summary:'最近三次現場安裝的檢查項目與未完成事項。',tags:['#安裝']},
+ ],
+ p1:[
+  {id:'gbpm-flow',name:'BPM 流程說明',kind:'PDF',source:'專案交付',updated:'2026/10/28 上午11:05',summary:'giant-bpm 的申請、審核與結案節點。',tags:['#流程']},
+  {id:'gbpm-api',name:'介面欄位對照',kind:'MD',source:'Web',updated:'2026/10/21 下午02:40',summary:'表單欄位與 API 的對照，含必填與錯誤碼。',tags:['#API']},
+ ],
+ p2:[{id:'gmp-runbook',name:'中台操作手冊',kind:'DOCX',source:'Teams',updated:'2026/10/18 上午09:30',summary:'捷安特中台的日常操作、權限與異常處理。',tags:['#操作']}],
+ p3:[{id:'nhi-scope',name:'健保署範圍備忘',kind:'MD',source:'專案交付',updated:'2026/10/12 下午05:10',summary:'草稿專案目前納入的資料範圍與尚未開放的項目。',tags:['#範圍']}],
+ p4:[{id:'nhi-v2-note',name:'健保署 v2 交付紀錄',kind:'PDF',source:'Web',updated:'2026/11/04 上午08:55',summary:'第二版上線後的交付檔案與已知差異。',tags:['#交付']}],
+};
+const packsFor=project=>project.id==='flir'?skillPacks:skillPacks.slice(0,Math.max(2,Math.min(skillPacks.length,Math.ceil((project.skills||2)/8))));
+const filesFor=project=>knowledgeFiles[project.id]||[{id:`${project.id}-note`,name:`${project.name} 工作說明`,kind:'MD',source:'專案交付',updated:'2026/11/01 上午09:00',summary:`${project.name} 的專案範圍、資料來源與 Agent 可以引用的文件。`,tags:['#專案']}];
+const issuesFor=(project,limit)=>{
+ const code=project.jira||'DEMO';
+ const people=project.members?.length?project.members:['未指派'];
+ return [
+  {key:`${code}-128`,summary:'欄位對應與權限需要再確認',status:'進行中',assignee:people[0]},
+  {key:`${code}-121`,summary:'搜尋條件沒有帶回預期議題',status:'待辦',assignee:people[1]||people[0]},
+  {key:`${code}-117`,summary:'草稿回覆缺少專案範圍',status:'已完成',assignee:people[0]},
+ ].slice(0,Math.max(1,Math.min(3,Number(limit)||3)));
+};
+
+function ProjectForm({initial,connections,onClose,onSave}){
+ const [draft,setDraft]=useState(initial);
+ const [error,setError]=useState('');
+ const set=patch=>setDraft(value=>({...value,...patch}));
+ const locked=!!initial.id;
+ const save=()=>{
+  if(!draft.name.trim()){setError('請填寫專案名稱。');return}
+  if(!codePattern.test(draft.code.trim())){setError('專案代碼要 2–32 個小寫英數字或連字號，並以字母開頭。');return}
+  onSave({...draft,name:draft.name.trim(),code:draft.code.trim(),repos:draft.repos.filter(repo=>repo.name.trim())});
+ };
+ return <Dialog title={locked?'編輯專案':'建立專案'} description="專案設定會在下一回編進該專案的 profile，不會修改專案助理 Agent 的名稱、角色、提示詞或呼叫群組。模型與發佈請使用 Agent 設定。" size="wide" onClose={onClose} footer={<><Button onClick={onClose}>取消</Button><Button variant="primary" onClick={save}><Plus size={16}/>儲存專案</Button></>}>
+  <div className="project-form">
+   <div className="project-pair">
+    <label>專案名稱<Input value={draft.name} onChange={e=>set({name:e.target.value})}/></label>
+    <label>專案代碼<Input value={draft.code} onChange={e=>set({code:e.target.value.toLowerCase()})} disabled={locked} placeholder="例如 gbpm"/><p className="field-hint">2–32 個小寫英數字或連字號，以字母開頭；建立後固定。</p></label>
+   </div>
+   <label>存取群組<Input as="select" value={draft.access} onChange={e=>set({access:e.target.value})}>{groups.map(([value,label])=><option key={value} value={value}>{label}</option>)}</Input><p className="field-hint">{draft.access==='all'?'所有員工都可以使用此專案的 Agent，不需要管理成員。':'只有這個群組的成員可以使用此專案的 Agent。'}</p></label>
+   <label>Jira 專案代碼<Input value={draft.jira} onChange={e=>set({jira:e.target.value})} placeholder="DEMO, OPS"/><p className="field-hint">以逗號分隔，例如 DEMO, OPS</p></label>
+   <label>備註<Input as="textarea" rows={3} value={draft.note} onChange={e=>set({note:e.target.value})} placeholder="尚無備註"/></label>
+   <label>連線<Input as="select" value={draft.connection} onChange={e=>set({connection:e.target.value})}><option value="none">不使用</option>{connections.map(item=><option key={item.id} value={item.id}>{item.serviceName}</option>)}</Input><p className="field-hint">專案的 sandbox 以此連線的權限使用 gh 與 git。</p></label>
+   <section>
+    <h3>程式庫</h3>
+    <p className="field-hint">Agent 可讀取任意分支、tag 或 commit；未指定時使用程式庫的預設分支。</p>
+    <div className="project-form" style={{marginTop:12}}>{draft.repos.map(repo=><div className="repo-row" key={repo.id}><label>程式庫<Input value={repo.name} onChange={e=>set({repos:draft.repos.map(item=>item.id===repo.id?{...item,name:e.target.value}:item)})}/></label><label>預設分支<Input value={repo.branch} onChange={e=>set({repos:draft.repos.map(item=>item.id===repo.id?{...item,branch:e.target.value}:item)})}/></label><Button type="button" onClick={()=>set({repos:draft.repos.filter(item=>item.id!==repo.id)})}>移除</Button></div>)}</div>
+    <Button type="button" onClick={()=>set({repos:[...draft.repos,{id:crypto.randomUUID(),name:'',branch:'main'}]})}><Plus size={16}/>新增程式庫</Button>
+   </section>
+   {error&&<p className="mcp-error" role="alert">{error}</p>}
+  </div>
+ </Dialog>;
+}
+
+function ProjectDetail({project,onBack,onEdit,onConnections}){
+ const [section,setSection]=useState('overview');
+ const [editingSkills,setEditingSkills]=useState(false);
+ const [mode,setMode]=useState('search');
+ const [limit,setLimit]=useState('10');
+ const [advanced,setAdvanced]=useState(false);
+ const [jql,setJql]=useState('');
+ const [checked,setChecked]=useState(null);
+ const [issue,setIssue]=useState(null);
+ const [file,setFile]=useState(null);
+ const [member,setMember]=useState(null);
+ const [repo,setRepo]=useState(null);
+ const [libraryNote,setLibraryNote]=useState('');
+ const packs=packsFor(project);
+ const files=filesFor(project);
+ const openFile=item=>{setFile(item)};
+ return <main>
+  <button type="button" className="project-back" onClick={onBack}><ChevronLeft size={16}/>專案 Agent</button>
+  <header className="page-heading project-detail-head"><div><h1>{project.name}</h1><p>{project.code} · {project.status} · {project.enabled?'已啟用':'未啟用'}</p></div><div className="heading-actions"><Button onClick={onEdit}>編輯專案</Button><a className="op-button op-button--secondary" href="./dashboard.html">Agent 設定</a></div></header>
+  <nav className="manage-tabs button-tabs" aria-label="專案內容">{sections.map(([id,label])=><button key={id} type="button" className={section===id?'active':''} aria-pressed={section===id} onClick={()=>setSection(id)}>{label}</button>)}</nav>
+  {section==='overview'&&<section className="project-overview"><div className="project-pair"><div><small>存取群組</small><strong>{accessLabel(project.access)}</strong></div><div><small>Jira 專案代碼</small><strong>{project.jira||'—'}</strong></div></div><div><small>技能</small><strong>指定 · 安裝 {project.skills||0} 個 skill（下一回合生效）</strong></div><div><small>程式庫</small><strong>{project.repos.length?project.repos.map(item=>item.name).join('、'):'尚未加入'}</strong></div><div><small>成員</small><strong>{project.members?.length?project.members.join('、'):'尚未指定'}</strong></div><div><small>知識庫</small><strong>{files.length} 個檔案</strong></div><div><small>備註</small><strong>{project.note||'尚無備註'}</strong></div><p className="field-hint">儲存專案不會發佈 Agent。請至 Agent 設定選擇模型、確認權限與發佈。</p><div className="connection-actions"><Button onClick={onConnections}>管理共用連線</Button></div></section>}
+  {section==='members'&&<section className="detail-block">{project.members?.length?<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>成員</th><th>角色</th><th>存取群組</th></tr></thead><tbody>{project.members.map(name=><tr key={name} tabIndex={0} onClick={()=>setMember(name)} onKeyDown={event=>{if(event.key==='Enter')setMember(name)}}><td>{name}</td><td>{name==='Ginny'?'管理員':'一般用戶'}</td><td>{accessLabel(project.access)}</td></tr>)}</tbody></table></div>:<p className="manage-empty">這個專案還沒有指定成員。</p>}</section>}
+  {section==='repos'&&<section className="detail-block">{project.repos.length?<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>程式庫</th><th>預設分支</th><th>權限</th></tr></thead><tbody>{project.repos.map(item=><tr key={item.id} tabIndex={0} onClick={()=>setRepo(item)} onKeyDown={event=>{if(event.key==='Enter')setRepo(item)}}><td>{item.name}</td><td>{item.branch}</td><td>讀取</td></tr>)}</tbody></table></div>:<p className="manage-empty">還沒有程式庫。</p>}<p className="field-hint">Agent 可讀取任意分支、tag 或 commit；未指定時使用程式庫的預設分支。</p></section>}
+  {section==='skills'&&<section className="detail-block"><div className="detail-line"><strong>指定 · 安裝 {project.skills||packs.length} 個 skill（下一回合生效）</strong><Button onClick={()=>setEditingSkills(true)}>編輯技能</Button></div><div>{packs.map(item=><div className="skill-line" key={item.name}><span>{item.name}</span><small>{item.meta}</small></div>)}</div></section>}
+  {section==='jira'&&<section className="detail-block project-form"><p>直接檢查此專案範圍內的 Jira 資料，可用於草稿 Agent。此結果不代表 MCP、模型或通道已驗證。</p><p>範圍 {project.jira||'尚未填寫'}</p><div className="connection-actions"><Button onClick={onConnections}>管理 Jira 連線</Button></div><label>檢查方式<Input as="select" value={mode} onChange={event=>setMode(event.target.value)}><option value="search">搜尋議題</option><option value="fields">欄位檢查</option><option value="access">權限檢查</option></Input></label><label>結果筆數<Input type="number" min="1" max="50" value={limit} onChange={event=>setLimit(event.target.value)}/></label><button type="button" className="detail-disclosure" aria-expanded={advanced} onClick={()=>setAdvanced(open=>!open)}>{advanced?<ChevronDown size={16}/>:<ChevronRight size={16}/>}進階搜尋</button>{advanced&&<label>JQL<Input as="textarea" rows={3} value={jql} onChange={event=>setJql(event.target.value)} placeholder={project.jira?`project = ${project.jira}`:'project = DEMO'}/></label>}<div className="connection-actions"><Button variant="primary" onClick={()=>setChecked(issuesFor(project,limit))}>檢查 Jira 資料</Button></div>{checked&&<div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>議題</th><th>摘要</th><th>狀態</th><th>負責人</th></tr></thead><tbody>{checked.map(item=><tr key={item.key} tabIndex={0} onClick={()=>setIssue(item)} onKeyDown={event=>{if(event.key==='Enter')setIssue(item)}}><td>{item.key}</td><td>{item.summary}</td><td>{item.status}</td><td>{item.assignee}</td></tr>)}</tbody></table></div>}{mode!=='search'&&checked&&<p className="field-hint">{mode==='fields'?'欄位檢查：摘要、狀態、負責人都可以讀取。':'權限檢查：目前連線可以讀取這個範圍的議題。'}</p>}</section>}
+  {section==='library'&&<section className="detail-block"><div className="connection-actions"><Button onClick={()=>setLibraryNote('已重新整理知識庫')}><RefreshCw size={16}/>重新整理</Button><a className="op-button op-button--secondary" href="./capabilities.html">管理知識庫檔案</a></div>{libraryNote&&<p role="status" className="manage-alert">{libraryNote}</p>}<p>Web 與 Teams 對話產出的交付檔案會自動存入此專案知識庫。同名檔案會分別保留，原始檔案可供專案成員下載。</p><h3 className="detail-title">{project.name}</h3><div className="dataset-table-wrap"><table className="dataset-table"><thead><tr><th>檔案</th><th>類型</th><th>來源</th><th>更新</th></tr></thead><tbody>{files.map(item=><tr key={item.id} tabIndex={0} onClick={()=>openFile(item)} onKeyDown={event=>{if(event.key==='Enter')openFile(item)}}><td>{item.name}</td><td>{item.kind}</td><td>{item.source}</td><td>{item.updated}</td></tr>)}</tbody></table></div></section>}
+  {editingSkills&&<Dialog title="編輯技能" description="指定與安裝會在下一回合生效，不會改到正在進行的對話。" onClose={()=>setEditingSkills(false)} footer={<><a className="op-button op-button--secondary" href="./capabilities.html">到能力中心</a><Button variant="primary" onClick={()=>setEditingSkills(false)}>完成</Button></>}><div>{packs.map(item=><div className="skill-line" key={item.name}><span>{item.name}</span><small>{item.meta}</small></div>)}</div></Dialog>}
+  {issue&&<Dialog title={issue.key} description={issue.status} onClose={()=>setIssue(null)} footer={<Button variant="primary" onClick={()=>setIssue(null)}>關閉</Button>}><p>{issue.summary}</p><p className="field-hint">負責人 {issue.assignee} · 範圍 {project.jira||'未設定'}</p></Dialog>}
+  {file&&<Dialog title={file.name} description={`${file.kind} · ${file.source} · ${file.updated}`} onClose={()=>setFile(null)} footer={<Button variant="primary" onClick={()=>setFile(null)}>關閉</Button>}><p>{file.summary}</p><p className="kb-tags">關聯標籤：{file.tags.map(tag=><span key={tag}>{tag}</span>)}</p></Dialog>}
+  {member&&<Dialog title={member} description={accessLabel(project.access)} onClose={()=>setMember(null)} footer={<Button variant="primary" onClick={()=>setMember(null)}>關閉</Button>}><p>{member==='Ginny'?'管理員':'一般用戶'}可以在這個專案使用 Agent，並下載知識庫的原始檔案。</p></Dialog>}
+  {repo&&<Dialog title={repo.name} description={`預設分支 ${repo.branch}`} onClose={()=>setRepo(null)} footer={<Button variant="primary" onClick={()=>setRepo(null)}>關閉</Button>}><p>Agent 以讀取權限使用這個程式庫。未指定分支、tag 或 commit 時，會使用 {repo.branch}。</p></Dialog>}
+ </main>;
+}
+
+function ConnectionForm({initial,onClose,onSave}){
+ const [service,setService]=useState(initial?.service||'jira');
+ const [clientId,setClientId]=useState(initial?.clientId||'');
+ const [secret,setSecret]=useState('');
+ const [site,setSite]=useState(initial?.site||'');
+ const [maintainer,setMaintainer]=useState(initial?.maintainer||'');
+ const [expires,setExpires]=useState(initial?.expires||'');
+ const [error,setError]=useState('');
+ const current=services.find(item=>item.id===service);
+ const close=()=>{setSecret('');onClose()};
+ const save=()=>{
+  if(!clientId.trim()||!maintainer.trim()||(!initial&&!secret.trim())){setError('請填寫用戶端識別、維護人，以及這次要更新的憑證。');return}
+  onSave({id:initial?.id||crypto.randomUUID(),service,serviceName:`${current.name} · ${current.kind}`,clientId:clientId.trim(),redirectUri:current.redirect,site:site.trim(),maintainer:maintainer.trim(),expires,hasCredential:true});
+  setSecret('');
+ };
+ return <Dialog title={initial?'更新設定':'新增連線'} description="連線資訊由所有專案共用。憑證輸入會在提交或關閉時清除。" size="wide" onClose={close} footer={<><Button onClick={close}>取消</Button><Button variant="primary" onClick={save}>儲存連線</Button></>}>
+  <div className="project-form connection-form">
+   <label>服務<Input as="select" value={service} disabled={!!initial} onChange={e=>setService(e.target.value)}>{services.map(item=><option key={item.id} value={item.id}>{item.name} · {item.kind}</option>)}</Input></label>
+   <label>{service==='jira'?'OAuth Client ID':'Application ID'}<Input value={clientId} onChange={e=>setClientId(e.target.value)}/></label>
+   <p className="field-hint">Callback URL 建立後固定：{current.redirect}</p>
+   <label>{service==='jira'?'Jira 網站':'GitLab 網站'}<Input value={site} onChange={e=>setSite(e.target.value)} placeholder={service==='jira'?'your-domain.atlassian.net':'gitlab.com'}/></label>
+   <label>憑證維護人<Input value={maintainer} onChange={e=>setMaintainer(e.target.value)} placeholder="name@example.com"/></label>
+   <label>憑證到期日（選填）<Input type="date" value={expires} onChange={e=>setExpires(e.target.value)}/></label>
+   <label>{service==='jira'?'Client secret':'Secret'}<Input type="password" value={secret} onChange={e=>setSecret(e.target.value)} autoComplete="off" placeholder={initial?'留空代表不更換已設定的 Secret':''}/></label>
+   <p className="field-hint">若儲存失敗，請重新輸入憑證。其他欄位會保留。</p>
+   {error&&<p className="mcp-error" role="alert">{error}</p>}
+  </div>
+ </Dialog>;
+}
+
+function App(){
+ const [projects,setProjects]=useLocalData('office-projects-v2',seedProjects);
+ const [connections,setConnections]=useLocalData('office-project-connections-v2',seedConnections);
+ const [tab,setTab]=useState(()=>location.pathname.endsWith('connections.html')?'connections':'projects');
+ const [creating,setCreating]=useState(false);
+ const [editing,setEditing]=useState(null);
+ const [selected,setSelected]=useState(null);
+ const [adding,setAdding]=useState(null);
+ const [guide,setGuide]=useState(null);
+ const [notice,setNotice]=useState('');
+ const project=projects.find(item=>item.id===selected);
+ const refresh=()=>setNotice(tab==='projects'?'已重新整理專案':'已重新整理連線');
+ const saveProject=next=>{setProjects(list=>list.some(item=>item.id===next.id)?list.map(item=>item.id===next.id?next:item):[...list,{...next,id:crypto.randomUUID(),status:'draft',enabled:false}]);setCreating(false);setEditing(null);setNotice(`已儲存 ${next.name}`)};
+ return <div className="market-shell management"><WorkspaceRail active="專案 Agent"/>{project?<ProjectDetail project={project} onBack={()=>setSelected(null)} onEdit={()=>setEditing(project)} onConnections={()=>{setSelected(null);setTab('connections')}}/>:<main>
+  <header className="page-heading"><div><h1>專案 Agent</h1><p>建立專案、管理成員與資料來源，並檢查連線狀態。</p></div><div className="heading-actions"><Button onClick={refresh}><RefreshCw size={16}/>重新整理</Button>{tab==='projects'?<Button variant="primary" onClick={()=>setCreating(true)}><Plus size={16}/>建立專案</Button>:<Button variant="primary" onClick={()=>setAdding({})}>新增連線</Button>}</div></header>
+  <nav className="manage-tabs button-tabs project-tabs" aria-label="專案 Agent 分類"><button type="button" className={tab==='projects'?'active':''} aria-pressed={tab==='projects'} onClick={()=>setTab('projects')}>專案</button><button type="button" className={tab==='connections'?'active':''} aria-pressed={tab==='connections'} onClick={()=>setTab('connections')}>連線</button></nav>
+  {notice&&<p role="status" className="manage-alert">{notice}</p>}
+  {tab==='projects'&&<div className="manage-grid">{projects.map(item=><article key={item.id} className="manage-card clickable" role="button" tabIndex={0} onClick={()=>setSelected(item.id)} onKeyDown={event=>{if(event.key==='Enter')setSelected(item.id)}}><h3>{item.name}</h3><p>{item.code} · {item.status} · {accessLabel(item.access)}</p><small>程式庫 {item.repos.length}</small></article>)}</div>}
+  {tab==='connections'&&<div className="project-list">{connections.map(item=>{const service=services.find(entry=>entry.id===item.service);const copy=()=>navigator.clipboard?.writeText(item.redirectUri).then(()=>setNotice('已複製 Callback URL')).catch(()=>setNotice('這個瀏覽器無法複製'));return <article className="connection-card" key={item.id}><header className="connection-head"><h3>{item.serviceName}</h3><Button variant="ghost" className="text-button" onClick={copy}>複製網址</Button></header><Button variant="ghost" className="guide-chip" onClick={()=>setGuide(service)}><Info size={14} aria-hidden="true"/>註冊教學</Button><label>Callback URL<Input readOnly value={item.redirectUri}/></label><p>Client ID: {item.clientId}</p><p>{item.hasCredential?'Secret 已設定':'Secret 尚未設定'}</p><label>{item.service==='jira'?'Jira 網站':'GitLab 網站'}<Input value={item.site} readOnly/></label><div className="connection-actions"><Button onClick={()=>setAdding(item)}>更新設定</Button><Button variant="primary" onClick={()=>setNotice(`這是示範流程，尚未真正連到 ${service.name}。`)}>連接 {item.service==='jira'?'Atlassian':'GitLab'}</Button></div></article>})}</div>}
+ </main>}
+ {creating&&<ProjectForm initial={blankProject()} connections={connections} onClose={()=>setCreating(false)} onSave={saveProject}/>}
+ {editing&&<ProjectForm initial={editing} connections={connections} onClose={()=>setEditing(null)} onSave={project=>{saveProject(project);setSelected(project.id)}}/>}
+ {adding&&<ConnectionForm initial={adding.id?adding:null} onClose={()=>setAdding(null)} onSave={item=>{setConnections(list=>list.some(entry=>entry.id===item.id)?list.map(entry=>entry.id===item.id?item:entry):[...list,item]);setAdding(null);setNotice(`已儲存 ${item.serviceName}`)}}/>}
+ {guide&&<Dialog title={`${guide.name} 註冊教學`} description={guide.kind} onClose={()=>setGuide(null)} footer={<Button variant="primary" onClick={()=>setGuide(null)}>知道了</Button>}><ol className="guide-steps">{guide.guide.map(step=><li key={step}>{step}</li>)}</ol></Dialog>}
+ </div>;
+}
+createRoot(document.getElementById('root')).render(<AdminOnly><App/></AdminOnly>);
