@@ -27,7 +27,10 @@ html .connection-card .op-button.text-button:hover,html .connection-form .op-but
 .saved-connection-head{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
 .saved-connection h3{margin:0;font:var(--t-title)}
 .saved-connection:hover{box-shadow:var(--shadow-float)}
-.provider-logo{width:22px;height:22px;flex:none;display:block}
+.provider-tile,.manage-grid.connection-grid .manage-card:first-child .tile.provider-tile{display:grid;place-items:center;background:var(--surface-2);color:inherit}
+.provider-tile .provider-logo{width:22px;height:22px}
+.connection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.connection-grid .manage-meta{flex-wrap:wrap}
 .connection-meta{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4) var(--sp-6);width:100%}
 .connection-meta small{display:block;margin-bottom:4px;color:var(--ink-3);font:var(--t-meta)}
 .connection-meta strong{font:var(--t-label);font-weight:500;color:var(--ink)}
