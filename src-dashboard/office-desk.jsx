@@ -4,7 +4,7 @@ import {CanvasTexture,SRGBColorSpace} from 'three';
 import {Html} from '@react-three/drei';
 import {Button} from '../src-shared/ui/index.jsx';
 import {OfficeBot,AgentCharacter} from './office-bots.jsx';
-import {BOT_VARIANTS,agentRoleFor,isAgentAlert} from './bot-variants.js';
+import {BOT_VARIANTS,agentRoleFor,novaPropFor,isAgentAlert} from './bot-variants.js';
 import {ROLES} from './agent-characters.js';
 
 function useBox(w,h,d,radius=0.04,segments=2){
@@ -99,17 +99,18 @@ function WorkDesk({color}){
 }
 function Spot({agent,selected,fresh,reduced,onSelect,index=0}){
  const [hovered,setHovered]=useState(false);
- // 大腦總管 NOVA stays the white robot with its lime leaf; every other agent is one of the ten characters
+ // 大腦總管 NOVA stays the white robot. 指令中心、App 小幫手 and 專案助理 use that same body with their own prop.
  const role=agentRoleFor(agent);
- const nova=role==='nova';
- const accent=nova?BOT_VARIANTS.life.color:ROLES[role].color;
+ const prop=novaPropFor(agent);
+ const nova=role==='nova'||!!prop;
+ const accent=prop==='command'?'#7ec8ee':prop==='app-helper'?'#cbb6f2':prop==='planner'?'#7ee0c2':nova?BOT_VARIANTS.life.color:ROLES[role].color;
  const alert=isAgentAlert(agent);
  const pick=e=>{e.stopPropagation();onSelect(agent.id)};
  return <group onPointerOver={e=>{e.stopPropagation();setHovered(true)}} onPointerOut={()=>setHovered(false)}>
   <Watermark color={accent}/>
   <WorkDesk color={accent}/>
   {nova
-   ?<OfficeBot variant="life" tool={false} reduced={reduced} hovered={hovered} selected={selected} alert={alert} rest={0} index={index} position={[.1,0,.95]} scale={NOVA_SCALE} onSelect={pick}/>
+   ?<OfficeBot variant="life" tool={false} prop={prop} reduced={reduced} hovered={hovered} selected={selected} alert={alert} rest={0} index={index} position={[.1,0,.95]} scale={NOVA_SCALE} onSelect={pick}/>
    :<AgentCharacter role={role} reduced={reduced} hovered={hovered} selected={selected} alert={alert} fresh={fresh} rest={0} index={index} position={[.1,0,.95]} scale={1} onSelect={pick}/>}
   {/* Who this agent is and what it is doing, on the floor in front of it. The office view has no such card. */}
   <Html position={[.1,-1.04,.95]} center zIndexRange={[5,3]} style={{pointerEvents:'none'}}><div className="agent-fact-card">

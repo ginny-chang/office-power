@@ -49,4 +49,4 @@ export function botVariantFor(agent = {}) {
   return match ? match[1] : 'life';
 }
 
-export {agentRoleFor} from '../src-shared/agent-role.js';
+export {agentRoleFor, novaPropFor} from '../src-shared/agent-role.js';

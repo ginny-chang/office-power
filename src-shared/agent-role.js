@@ -6,8 +6,21 @@ export const AGENT_ROLES = [
 ];
 const known = new Set(['nova', ...AGENT_ROLES.map(([id]) => id)]);
 const roleById = {nova: 'nova', it: 'equipment', hr: 'hr', pm: 'project', finance: 'finance', sales: 'sales'};
+// These three keep NOVA's white robot. The id is also the avatar file and the prop beside the body.
+const novaBodyRules = [
+  [/指令中心/, 'command'],
+  [/app\s*產生|產生修改/i, 'app-helper'],
+  [/專案助理/, 'planner'],
+];
+export function novaPropFor(agent = {}) {
+  if (typeof agent === 'string') agent = {id: agent, name: agent};
+  if (agent.id === 'nova' || /大腦總管/.test(agent.name || '')) return null;
+  const match = novaBodyRules.find(([rule]) => rule.test(`${agent.id || ''} ${agent.name || ''} ${agent.role || ''}`));
+  return match ? match[1] : null;
+}
 const roleRules = [
   [/大腦總管/, 'nova'],
+  ...novaBodyRules,
   [/出勤|打卡|請假|假勤|考勤/, 'attendance'],
   [/人資|招募|\bhr\b/i, 'hr'],
   [/財務|報帳|費用|發票|finance/i, 'finance'],
@@ -21,6 +34,8 @@ const roleRules = [
 // agent: {id, name, role, character}. A character picked in Agent 設定 wins over the rules.
 export function agentRoleFor(agent = {}) {
   if (typeof agent === 'string') agent = {id: agent, name: agent};
+  const prop = novaPropFor(agent);
+  if (prop) return prop;
   if (agent.id === 'nova') return 'nova';
   if (known.has(agent.character) && agent.character !== 'nova') return agent.character;
   if (roleById[agent.id]) return roleById[agent.id];

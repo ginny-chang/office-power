@@ -23,6 +23,9 @@ const glyphs={grid:LayoutGrid,chat:MessageCircle,apps:Blocks,clock:Clock,studio:
 export function Icon({name,size=20,...props}){const Glyph=glyphs[name]||LayoutGrid;return <Glyph size={size} aria-hidden="true" {...props}/>}
 export const agents = [
  {id:'nova',name:'大腦總管 NOVA',role:'團隊協作',color:'#007aff',at:[0,0,0],status:'working',task:'整理各部門的今日任務',detail:'已彙整 HR、IT 與財務的待辦，正在整理今日摘要。',progress:72},
+ {id:'command',name:'Office Power 指令中心',role:'平台調度',color:'#7ec8ee',at:[2.4,0,-3.1],status:'working',task:'監看各 Agent 的執行狀態',detail:'彙整目前的執行與等待項目。',progress:40},
+ {id:'app-helper',name:'Nova App 產生修改小幫手',role:'App 製作',color:'#cbb6f2',at:[-2.4,0,-3.1],status:'working',task:'調整請假管理的畫面',detail:'依照現有 App 結構整理修改。',progress:55},
+ {id:'planner',name:'專案助理',role:'專案協作',color:'#7ee0c2',at:[3.6,0,1.4],status:'working',task:'整理本週里程碑',detail:'對齊各項進度與下一步。',progress:36},
  {id:'hr',name:'HR 小幫手',role:'人力資源',color:'#af52de',at:[-4.2,0,-2.4],status:'attention',task:'2 件請假等待你的確認',detail:'兩筆請假申請已完成資料檢查，等待主管確認。',progress:100,event:'2 件請假，等你確認',eventType:'等待決策'},
  {id:'it',name:'維修小管家',role:'設備管理',color:'#30b0c7',at:[4.2,0,-2.4],status:'done',task:'報修 #128 已完成',detail:'會議室投影設備已恢復使用，處理結果已整理完成。',progress:100,event:'報修 #128 已完成',eventType:'任務完成'},
  {id:'sales',name:'Sales 助理',role:'客戶關係',color:'#5856d6',at:[-4.2,0,2.4],status:'working',task:'整理本週客戶跟進清單',detail:'正在歸納客戶互動紀錄與下一步跟進建議。',progress:46},

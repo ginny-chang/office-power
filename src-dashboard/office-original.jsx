@@ -7,8 +7,8 @@ import {createRobotShell} from '../src/components/robot-shell.js';
 import {agentAvatarSrc} from '../src-shared/agent-role.js';
 import {Settings} from 'lucide-react';
 import {officeLayout} from './office-layout.js';
-import {AgentCharacter} from './office-bots.jsx';
-import {agentRoleFor,isAgentAlert} from './bot-variants.js';
+import {AgentCharacter,OfficeBot} from './office-bots.jsx';
+import {agentRoleFor,novaPropFor,isAgentAlert} from './bot-variants.js';
 // Desk and robot geometry adapted from the landing page's reservation scene.
 const C = { shell: '#e7eefb', metal: '#a6b8d4', ink: '#203c86', floor: '#a8bfe5', wall: '#dce7f8', light: '#ffffff' };
 function Box({ at=[0,0,0], size=[1,1,1], color=C.shell, radius=.035, metal=.15, ...props }) {
@@ -98,7 +98,7 @@ function Station({agent,index,onSelect,onSettings,read,reduced}){
       {Array.from({length:8},(_,i)=><Box key={i} at={[-.365+i*.075,.797,-.10]} size={[.04,.008,.13]} color="#919fb3" radius={.002}/>)}
       <Sphere at={[.57,.79,-.09]} size={[.07,.026,.10]} color="#c4cddb"/>
     </group>
- {agentRoleFor(agent)!=='nova'?<AgentCharacter role={agentRoleFor(agent)} position={[-.22,.31,-.38]} scale={1.02} rest={.42} index={index} reduced={reduced} hovered={hovered} alert={isAgentAlert(agent)} fresh={!!(agent.event&&agent.published!==false&&!read.includes(agent.id))} shadow={false} ownLight onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>:
+ {novaPropFor(agent)?<OfficeBot prop={novaPropFor(agent)} tool={false} shadow={false} position={[-.22,.31,-.38]} scale={1.02} rest={.42} index={index} reduced={reduced} hovered={hovered} alert={isAgentAlert(agent)} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>:agentRoleFor(agent)!=='nova'?<AgentCharacter role={agentRoleFor(agent)} position={[-.22,.31,-.38]} scale={1.02} rest={.42} index={index} reduced={reduced} hovered={hovered} alert={isAgentAlert(agent)} fresh={!!(agent.event&&agent.published!==false&&!read.includes(agent.id))} shadow={false} ownLight onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>:
  <Agent at={[-.22,.31,-.38]} index={index} reduced={reduced} hovered={hovered} onHover={e=>{e.stopPropagation();setHovered(true)}} onLeave={()=>setHovered(false)} onSelect={e=>{e.stopPropagation();onSelect(agent.id)}}/>}
  <Html position={[.18,.47,1.24]} center zIndexRange={[5,1]}><div className="bot-name-actions" {...hoverProps} data-hovered={hovered}><Button variant="plain" type="button" data-agent={agent.id} data-hovered={hovered} className="bot-label" style={{padding:'7px 11px',borderRadius:12,fontSize:12,color:agent.color,background:'#fcfdff',boxShadow:'0 3px 10px #66779920'}} onClick={()=>onSelect(agent.id)}>{agent.name}</Button>{onSettings&&<Button variant="plain" type="button" className="bot-settings-button" aria-label={`設定 ${agent.name}`} title="設定" onClick={e=>{e.stopPropagation();onSettings(agent.id)}}><Settings size={16}/></Button>}</div></Html>
  {agent.event&&agent.published!==false&&!read.includes(agent.id)&&<Html position={[0,3.15,.1]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" {...hoverProps} className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}

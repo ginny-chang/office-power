@@ -184,6 +184,61 @@ function Leaf() {
 
 const tools = {box: ArchiveBox, badge: Badge, clipboard: Clipboard, calculator: Calculator, bars: Bars, leaf: Leaf};
 
+function CommandConsole() {
+  return <group position={[0, 0.34, 0]} rotation={[0.08, -0.45, 0]}>
+    <Round w={0.78} h={0.14} d={0.48} radius={0.06} segments={3} color="#e7f4fb" position={[0, 0, 0.02]} rough={0.24} coat={0.9}/>
+    <group position={[0, 0.28, -0.02]} rotation={[-0.42, 0, 0]}>
+      <Round w={0.66} h={0.42} d={0.06} radius={0.05} segments={3} color="#d5eaf6" rough={0.22} coat={0.95}/>
+      <mesh position={[0, 0.01, 0.04]} rotation={[0, 0, 0.4]}>
+        <ringGeometry args={[0.09, 0.125, 40]}/>
+        <meshBasicMaterial color="#3d9ec8"/>
+      </mesh>
+      <mesh position={[0, 0.01, 0.045]}>
+        <sphereGeometry args={[0.028, 16, 12]}/>
+        <meshBasicMaterial color="#7ec8ee"/>
+      </mesh>
+    </group>
+    {[-0.22, 0.22].map(x => <mesh key={x} position={[x, 0.1, 0.16]} castShadow>
+      <cylinderGeometry args={[0.045, 0.05, 0.07, 20]}/>
+      <Gloss color="#7ec8ee" rough={0.24} coat={0.9}/>
+    </mesh>)}
+  </group>;
+}
+
+function AppStudio() {
+  return <group position={[0, 0.42, 0]} rotation={[0, -0.32, 0]}>
+    <Round w={0.46} h={0.78} d={0.08} radius={0.12} segments={4} color="#e4d8f8" rough={0.24} coat={0.92}/>
+    <Round w={0.34} h={0.48} d={0.03} radius={0.05} segments={3} color="#f6f1fc" position={[0, 0.06, 0.045]} rough={0.3} coat={0.7} castShadow={false}/>
+    <Round w={0.1} h={0.035} d={0.02} radius={0.014} segments={2} color="#cbb6f2" position={[0, -0.28, 0.05]} rough={0.3} coat={0.6} castShadow={false}/>
+    <group position={[0.3, -0.02, 0.08]} rotation={[0.15, 0.1, 0.85]}>
+      <mesh castShadow>
+        <capsuleGeometry args={[0.028, 0.26, 4, 8]}/>
+        <Gloss color="#9b78d4" rough={0.26} coat={0.85}/>
+      </mesh>
+      <mesh position={[0, 0.18, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <torusGeometry args={[0.07, 0.022, 8, 16, Math.PI]}/>
+        <Gloss color="#cbb6f2" rough={0.26} coat={0.85}/>
+      </mesh>
+    </group>
+  </group>;
+}
+
+function PlanCalendar() {
+  const days = [];
+  for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) days.push([col, row]);
+  return <group position={[0, 0.42, 0]} rotation={[0, -0.34, 0]}>
+    <Round w={0.64} h={0.72} d={0.08} radius={0.06} segments={4} color="#f3fbf7" rough={0.24} coat={0.9}/>
+    <Round w={0.64} h={0.16} d={0.09} radius={0.04} segments={3} color="#7ee0c2" position={[0, 0.28, 0.005]} rough={0.24} coat={0.85}/>
+    {[-0.16, 0.16].map(x => <mesh key={x} position={[x, 0.4, 0]} castShadow>
+      <cylinderGeometry args={[0.028, 0.028, 0.12, 12]}/>
+      <Gloss color="#1f9a66" rough={0.3} coat={0.7}/>
+    </mesh>)}
+    {days.map(([col, row]) => <Round key={`${col}-${row}`} w={0.09} h={0.09} d={0.025} radius={0.02} segments={2} color={row === 1 && col === 1 ? '#7ee0c2' : '#d9f3e8'} position={[-0.16 + col * 0.16, 0.08 - row * 0.15, 0.05]} rough={0.3} coat={0.6} castShadow={false}/>)}
+  </group>;
+}
+
+const novaProps = {command: CommandConsole, 'app-helper': AppStudio, planner: PlanCalendar};
+
 function GroundShadow() {
   const map = useMemo(contactShadow, []);
   return <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.12, 0.012, 0.02]} raycast={() => null}>
@@ -192,9 +247,9 @@ function GroundShadow() {
   </mesh>;
 }
 
-export function OfficeBot({variant = 'life', tool = true, reduced = false, hovered = false, selected = false, rest = 0.2, index = 0, alert = false, onSelect, ...props}) {
+export function OfficeBot({variant = 'life', tool = true, prop, shadow = true, reduced = false, hovered = false, selected = false, rest = 0.2, index = 0, alert = false, onSelect, ...props}) {
   const spec = BOT_VARIANTS[variant] || BOT_VARIANTS.life;
-  const Tool = tools[spec.tool];
+  const Tool = (prop && novaProps[prop]) || (tool ? tools[spec.tool] : null);
   const root = useRef();
   const eyes = useRef([]);
   const arm = useRef();
@@ -218,9 +273,9 @@ export function OfficeBot({variant = 'life', tool = true, reduced = false, hover
   });
   return <group {...props}>
     <group ref={root} rotation={[0, rest, 0]} onClick={onSelect}>
-      <GroundShadow/>
-      <group position={[tool ? -0.42 : 0, 0, 0]}><RobotBody eyes={eyes} arm={arm}/></group>
-      {tool && <group position={[0.92, 0, 0.02]} scale={1.38}><Tool/></group>}
+      {shadow && <GroundShadow/>}
+      <group position={[Tool ? -0.42 : 0, 0, 0]}><RobotBody eyes={eyes} arm={arm}/></group>
+      {Tool && <group position={[0.92, 0, 0.02]} scale={1.38}><Tool/></group>}
     </group>
   </group>;
 }
