@@ -5,6 +5,7 @@ import {PageTitle,Button} from '../src-shared/ui/index.jsx';
 import {csv,download} from '../src-shared/Management';
 import useLocalData from '../src-shared/useLocalData.js';
 import AgentSettings from '../src-dashboard/AgentSettings.jsx';
+import {isSystemAgent} from '../src-shared/agent-role.js';
 import AgentMonitor from './AgentMonitor.jsx';
 import './usage.css';
 
@@ -82,7 +83,7 @@ export default function UsagePanel(){
  // Rows show the name from Agent 設定. A deleted agent keeps its row, since its cost is history, but can no longer be opened.
  const agents=period.agents.map(agent=>{const config=configs[agent.id];return config?{...agent,name:config.name||agent.name,role:config.role||agent.role,emoji:config.emoji||agent.emoji}:agent});
  const settingsAgent=agents.find(agent=>agent.id===settingsId),monitorAgent=agents.find(agent=>agent.id===monitorId);
- const deleteAgent=id=>{setSettingsId(null);setDeleted(ids=>[...ids,id]);setConfigs(({[id]:removed,...rest})=>rest)};
+ const deleteAgent=id=>{if(isSystemAgent(id))return;setSettingsId(null);setDeleted(ids=>[...ids,id]);setConfigs(({[id]:removed,...rest})=>rest)};
  const totalCost=sum(agents,'cost'),input=sum(agents,'input'),output=sum(agents,'output'),tokens=input+output,requests=sum(agents,'requests');
  const avg=requests?totalCost/requests:0,prev=period.previous,prevAvg=prev.cost/prev.requests;
  const inputShare=tokens?input/tokens*100:0;
@@ -146,6 +147,6 @@ export default function UsagePanel(){
     </div></td></tr>}</React.Fragment>})}</tbody></table></div>:<p className="usage-empty">找不到符合的 Agent。</p>}
   </section>
    {monitorAgent&&<AgentMonitor agent={monitorAgent} scheduleAgent={period.agents.find(agent=>agent.id===monitorId).name} month={periodId.slice(5)} onClose={()=>setMonitorId(null)}/>}
-  {settingsAgent&&<AgentSettings modal agent={{id:settingsAgent.id,name:settingsAgent.name,role:settingsAgent.role,emoji:settingsAgent.emoji}} config={configs[settingsAgent.id]} onSave={config=>setConfigs(previous=>({...previous,[settingsAgent.id]:config}))} onClose={()=>setSettingsId(null)} onDelete={settingsAgent.id==='nova'?undefined:()=>deleteAgent(settingsAgent.id)}/>}
+  {settingsAgent&&<AgentSettings modal agent={{id:settingsAgent.id,name:settingsAgent.name,role:settingsAgent.role,emoji:settingsAgent.emoji}} config={configs[settingsAgent.id]} onSave={config=>setConfigs(previous=>({...previous,[settingsAgent.id]:config}))} onClose={()=>setSettingsId(null)} onDelete={isSystemAgent(settingsAgent)?undefined:()=>deleteAgent(settingsAgent.id)}/>}
  </>;
 }

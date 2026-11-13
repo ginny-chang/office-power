@@ -43,3 +43,14 @@ export function agentRoleFor(agent = {}) {
   return match ? match[1] : 'general';
 }
 export const agentAvatarSrc = agent => `${import.meta.env.BASE_URL}bot-avatars/${agentRoleFor(agent)}.png`;
+
+// Built-in system agents. They stay first, in this order, and cannot be deleted.
+export const SYSTEM_AGENT_IDS = ['nova', 'command', 'app-helper', 'planner'];
+export function isSystemAgent(agent) {
+  const id = typeof agent === 'string' ? agent : agent?.id;
+  return SYSTEM_AGENT_IDS.includes(id);
+}
+export function pinSystemAgents(list) {
+  const system = SYSTEM_AGENT_IDS.map(id => list.find(agent => agent.id === id)).filter(Boolean);
+  return [...system, ...list.filter(agent => !isSystemAgent(agent))];
+}
