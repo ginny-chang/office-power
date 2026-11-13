@@ -16,7 +16,7 @@ import {AgentPortrait,AlertPoint} from '../src-dashboard/bot-avatar.jsx';
 export default {
   title:'Product/Office bots',
   tags:['autodocs'],
-  parameters:{docs:{description:{component:'大腦總管 NOVA、Office Power 指令中心、Nova App 產生修改小幫手與專案助理共用同一隻白色機器人。後三者各自帶一件道具：控制台、App 與扳手、月曆。其餘 Agent 維持各自的角色造型。'}}}
+  parameters:{docs:{description:{component:'大腦總管 NOVA、Office Power 指令中心、Nova App 產生修改小幫手與專案助理共用同一隻白色機器人。後三者只在天線、胸口色塊和一件小配件上有差別，並各帶一件較飽和的道具：控制台、App 與扳手、月曆。其餘 Agent 維持各自的角色造型。'}}}
 };
 
 function useReduced(){
