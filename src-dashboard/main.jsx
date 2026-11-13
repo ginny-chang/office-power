@@ -1,5 +1,6 @@
 import AccountMenu from '../src-shared/AccountMenu';
 import AgentAvatar from '../src-shared/AgentAvatar.jsx';
+import {isSystemAgent, pinSystemAgents} from '../src-shared/agent-role.js';
 import {showAdmin,showRuntime} from '../src-shared/features.js';
 import {useUserRole} from '../src-shared/UserRole.jsx';
 import CreateAgent from '../src-shared/CreateAgent.jsx';
@@ -23,6 +24,9 @@ const glyphs={grid:LayoutGrid,chat:MessageCircle,apps:Blocks,clock:Clock,studio:
 export function Icon({name,size=20,...props}){const Glyph=glyphs[name]||LayoutGrid;return <Glyph size={size} aria-hidden="true" {...props}/>}
 export const agents = [
  {id:'nova',name:'大腦總管 NOVA',role:'團隊協作',color:'#007aff',at:[0,0,0],status:'working',task:'整理各部門的今日任務',detail:'已彙整 HR、IT 與財務的待辦，正在整理今日摘要。',progress:72},
+ {id:'command',name:'Office Power 指令中心',role:'平台調度',color:'#7ec8ee',at:[2.4,0,-3.1],status:'working',task:'監看各 Agent 的執行狀態',detail:'彙整目前的執行與等待項目。',progress:40},
+ {id:'app-helper',name:'Nova App 產生修改小幫手',role:'App 製作',color:'#cbb6f2',at:[-2.4,0,-3.1],status:'working',task:'調整請假管理的畫面',detail:'依照現有 App 結構整理修改。',progress:55},
+ {id:'planner',name:'專案助理',role:'專案協作',color:'#7ee0c2',at:[3.6,0,1.4],status:'working',task:'整理本週里程碑',detail:'對齊各項進度與下一步。',progress:36},
  {id:'hr',name:'HR 小幫手',role:'人力資源',color:'#af52de',at:[-4.2,0,-2.4],status:'attention',task:'2 件請假等待你的確認',detail:'兩筆請假申請已完成資料檢查，等待主管確認。',progress:100,event:'2 件請假，等你確認',eventType:'等待決策'},
  {id:'it',name:'維修小管家',role:'設備管理',color:'#30b0c7',at:[4.2,0,-2.4],status:'done',task:'報修 #128 已完成',detail:'會議室投影設備已恢復使用，處理結果已整理完成。',progress:100,event:'報修 #128 已完成',eventType:'任務完成'},
  {id:'sales',name:'Sales 助理',role:'客戶關係',color:'#5856d6',at:[-4.2,0,2.4],status:'working',task:'整理本週客戶跟進清單',detail:'正在歸納客戶互動紀錄與下一步跟進建議。',progress:46},
@@ -42,7 +46,7 @@ function Dashboard(){
  const [customAgents,setCustomAgents,customAgentError]=useLocalData('office-custom-agents-v1',[]);
  const [createAgentOpen,setCreateAgentOpen]=useState(()=>new URLSearchParams(location.search).has('create'));
  const [deletedAgents,setDeletedAgents,deletedAgentError]=useLocalData('office-deleted-agents-v1',[]);
- const roster=[...agents,...customAgents].filter(a=>!deletedAgents.includes(a.id)).map(a=>({...a,...agentConfigs[a.id]}));
+ const roster=pinSystemAgents([...agents,...customAgents.filter(agent=>!isSystemAgent(agent))].filter(agent=>isSystemAgent(agent)||!deletedAgents.includes(agent.id)).map(agent=>({...agent,...agentConfigs[agent.id]})));
  const [introReady,setIntroReady]=useState(false);const onOfficeReady=useCallback(()=>setIntroReady(true),[]);
  const [stageLayout,setStageLayout]=useState('row');
  const reduced=useMotion();const [appsOpen]=useState(true),[selected,setSelected]=useState(null),[query,setQuery]=useState(''),[filter,setFilter]=useState('published'),[view,setView]=useState('office'),[menu,setMenu]=useState(false),[read,setRead]=useState([]),[modal,setModal]=useState(null),[clockedAt,setClockedAt]=useState(null),[leave,setLeave]=useState(null),[expense,setExpense]=useState(null),[toast,setToast]=useState(''),[panelTab,setPanelTab]=useState('overview'),[panelWidth,setPanelWidth]=useState(null);
@@ -63,9 +67,10 @@ function Dashboard(){
  const createAgent=agent=>{setCustomAgents(items=>[...items,agent]);setFilter('published');setQuery('');notify(`${agent.name} 已加入 My Board`)};
  const openNewAgent=agent=>setSettingsAgent(agent.id);
  // Built-in agents have no record to remove, so every deleted id is remembered; My Board and Chat both hide them.
- const deleteAgent=id=>{const agent=roster.find(a=>a.id===id);setSettingsAgent(null);setCreateAgentOpen(false);setDeletedAgents(ids=>[...ids,id]);setCustomAgents(items=>items.filter(a=>a.id!==id));setAgentConfigs(({[id]:removed,...rest})=>rest);notify(`${agent.name} 已刪除`)};
- const published=roster.filter(a=>a.published!==false),unpublished=roster.filter(a=>a.published===false),pool=filter==='published'?published:unpublished;
- const shown=pool.filter(a=>`${a.name}${a.role}`.toLowerCase().includes(query.toLowerCase()));
+ const deleteAgent=id=>{if(isSystemAgent(id))return;const agent=roster.find(a=>a.id===id);setSettingsAgent(null);setCreateAgentOpen(false);setDeletedAgents(ids=>[...ids,id]);setCustomAgents(items=>items.filter(a=>a.id!==id));setAgentConfigs(({[id]:removed,...rest})=>rest);notify(`${agent.name} 已刪除`)};
+ const published=roster.filter(a=>a.published!==false),unpublished=roster.filter(a=>a.published===false),pool=pinSystemAgents(filter==='published'?published:unpublished);
+ const queryHit=agent=>`${agent.name}${agent.role}`.toLowerCase().includes(query.toLowerCase());
+ const shown=pinSystemAgents([...pool.filter(agent=>isSystemAgent(agent)),...pool.filter(agent=>!isSystemAgent(agent)&&queryHit(agent))]);
  const active=roster.find(a=>a.id===selected);
  const events=published.filter(a=>a.event&&!read.includes(a.id));
  // Unpublished agents are not in Chat, so opening one goes to its settings.
@@ -96,7 +101,7 @@ function Dashboard(){
   {active&&<section className="agent-panel" aria-label="Agent 詳細資訊"><header><h2>{active.name}</h2><button className="icon-button" aria-label="關閉 Agent 詳細資訊" onClick={()=>setSelected(null)}><Icon name="close"/></button></header><div className="agent-detail"><div className="detail-identity"><img src="./officepower-app-icon.svg" alt=""/><div><span>{active.role}</span><span className={`status ${active.status}`}>{statusLabel[active.status]}</span></div></div><h3>{active.task}</h3><p>{active.detail}</p>{active.progress>0&&<><div className="progress-label">目前進度 <strong>{active.progress}%</strong></div><progress value={active.progress} max="100"/></>}<div className="detail-note"><Icon name="shield" size={16}/>只在里程碑、等待決策或異常時回報。</div>{active.event&&!read.includes(active.id)?<button className="primary full" onClick={()=>{setRead(r=>[...r,active.id]);setSelected(null);notify('已標記為已讀，相同事件不再提示')}}>知道了，標記為已讀<Icon name="check" size={16}/></button>:<button className="secondary full" onClick={()=>setSelected(null)}>回到辦公室</button>}<small className="demo-note">此為任務狀態示範，尚未連接真實 Agent。</small></div></section>}
   </main></div>
   {createAgentOpen&&<CreateAgent onClose={()=>setCreateAgentOpen(false)} onCreate={createAgent} onOpen={openNewAgent}/>}
-  {settingsAgent&&<AgentSettings modal={createAgentOpen} agent={roster.find(a=>a.id===settingsAgent)} config={agentConfigs[settingsAgent]} onSave={config=>setAgentConfigs(prev=>({...prev,[settingsAgent]:config}))} onClose={()=>setSettingsAgent(null)} onDelete={settingsAgent==='nova'?undefined:()=>deleteAgent(settingsAgent)}/>}
+  {settingsAgent&&<AgentSettings modal={createAgentOpen} agent={roster.find(a=>a.id===settingsAgent)} config={agentConfigs[settingsAgent]} onSave={config=>setAgentConfigs(prev=>({...prev,[settingsAgent]:config}))} onClose={()=>setSettingsAgent(null)} onDelete={isSystemAgent(settingsAgent)?undefined:()=>deleteAgent(settingsAgent)}/>}
   {agentStorageError&&<p role="alert" className="storage-warning">{agentStorageError}</p>}
   {customAgentError&&<p role="alert" className="storage-warning">{customAgentError}</p>}
   {deletedAgentError&&<p role="alert" className="storage-warning">{deletedAgentError}</p>}

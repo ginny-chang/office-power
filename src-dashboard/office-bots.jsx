@@ -61,12 +61,71 @@ const robotShell = createRobotShell();
 function ShellMat() {
   return <meshStandardMaterial color="#f1f2f3" roughness={0.48}/>;
 }
-function RobotBody({eyes, arm}) {
+const MARKS = {
+  command: {band: '#2f8fc4', tip: '#4eb4e8', chest: '#3aa0d8'},
+  'app-helper': {band: '#8b62d0', tip: '#c4a6f5', chest: '#b48aee'},
+  planner: {band: '#178a5c', tip: '#4ed4a4', chest: '#3ecf9a'},
+};
+function Antenna({side, mark}) {
+  const accent = mark && MARKS[mark];
+  const stalk = mark === 'command' ? 0.16 : mark === 'app-helper' ? 0.18 : 0.24;
+  const stalkY = 0.15 + stalk / 2;
+  return <group position={[side * 0.36, 1.33, 0]} rotation={[0, 0, side * -0.4]}>
+    <mesh position={[0, 0.055, 0]}><cylinderGeometry args={[0.14, 0.15, 0.1, 28]}/><meshStandardMaterial color="#e5e7e9" roughness={0.35}/></mesh>
+    <mesh position={[0, 0.13, 0]}><cylinderGeometry args={[0.11, 0.11, 0.05, 28]}/><meshStandardMaterial color={accent.band} metalness={0.25} roughness={0.28}/></mesh>
+    <mesh position={[0, stalkY, 0]} castShadow><cylinderGeometry args={[0.12, 0.13, stalk, 28]}/><meshStandardMaterial color="#f0f1f3" roughness={0.35}/></mesh>
+    {mark === 'command' && <mesh position={[0, stalkY + stalk / 2 + 0.045, 0]} castShadow><sphereGeometry args={[0.085, 20, 14]}/><meshStandardMaterial color={accent.tip} roughness={0.32}/></mesh>}
+    {mark === 'app-helper' && <mesh position={[0, stalkY + stalk / 2 + 0.02, 0]} castShadow><cylinderGeometry args={[0.16, 0.16, 0.045, 24]}/><meshStandardMaterial color={accent.tip} roughness={0.32}/></mesh>}
+    {mark === 'planner' && <mesh position={[0, stalkY + stalk / 2 + 0.05, 0]} castShadow><sphereGeometry args={[0.065, 18, 12]}/><meshStandardMaterial color={accent.tip} roughness={0.32}/></mesh>}
+  </group>;
+}
+function Headset() {
+  return <group>
+    {[-1, 1].map(side => <mesh key={side} position={[side * 0.46, 1.02, 0.02]} rotation={[0, 0, Math.PI / 2]} castShadow>
+      <cylinderGeometry args={[0.08, 0.08, 0.05, 20]}/>
+      <meshStandardMaterial color="#3aa0d8" roughness={0.32}/>
+    </mesh>)}
+    <mesh position={[0.3, 0.9, 0.26]} rotation={[0.7, 0.2, -0.5]} castShadow>
+      <capsuleGeometry args={[0.014, 0.2, 4, 8]}/>
+      <meshStandardMaterial color="#2f8fc4" roughness={0.32}/>
+    </mesh>
+    <mesh position={[0.38, 0.78, 0.34]} castShadow>
+      <sphereGeometry args={[0.028, 12, 10]}/>
+      <meshStandardMaterial color="#4eb4e8" roughness={0.3}/>
+    </mesh>
+  </group>;
+}
+function Goggles() {
+  return <group position={[0, 1.3, 0.4]}>
+    {[-0.13, 0.13].map(x => <mesh key={x} position={[x, 0, 0]}>
+      <torusGeometry args={[0.075, 0.018, 8, 18]}/>
+      <meshStandardMaterial color="#b48aee" roughness={0.3}/>
+    </mesh>)}
+    <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+      <cylinderGeometry args={[0.012, 0.012, 0.1, 8]}/>
+      <meshStandardMaterial color="#8b62d0" roughness={0.32}/>
+    </mesh>
+  </group>;
+}
+function PlannerMarks() {
+  return <group>
+    <mesh position={[-0.2, 0.62, 0.38]} castShadow>
+      <cylinderGeometry args={[0.055, 0.055, 0.028, 20]}/>
+      <meshStandardMaterial color="#3ecf9a" roughness={0.32}/>
+    </mesh>
+    <mesh position={[0.2, 0.58, 0.38]} rotation={[0.15, 0, 0.55]} castShadow>
+      <capsuleGeometry args={[0.016, 0.16, 4, 8]}/>
+      <meshStandardMaterial color="#178a5c" roughness={0.32}/>
+    </mesh>
+  </group>;
+}
+function RobotBody({eyes, arm, mark}) {
+  const accent = mark && MARKS[mark];
   return <group>
     {['torso', 'inset'].map(part => <mesh key={part} geometry={robotShell[part]} position={[0, 0.73, 0]} castShadow dispose={null}><ShellMat/></mesh>)}
     {[-0.29, 0.29].map(x => <RoundedBox key={x} args={[0.46, 0.32, 0.66]} radius={0.13} smoothness={4} position={[x, 0.16, 0.015]} castShadow><ShellMat/></RoundedBox>)}
     <RoundedBox args={[0.35, 0.115, 0.08]} radius={0.05} smoothness={3} position={[0, 0.41, 0.36]}><meshStandardMaterial color="#9ca3aa" roughness={0.45}/></RoundedBox>
-    <RoundedBox args={[0.326, 0.096, 0.06]} radius={0.045} smoothness={3} position={[0, 0.41, 0.4]}><meshStandardMaterial color="#e2e5e8" roughness={0.4}/></RoundedBox>
+    <RoundedBox args={[0.326, 0.096, 0.06]} radius={0.045} smoothness={3} position={[0, 0.41, 0.4]}><meshStandardMaterial color={accent ? accent.chest : '#e2e5e8'} roughness={0.35}/></RoundedBox>
     <mesh geometry={robotShell.head} position={[0, 0.73, 0]} castShadow dispose={null}><ShellMat/></mesh>
     <RoundedBox args={[0.79, 0.76, 0.22]} radius={0.22} smoothness={6} position={[0, 0.97, 0.335]} castShadow>
       <meshPhysicalMaterial color="#101116" roughness={0.16} metalness={0.2} clearcoat={1} clearcoatRoughness={0.08}/>
@@ -81,11 +140,16 @@ function RobotBody({eyes, arm}) {
         <meshStandardMaterial color="#eef0f2" roughness={0.45}/>
       </mesh>
     </group>)}
-    {[-1, 1].map(side => <group key={`ear-${side}`} position={[side * 0.36, 1.33, 0]} rotation={[0, 0, side * -0.4]}>
-      <mesh position={[0, 0.055, 0]}><cylinderGeometry args={[0.14, 0.15, 0.1, 28]}/><meshStandardMaterial color="#e5e7e9" roughness={0.35}/></mesh>
-      <mesh position={[0, 0.13, 0]}><cylinderGeometry args={[0.1, 0.1, 0.05, 28]}/><meshStandardMaterial color="#777d84" metalness={0.8} roughness={0.25}/></mesh>
-      <mesh position={[0, 0.27, 0]} castShadow><cylinderGeometry args={[0.13, 0.13, 0.24, 28]}/><meshStandardMaterial color="#f0f1f3" roughness={0.35}/></mesh>
-    </group>)}
+    {mark
+      ? [-1, 1].map(side => <Antenna key={`ear-${side}`} side={side} mark={mark}/>)
+      : [-1, 1].map(side => <group key={`ear-${side}`} position={[side * 0.36, 1.33, 0]} rotation={[0, 0, side * -0.4]}>
+        <mesh position={[0, 0.055, 0]}><cylinderGeometry args={[0.14, 0.15, 0.1, 28]}/><meshStandardMaterial color="#e5e7e9" roughness={0.35}/></mesh>
+        <mesh position={[0, 0.13, 0]}><cylinderGeometry args={[0.1, 0.1, 0.05, 28]}/><meshStandardMaterial color="#777d84" metalness={0.8} roughness={0.25}/></mesh>
+        <mesh position={[0, 0.27, 0]} castShadow><cylinderGeometry args={[0.13, 0.13, 0.24, 28]}/><meshStandardMaterial color="#f0f1f3" roughness={0.35}/></mesh>
+      </group>)}
+    {mark === 'command' && <Headset/>}
+    {mark === 'app-helper' && <Goggles/>}
+    {mark === 'planner' && <PlannerMarks/>}
   </group>;
 }
 
@@ -184,6 +248,61 @@ function Leaf() {
 
 const tools = {box: ArchiveBox, badge: Badge, clipboard: Clipboard, calculator: Calculator, bars: Bars, leaf: Leaf};
 
+function CommandConsole() {
+  return <group position={[0, 0.34, 0]} rotation={[0.08, -0.45, 0]}>
+    <Round w={0.78} h={0.16} d={0.5} radius={0.07} segments={3} color="#2f8fc4" position={[0, 0, 0.02]} rough={0.24} coat={0.92}/>
+    <group position={[0, 0.3, -0.02]} rotation={[-0.42, 0, 0]}>
+      <Round w={0.66} h={0.44} d={0.07} radius={0.05} segments={3} color="#4eb4e8" rough={0.22} coat={0.95}/>
+      <mesh position={[0, 0.01, 0.045]} rotation={[0, 0, 0.4]}>
+        <ringGeometry args={[0.1, 0.14, 40]}/>
+        <meshBasicMaterial color="#e7f6fd"/>
+      </mesh>
+      <mesh position={[0, 0.01, 0.05]}>
+        <sphereGeometry args={[0.034, 16, 12]}/>
+        <meshBasicMaterial color="#ffffff"/>
+      </mesh>
+    </group>
+    {[-0.22, 0.22].map(x => <mesh key={x} position={[x, 0.12, 0.16]} castShadow>
+      <cylinderGeometry args={[0.05, 0.055, 0.08, 20]}/>
+      <Gloss color="#d7f0fb" rough={0.24} coat={0.9}/>
+    </mesh>)}
+  </group>;
+}
+
+function AppStudio() {
+  return <group position={[0, 0.42, 0]} rotation={[0, -0.32, 0]}>
+    <Round w={0.48} h={0.8} d={0.09} radius={0.12} segments={4} color="#b08af0" rough={0.24} coat={0.92}/>
+    <Round w={0.34} h={0.48} d={0.03} radius={0.05} segments={3} color="#f4effc" position={[0, 0.06, 0.05]} rough={0.3} coat={0.7} castShadow={false}/>
+    <Round w={0.1} h={0.04} d={0.02} radius={0.016} segments={2} color="#7a4ec4" position={[0, -0.28, 0.055]} rough={0.3} coat={0.6} castShadow={false}/>
+    <group position={[0.32, -0.02, 0.1]} rotation={[0.15, 0.1, 0.85]}>
+      <mesh castShadow>
+        <capsuleGeometry args={[0.032, 0.28, 4, 8]}/>
+        <Gloss color="#7a4ec4" rough={0.24} coat={0.9}/>
+      </mesh>
+      <mesh position={[0, 0.2, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <torusGeometry args={[0.08, 0.026, 8, 16, Math.PI]}/>
+        <Gloss color="#d4c2f8" rough={0.24} coat={0.9}/>
+      </mesh>
+    </group>
+  </group>;
+}
+
+function PlanCalendar() {
+  const days = [];
+  for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) days.push([col, row]);
+  return <group position={[0, 0.42, 0]} rotation={[0, -0.34, 0]}>
+    <Round w={0.66} h={0.74} d={0.1} radius={0.07} segments={4} color="#3ecf9a" rough={0.24} coat={0.92}/>
+    <Round w={0.66} h={0.16} d={0.11} radius={0.04} segments={3} color="#178a5c" position={[0, 0.29, 0.005]} rough={0.24} coat={0.85}/>
+    {[-0.16, 0.16].map(x => <mesh key={x} position={[x, 0.42, 0]} castShadow>
+      <cylinderGeometry args={[0.03, 0.03, 0.14, 12]}/>
+      <Gloss color="#0f6b46" rough={0.3} coat={0.7}/>
+    </mesh>)}
+    {days.map(([col, row]) => <Round key={`${col}-${row}`} w={0.1} h={0.1} d={0.03} radius={0.02} segments={2} color={row === 1 && col === 1 ? '#178a5c' : '#f3fbf7'} position={[-0.16 + col * 0.16, 0.06 - row * 0.16, 0.06]} rough={0.28} coat={0.7} castShadow={false}/>)}
+  </group>;
+}
+
+const novaProps = {command: CommandConsole, 'app-helper': AppStudio, planner: PlanCalendar};
+
 function GroundShadow() {
   const map = useMemo(contactShadow, []);
   return <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0.12, 0.012, 0.02]} raycast={() => null}>
@@ -192,9 +311,9 @@ function GroundShadow() {
   </mesh>;
 }
 
-export function OfficeBot({variant = 'life', tool = true, reduced = false, hovered = false, selected = false, rest = 0.2, index = 0, alert = false, onSelect, ...props}) {
+export function OfficeBot({variant = 'life', tool = true, prop, shadow = true, reduced = false, hovered = false, selected = false, rest = 0.2, index = 0, alert = false, onSelect, ...props}) {
   const spec = BOT_VARIANTS[variant] || BOT_VARIANTS.life;
-  const Tool = tools[spec.tool];
+  const Tool = (prop && novaProps[prop]) || (tool ? tools[spec.tool] : null);
   const root = useRef();
   const eyes = useRef([]);
   const arm = useRef();
@@ -218,9 +337,9 @@ export function OfficeBot({variant = 'life', tool = true, reduced = false, hover
   });
   return <group {...props}>
     <group ref={root} rotation={[0, rest, 0]} onClick={onSelect}>
-      <GroundShadow/>
-      <group position={[tool ? -0.42 : 0, 0, 0]}><RobotBody eyes={eyes} arm={arm}/></group>
-      {tool && <group position={[0.92, 0, 0.02]} scale={1.38}><Tool/></group>}
+      {shadow && <GroundShadow/>}
+      <group position={[Tool ? -0.42 : 0, 0, 0]}><RobotBody eyes={eyes} arm={arm} mark={prop}/></group>
+      {Tool && <group position={[0.92, 0, 0.02]} scale={1.38}><Tool/></group>}
     </group>
   </group>;
 }

@@ -3,7 +3,7 @@ import {Canvas,useFrame,useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {ChevronLeft,ChevronRight,Plus,Settings} from 'lucide-react';
 import {BotLighting} from './office-bots.jsx';
-import {agentRoleFor,isAgentAlert} from './bot-variants.js';
+import {isAgentAlert} from './bot-variants.js';
 import {RobotRow,ROW_PITCH} from './office-desk.jsx';
 import {OriginalBoard} from './office-original.jsx';
 import {AgentPortrait,AlertPoint} from './bot-avatar.jsx';
@@ -14,7 +14,7 @@ function AgentDock({agents,activeId,read,onFocus,onSettings,onAdd}){
   const selected=agent.id===activeId;
   const label=[agent.name,fresh?'有新動態':null,alert?'等待你':null].filter(Boolean).join('，');
   return <div key={agent.id} className={`agent-dock-item${selected?' is-selected':''}${fresh?' has-update':''}`} role="presentation">
-   <button type="button" role="option" aria-selected={selected} className="agent-dock-avatar" aria-label={label} onClick={()=>onFocus(agent.id)}><AgentPortrait role={agentRoleFor(agent)}/></button>
+   <button type="button" role="option" aria-selected={selected} className="agent-dock-avatar" aria-label={label} onClick={()=>onFocus(agent.id)}><AgentPortrait agent={agent}/></button>
    {alert&&<AlertPoint/>}
    {onSettings&&<button type="button" className="agent-dock-settings" aria-label={`設定 ${agent.name}`} onClick={()=>onSettings(agent.id)}><Settings size={16}/></button>}
   </div>;
