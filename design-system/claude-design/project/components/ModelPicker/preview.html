@@ -1,0 +1,19 @@
+<!-- @dsCard group="表單" height=520 subtitle="可搜尋，依供應商分組" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>ModelPicker</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, h = React.createElement;
+  function Demo() {
+    var state = React.useState('inherit');
+    return h('div', {style: {padding: 24, maxWidth: 520}},
+      h(O.Card, {style: {display: 'grid', gap: 8, padding: 24}},
+        h('label', {htmlFor: 'preview-model', className: 't-label', style: {color: 'var(--ink-2)'}}, '模型'),
+        h(O.ModelPicker, {id: 'preview-model', value: state[0], onChange: state[1]})));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body>
+</html>

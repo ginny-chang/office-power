@@ -1,0 +1,22 @@
+<!-- @dsCard group="容器" height=220 subtitle="整張可點，額外動作收進 ⋯" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Card</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, I = O.Icons, h = React.createElement;
+  var head = {display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8};
+  var card = function (title, text, meta) {
+    return h(O.Card, {key: title, style: {display: 'grid', gap: 8, padding: 24}},
+      h('div', {style: head}, h('h3', {className: 't-title', style: {margin: 0}}, title),
+        h(O.Button, {iconOnly: true, size: 'medium', variant: 'ghost', 'aria-label': '更多'}, h(I.MoreHorizontal, {size: 16}))),
+      h('p', {className: 't-body', style: {margin: 0, color: 'var(--ink-2)'}}, text),
+      h('span', {className: 't-meta', style: {color: 'var(--ink-2)'}}, meta));
+  };
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style: {display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, padding: 24}},
+    card('請假管理', '查看假期餘額並送出請假申請。', '出勤假勤助理 · 更新於今天 09:30'),
+    card('設備報修', '拍照描述問題，追蹤維修進度。', '設備維修助理 · 更新於昨天')));
+</script>
+</body>
+</html>

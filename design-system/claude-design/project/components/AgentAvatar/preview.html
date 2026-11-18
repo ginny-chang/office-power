@@ -1,0 +1,27 @@
+<!-- @dsCard group="Agent" height=280 subtitle="14 個角色，44px 圓角方塊" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>AgentAvatar</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, h = React.createElement;
+  var roles = [
+    ['nova', '大腦總管', '/_blob/308fd5be64805f10b9b7590986ce5744'], ['command', '指令中心', '/_blob/deb589414c6c0ac07105f6adc617024c'],
+    ['app-helper', 'App 產生', '/_blob/def8d523109fc738f488c0f8b1f3a09a'], ['planner', '專案助理', '/_blob/99026c51d5e7a4099d0987d8c9dec61f'],
+    ['attendance', '出勤假勤', '/_blob/cdbbffe3f89d1849df9a25df7e60d9ab'], ['equipment', '設備維修', '/_blob/8e968e2598f5e64eaebabe6c88681a16'],
+    ['product', '產品開發', '/_blob/42b37ef493d812a0db1a91bc910ec932'], ['project', '專案管理', '/_blob/5198630b4612a27825165d22ed5a3cb2'],
+    ['sales', '業務接待', '/_blob/c5aca1d11962d05c231f1fd5cc41af12'], ['hr', '人資', '/_blob/5f0423daa79bd6f9fb87520f30aa3ada'],
+    ['design', '設計內容', '/_blob/6ae44e1534925e9a4c6061f24def6c16'], ['life', '生活福利', '/_blob/03b699e3ac4a2214d16631d837132bd8'],
+    ['finance', '財務', '/_blob/99c175029c3f0aca1235b0828b5ce399'], ['general', '通用', '/_blob/36788d309f431b61490b52b6e7ef0809'],
+  ];
+  var grid = {display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(84px, 1fr))', gap: 16, padding: 24};
+  var cell = {display: 'grid', justifyItems: 'center', gap: 8};
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style: grid}, roles.map(function (r) {
+    return h('div', {key: r[0], style: cell},
+      h(O.AgentAvatar, {agent: r[0], size: 44, src: r[2]}),
+      h('span', {className: 't-meta', style: {color: 'var(--ink-2)'}}, r[1]));
+  })));
+</script>
+</body>
+</html>

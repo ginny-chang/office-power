@@ -1,0 +1,20 @@
+<!-- @dsCard group="容器" height=480 subtitle="編輯單一項目，footer 靠右" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Dialog</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, I = O.Icons, h = React.createElement;
+  var stay = function () {};
+  ReactDOM.createRoot(document.getElementById('root')).render(h(O.Dialog, {
+    title: '編輯 Agent', description: '名稱會顯示在 My Board 與 Chat。', onClose: stay,
+    footer: h(React.Fragment, null,
+      h(O.Button, {variant: 'ghost', onClick: stay}, '取消'),
+      h(O.Button, {variant: 'primary', onClick: stay}, h(I.Check, {size: 16}), '儲存')),
+  }, h('div', {style: {display: 'grid', gap: 16}},
+    h(O.FormField, {label: 'Agent 名稱', hint: '使用容易辨識的職務名稱。'}, h(O.Input, {defaultValue: '出勤假勤助理'})),
+    h(O.FormField, {label: '一句話介紹'}, h(O.Input, {defaultValue: '幫你查假期餘額、送出請假申請。'})))));
+</script>
+</body>
+</html>

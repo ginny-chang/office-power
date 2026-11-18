@@ -1,0 +1,16 @@
+<!-- @dsCard group="表單" height=440 subtitle="說明、錯誤、停用" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>FormField</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style: {padding: 24, maxWidth: 560}},
+    h(O.Card, {style: {display: 'grid', gap: 16, padding: 24}},
+      h(O.FormField, {label: 'Agent 名稱', hint: '使用容易辨識的職務名稱。'}, h(O.Input, {defaultValue: '出勤假勤助理'})),
+      h(O.FormField, {label: '通知 Email', error: '這個 Email 格式不正確，請檢查 @ 後面的網域。'}, h(O.Input, {defaultValue: 'ginny@example'})),
+      h(O.FormField, {label: '預設模型'}, h(O.Input, {value: '繼承工作空間預設', disabled: true, readOnly: true})))));
+</script>
+</body>
+</html>

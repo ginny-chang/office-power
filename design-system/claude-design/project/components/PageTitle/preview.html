@@ -1,0 +1,20 @@
+<!-- @dsCard group="版面" height=200 subtitle="第一層頁首與子頁面頁首" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>PageTitle</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, I = O.Icons, h = React.createElement;
+  var bar = {display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap'};
+  var back = {display: 'inline-flex', alignItems: 'center', gap: 4, height: 28, marginBottom: 16, color: 'var(--ink-2)', fontWeight: 500, textDecoration: 'none'};
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {className: 'management', style: {padding: 24}},
+    h('a', {href: '#', className: 't-label', style: back}, h(I.ChevronLeft, {size: 16}), 'My Board'),
+    h('div', {className: 'page-heading', style: bar},
+      h(O.PageTitle, null, '出勤假勤助理'),
+      h('div', {style: {display: 'flex', gap: 8}},
+        h(O.Button, null, h(I.Play, {size: 16}), '立即執行'),
+        h(O.Button, {variant: 'primary', disabled: true}, h(I.Check, {size: 16}), '儲存')))));
+</script>
+</body>
+</html>

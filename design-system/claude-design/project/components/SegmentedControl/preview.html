@@ -1,0 +1,19 @@
+<!-- @dsCard group="操作" height=120 subtitle="選中項是 action 底" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>SegmentedControl</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, h = React.createElement;
+  function Demo() {
+    var state = React.useState('mine');
+    return h('div', {style: {padding: 24}}, h(O.SegmentedControl, {
+      label: 'App 檢視', value: state[0], onChange: state[1],
+      items: [{value: 'mine', label: '我的 Apps', count: 6}, {value: 'market', label: 'Apps 市集', count: 24}],
+    }));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body>
+</html>

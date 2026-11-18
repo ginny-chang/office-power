@@ -1,0 +1,16 @@
+<!-- @dsCard group="資料" height=140 subtitle="五種 tone 與萊姆綠數量 badge" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Badge</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, h = React.createElement;
+  var row = {display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8};
+  var tones = [['neutral', '待命'], ['primary', '處理中'], ['success', '已完成'], ['warning', '等待確認'], ['danger', '連線失敗']];
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style: {display: 'grid', gap: 16, padding: 24}},
+    h('div', {style: row}, tones.map(function (t) { return h(O.Badge, {key: t[0], tone: t[0]}, t[1]); })),
+    h('div', {style: row}, h('span', {className: 't-label'}, '重要回報'), h('span', {className: 'op-badge'}, '3'))));
+</script>
+</body>
+</html>

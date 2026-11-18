@@ -1,0 +1,22 @@
+<!-- @dsCard group="資料" height=400 subtitle="ResourceList 與 ResourceRow" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>ResourceList</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, I = O.Icons, h = React.createElement;
+  var Folder = function (props) {
+    return h('svg', {className: 'lucide', width: props.size, height: props.size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true},
+      h('path', {d: 'M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z'}));
+  };
+  var folders = [['共用資料夾', '供團隊 Agent 參考的既有資料。', '12 個檔案'], ['人資規章', '請假、加班與福利辦法。', '3 個檔案'], ['業務簡報', '產品介紹與報價範本。', '8 個檔案']];
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style: {padding: 24}},
+    h(O.Card, {style: {padding: 16}}, h(O.ResourceList, {label: '知識庫'}, folders.map(function (f) {
+      return h(O.ResourceRow, {key: f[0], icon: Folder, title: f[0], description: f[1], meta: f[2], actions: h(React.Fragment, null,
+        h(O.Button, {size: 'medium'}, '查看檔案'),
+        h(O.Button, {size: 'medium', iconOnly: true, variant: 'ghost', 'aria-label': '更多'}, h(I.MoreHorizontal, {size: 16})))});
+    })))));
+</script>
+</body>
+</html>

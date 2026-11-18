@@ -1,0 +1,22 @@
+<!-- @dsCard group="版面" height=480 subtitle="一般使用者看到的導覽列，目前頁是 My Board" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"><title>WorkspaceRail</title>
+<style>
+  .rail{width:80px;height:440px;padding:var(--sp-6) 16px;background:var(--frame);display:flex;flex-direction:column;align-items:center;box-sizing:border-box}
+  .rail nav{display:flex;flex-direction:column;gap:4px;margin-top:var(--sp-6)}
+  .rail img{width:36px}
+</style>
+</head>
+<body>
+<div id="root" style="padding:20px 24px"></div>
+<script>
+  var O = window.OfficePower, h = React.createElement;
+  var root = ReactDOM.createRoot(document.getElementById('root'));
+  ReactDOM.flushSync(function () { root.render(h(O.WorkspaceRail, {active: 'My Board'})); });
+  var logo = document.querySelector('.op-rail img');
+  if (logo) logo.src = '/_blob/dfa75738001daa7eb6f86128426cf658';
+</script>
+</body>
+</html>

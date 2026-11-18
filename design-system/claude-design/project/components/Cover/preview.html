@@ -1,0 +1,50 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"><title>Office Power</title>
+<style>
+  html, body { margin: 0; background: var(--canvas); }
+  .cover { position: relative; width: 960px; height: 288px; overflow: hidden; background: var(--canvas); }
+  .cover svg { position: absolute; inset: 0; }
+  .tile { rx: var(--r); ry: var(--r); }
+  .action { fill: var(--action); }
+  .lime { fill: var(--lime); }
+  .card { fill: var(--surface); }
+  .quiet { fill: var(--surface-3); }
+  .mint { fill: var(--mint-strong); }
+  .name { position: absolute; left: 32px; bottom: 32px; width: 440px; display: grid; gap: 16px; }
+  .name h1 { margin: 0; font-family: var(--font-sans); font-weight: 400; font-size: 104px; line-height: .92; letter-spacing: -0.02em; color: var(--ink); }
+  .name p { margin: 0; font-family: var(--font-sans); font-size: 14px; line-height: 20px; color: var(--ink-2); }
+</style>
+</head>
+<body>
+<div class="cover">
+  <svg viewBox="0 0 960 288" width="960" height="288" aria-hidden="true">
+    <!-- blocks: action 176×112 (3×2 cells), lime 112×176 (2×3 cells), mint-strong one 48 cell; cards: surface tiles on canvas, surface-3 one tile -->
+    <!-- arrangement: flush 7×4 modular grid from x=504 to 936, y=24 to 264; the two colour blocks sit top-right like the board's focus cards -->
+    <!-- pattern: geometric, modular, dense UI → white cards on the grey canvas, some merged two-wide, because the system is "soft card: white cards on a pale canvas" -->
+    <!-- scales: cell sp-12 48px, gap sp-4 16px (pitch 64), margin sp-6 24px, every corner r 12px -->
+    <rect class="tile action" x="632" y="24" width="176" height="112"/>
+    <rect class="tile lime" x="824" y="24" width="112" height="176"/>
+    <rect class="tile card" x="504" y="24" width="112" height="48"/>
+    <rect class="tile card" x="504" y="88" width="48" height="48"/>
+    <rect class="tile card" x="568" y="88" width="48" height="48"/>
+    <rect class="tile card" x="504" y="152" width="48" height="48"/>
+    <rect class="tile card" x="568" y="152" width="112" height="48"/>
+    <rect class="tile card" x="696" y="152" width="48" height="48"/>
+    <rect class="tile quiet" x="760" y="152" width="48" height="48"/>
+    <rect class="tile card" x="504" y="216" width="48" height="48"/>
+    <rect class="tile card" x="568" y="216" width="48" height="48"/>
+    <rect class="tile mint" x="632" y="216" width="48" height="48"/>
+    <rect class="tile card" x="696" y="216" width="112" height="48"/>
+    <rect class="tile card" x="824" y="216" width="48" height="48"/>
+    <rect class="tile card" x="888" y="216" width="48" height="48"/>
+  </svg>
+  <div class="name">
+    <h1>Office<br>Power</h1>
+    <p>柔和、留白多的 soft card，讓人一眼看出 Agent 在做什麼。</p>
+  </div>
+</div>
+</body>
+</html>
