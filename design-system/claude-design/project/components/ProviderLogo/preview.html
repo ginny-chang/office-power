@@ -1,0 +1,17 @@
+<!-- @dsCard group="Agent" height=120 subtitle="六個連線來源" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>ProviderLogo</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, h = React.createElement;
+  var providers = [['github', 'GitHub'], ['gitlab', 'GitLab'], ['jira', 'Jira'], ['slack', 'Slack'], ['drive', 'Google Drive'], ['postgres', 'PostgreSQL']];
+  var row = {display: 'flex', flexWrap: 'wrap', gap: 24, padding: 24};
+  var item = {display: 'inline-flex', alignItems: 'center', gap: 8};
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style: row}, providers.map(function (p) {
+    return h('span', {key: p[0], style: item}, h(O.ProviderLogo, {id: p[0]}), h('span', {className: 't-label'}, p[1]));
+  })));
+</script>
+</body>
+</html>

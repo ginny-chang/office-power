@@ -1,0 +1,32 @@
+<!-- @dsCard group="操作" height=300 subtitle="Primary / Secondary / Tertiary，大中小三種尺寸" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Button</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, I = O.Icons, h = React.createElement;
+  var stack = {display: 'grid', gap: 16, padding: 24};
+  var row = {display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8};
+  var label = function (text) { return h('div', {className: 't-meta', style: {color: 'var(--ink-2)'}}, text); };
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style: stack},
+    label('層級'),
+    h('div', {style: row},
+      h(O.Button, {variant: 'primary'}, h(I.Check, {size: 16}), '儲存'),
+      h(O.Button, null, h(I.Play, {size: 16}), '立即執行'),
+      h(O.Button, {variant: 'ghost'}, '取消')),
+    label('大 44 · 中 36 · 小 28'),
+    h('div', {style: row},
+      h(O.Button, null, h(I.RotateCw, {size: 16}), '重新執行'),
+      h(O.Button, {size: 'medium'}, h(I.RotateCw, {size: 16}), '重新執行'),
+      h(O.Button, {size: 'small'}, '釘選'),
+      h(O.Button, {iconOnly: true, 'aria-label': '更多'}, h(I.MoreHorizontal, {size: 16})),
+      h(O.Button, {iconOnly: true, size: 'medium', 'aria-label': '更多'}, h(I.MoreHorizontal, {size: 16})),
+      h(O.Button, {iconOnly: true, size: 'small', 'aria-label': '更多'}, h(I.MoreHorizontal, {size: 16}))),
+    label('沒有變更 · 處理中'),
+    h('div', {style: row},
+      h(O.Button, {variant: 'primary', disabled: true}, h(I.Check, {size: 16}), '儲存'),
+      h(O.Button, {variant: 'primary', loading: true}, '發佈中'))));
+</script>
+</body>
+</html>

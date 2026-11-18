@@ -1,0 +1,20 @@
+<!-- @dsCard group="操作" height=260 subtitle="lucide-react，16px，線寬 1.5" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Icons</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, I = O.Icons, h = React.createElement;
+  var meanings = [['Pencil', '編輯'], ['Plus', '新增'], ['Check', '儲存'], ['Wallet', '用量與費用'], ['ScrollText', '稽核紀錄'],
+    ['SquareActivity', '監控紀錄'], ['Settings', '設定'], ['ArrowRight', '送出'], ['Globe', '發佈'], ['ChevronLeft', '返回'],
+    ['ChevronRight', '下一題'], ['MoreHorizontal', '更多'], ['ArrowUpRight', '開啟 App'], ['Search', '搜尋'], ['Trash2', '刪除'],
+    ['Play', '立即執行'], ['RotateCw', '重新執行'], ['Pin', '釘選'], ['Maximize2', '放大預覽']];
+  var grid = {display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(96px, 1fr))', gap: 16, padding: 24};
+  var cell = {display: 'grid', justifyItems: 'center', gap: 8, color: 'var(--ink)'};
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style: grid}, meanings.map(function (m) {
+    return h('div', {key: m[0], style: cell}, h(I[m[0]], {size: 16}), h('span', {className: 't-meta', style: {color: 'var(--ink-2)'}}, m[1]));
+  })));
+</script>
+</body>
+</html>

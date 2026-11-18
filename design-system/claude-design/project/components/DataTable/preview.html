@@ -1,0 +1,24 @@
+<!-- @dsCard group="資料" height=300 subtitle="欄位比較，列裡用中尺寸按鈕" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>DataTable</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, h = React.createElement;
+  var columns = [
+    {key: 'name', label: '資料表'},
+    {key: 'app', label: '關聯 App'},
+    {key: 'count', label: '資料筆數'},
+    {key: 'action', label: '操作', render: function () { return h(O.Button, {size: 'medium'}, '開啟資料表'); }},
+  ];
+  var rows = [
+    {id: 1, name: 'leave_requests', app: '請假管理', count: 24},
+    {id: 2, name: 'attendance', app: '打卡系統', count: 128},
+    {id: 3, name: 'repair_tickets', app: '設備報修', count: 9},
+  ];
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style: {padding: 24}},
+    h(O.Card, {style: {padding: 24}}, h(O.DataTable, {caption: 'NOVA App 資料表', columns: columns, rows: rows}))));
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!-- @dsCard group="表單" height=450 subtitle="input / select / textarea，放在白卡片裡" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Input</title></head>
+<body>
+<div id="root"></div>
+<script>
+  var O = window.OfficePower, h = React.createElement;
+  var field = function (text, control) {
+    return h('label', {style: {display: 'grid', gap: 8}}, h('span', {className: 't-label', style: {color: 'var(--ink-2)'}}, text), control);
+  };
+  ReactDOM.createRoot(document.getElementById('root')).render(h('div', {style: {padding: 24, maxWidth: 560}},
+    h(O.Card, {style: {display: 'grid', gap: 16, padding: 24}},
+      field('Agent 名稱', h(O.Input, {placeholder: '例如：出勤假勤助理'})),
+      field('誰可以使用', h(O.Input, {as: 'select', defaultValue: 'workspace'},
+        h('option', {value: 'workspace'}, '所有員工'), h('option', {value: 'admin'}, '平台管理員'), h('option', {value: 'private'}, '僅自己'))),
+      field('開場建議問句（每行一個）', h(O.Input, {as: 'textarea', rows: 3, defaultValue: '我還有幾天特休？\n幫我請明天下午的假'})),
+      field('Runtime', h(O.Input, {value: 'OpenShell + Hermes', disabled: true, readOnly: true})))));
+</script>
+</body>
+</html>
