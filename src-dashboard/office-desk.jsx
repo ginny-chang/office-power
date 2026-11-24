@@ -115,8 +115,7 @@ function Spot({agent,selected,fresh,reduced,onSelect,index=0}){
   {/* Who this agent is and what it is doing, on the floor in front of it. The office view has no such card. */}
   <Html position={[.1,-1.04,.95]} center zIndexRange={[5,3]} style={{pointerEvents:'none'}}><div className="agent-fact-card">
    <span className="agent-fact-name"><b>{agent.name}</b><small>{agent.role}</small></span>
-   <strong>{agent.task||'目前沒有待處理的任務'}</strong>
-   {agent.detail&&<p>{agent.detail}</p>}
+   <p className="agent-fact-progress">{agent.task||'目前沒有待辦'}</p>
   </div></Html>
   {fresh&&<Html position={[.15,2.7,.95]} center zIndexRange={[8,6]}><Button variant="secondary" type="button" className={`bot-bubble ${agent.status}`} onClick={()=>onSelect(agent.id)}><span className="bubble-meta"><i/>{agent.eventType}<span>↗</span></span><strong>{agent.event}</strong></Button></Html>}
  </group>;
