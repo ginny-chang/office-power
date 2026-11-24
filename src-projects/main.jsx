@@ -16,7 +16,7 @@ import './styles.css';
 const codePattern=/^[a-z][a-z0-9-]{1,31}$/;
 const services=[
  {id:'jira',name:'Atlassian (Jira Cloud)',kind:'OAuth App 設定',redirect:'https://op.bct-tw.org/api/project-agent-connections/oauth/atlassian/callback',limit:'Jira 檢視 jira-user、jira-work，更新 jira-work。Confluence 檢視 confluence-content.all、confluence-content.summary、Page，搜尋 confluence。',guide:['到 Atlassian Developer Console 建立 OAuth 2.0 (3LO) App。','把這個頁面的 Callback URL 貼到 Authorization callback URL。','在 Permissions 加入讀取 Jira 專案與議題的範圍。','回到這裡確認 Client ID，再按連接 Atlassian。Secret 只在更新設定時輸入，送出後不會保留。']},
- {id:'gitlab',name:'GitLab.com',kind:'OAuth App 設定',redirect:'https://op.bct-tw.org/api/project-agent-connections/oauth/gitlab/callback',limit:'Scopes：api、read_api、read_user、read_repository、write_repository。',guide:['到 GitLab.com → Preferences → Applications。','建立應用，Redirect URI 貼上這個頁面的 Callback URL。','勾選 read_api 與 read_repository。','回到這裡確認 Application ID。Secret 只在更新設定時輸入，送出後不會保留。']},
+ {id:'gitlab',name:'GitLab.com',kind:'OAuth App 設定',redirect:'https://op.bct-tw.org/api/project-agent-connections/oauth/gitlab/callback',limit:'Scopes: api, read_api, read_user, read_repository, write_repository.',guide:['到 GitLab.com → Preferences → Applications。','建立應用，Redirect URI 貼上這個頁面的 Callback URL。','勾選 read_api 與 read_repository。','回到這裡確認 Application ID。Secret 只在更新設定時輸入，送出後不會保留。']},
 ];
 const groups=[['all','所有員工'],['nhi','健保署']];
 const seedProjects=[

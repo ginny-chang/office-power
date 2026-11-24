@@ -73,7 +73,7 @@ h1 span{margin-left:var(--sp-4);font:300 24px/32px var(--font);color:var(--ink-3
 .pin.pinned{background:var(--action);color:var(--on-ink)}
 .app-open h3{font:var(--t-title);letter-spacing:0;color:var(--ink)}
 .app-open h3 svg{color:var(--ink-3)}
-.app-open p{min-height:44px;margin-top:var(--sp-4);font:var(--t-label);color:var(--ink-2)}
+.app-open p{min-height:44px;margin-top:var(--sp-4);font:var(--t-body);color:var(--ink-2)}
 .app-card footer{margin-top:var(--sp-6);padding-top:var(--sp-4);gap:var(--sp-4);border-top:1px solid var(--line);font:var(--t-meta);color:var(--ink-2)}
 .empty{color:var(--ink-2)}
 .empty h3{font:400 22px/30px var(--font);color:var(--ink)}
@@ -137,7 +137,7 @@ dialog footer a{display:inline-flex;align-items:center;background:var(--action);
 .market-card .type-icon{width:44px;height:44px;flex:none;display:grid;place-items:center}
 .market-card h3{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:var(--t-title);color:var(--ink)}
 .market-card small{display:block;margin-top:2px;font:var(--t-meta);color:var(--ink-2)}
-.market-card>p{margin-top:12px;font:var(--t-label);color:var(--card-text);line-height:1.7}
+.market-card>p{margin-top:12px;font:var(--t-body);color:var(--card-text);line-height:22px}
 .market-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 .market-pills span{height:24px;display:inline-flex;align-items:center;padding:0 var(--sp-2);border-radius:var(--r);background:var(--surface-2);font:var(--t-meta);color:var(--ink-2)}
 .market-foot{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);margin-top:auto;padding-top:16px;font:var(--t-meta);color:var(--ink-2)}
