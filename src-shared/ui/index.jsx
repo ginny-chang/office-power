@@ -1,5 +1,5 @@
-import React,{forwardRef,useEffect,useId,useRef} from 'react';
-import {X,LoaderCircle,Search} from 'lucide-react';
+import React,{forwardRef,useEffect,useId,useRef,useState} from 'react';
+import {Check,X,ChevronDown,LoaderCircle,Search} from 'lucide-react';
 import './components.css';
 export const Button=forwardRef(function Button({variant='secondary',size='default',loading=false,iconOnly=false,className='',children,disabled,type='button',...props},ref){return <button ref={ref} type={type} className={`op-button op-button--${variant} op-button--${size} ${iconOnly?'op-button--icon':''} ${className}`} disabled={disabled||loading} aria-busy={loading||undefined} {...props}>{loading&&<LoaderCircle className="op-spinner" size={16} aria-hidden="true"/>}{children}</button>});
 export function Card({as:Tag='article',children,className='',...props}){return <Tag className={`op-card ${className}`} {...props}>{children}</Tag>}
@@ -11,6 +11,31 @@ export function ResourceList({children,label}){return <div className="op-resourc
 export function ResourceRow({icon:Icon,title,description,meta,actions}){return <div className="op-resource-row" role="listitem">{Icon&&<Icon size={20} aria-hidden="true"/>}<div className="op-resource-copy"><h3>{title}</h3>{description&&<p>{description}</p>}{meta&&<div className="op-resource-meta">{meta}</div>}</div><div className="op-actions">{actions}</div></div>}
 
 export const Input=forwardRef(function Input({as:Tag='input',className='',...props},ref){return <Tag ref={ref} className={`op-input ${className}`} {...props}/>});
+export function SelectMenu({label,value,onChange,options,className=''}){
+ const [open,setOpen]=useState(false),[menuStyle,setMenuStyle]=useState({}),root=useRef(null),trigger=useRef(null),optionRefs=useRef([]),menuId=useId();
+ const selectedIndex=Math.max(0,options.findIndex(option=>option.value===value)),selected=options[selectedIndex]||options[0];
+ useEffect(()=>{function close(event){if(!root.current?.contains(event.target))setOpen(false)}document.addEventListener('pointerdown',close);return()=>document.removeEventListener('pointerdown',close)},[]);
+ useEffect(()=>{if(open)requestAnimationFrame(()=>optionRefs.current[selectedIndex]?.focus())},[open,selectedIndex]);
+ useEffect(()=>{if(!open)return;const reposition=()=>placeMenu();window.addEventListener('resize',reposition);window.addEventListener('scroll',reposition,true);return()=>{window.removeEventListener('resize',reposition);window.removeEventListener('scroll',reposition,true)}},[open,options.length]);
+ function placeMenu(){
+  const rect=trigger.current?.getBoundingClientRect();if(!rect)return;
+  const estimatedHeight=Math.min(options.length*40+16,320),roomBelow=window.innerHeight-rect.bottom-8,openAbove=roomBelow<Math.min(estimatedHeight,180)&&rect.top>roomBelow;
+  const maxHeight=Math.max(120,Math.min(320,openAbove?rect.top-12:roomBelow)),width=Math.max(rect.width,Math.min(220,window.innerWidth-16));
+  setMenuStyle({top:openAbove?Math.max(8,rect.top-Math.min(estimatedHeight,maxHeight)-4):rect.bottom+4,left:Math.max(8,Math.min(rect.left,window.innerWidth-width-8)),width,maxHeight});
+ }
+ function openMenu(){placeMenu();setOpen(true)}
+ function choose(nextValue){onChange(nextValue);setOpen(false);requestAnimationFrame(()=>trigger.current?.focus())}
+ function moveFocus(direction){const current=optionRefs.current.indexOf(document.activeElement),next=(current+direction+options.length)%options.length;optionRefs.current[next]?.focus()}
+ return <div ref={root} className={`op-select ${className}`} onKeyDown={event=>{
+  if(event.key==='Escape'&&open){event.preventDefault();setOpen(false);trigger.current?.focus()}
+  if(open&&event.key==='ArrowDown'){event.preventDefault();moveFocus(1)}
+  if(open&&event.key==='ArrowUp'){event.preventDefault();moveFocus(-1)}
+  if(!open&&['ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();openMenu()}
+ }}>
+  <button ref={trigger} type="button" className="op-select-trigger" aria-label={label} aria-haspopup="listbox" aria-expanded={open} aria-controls={menuId} onClick={()=>open?setOpen(false):openMenu()}><span>{selected?.label}</span><ChevronDown size={16} aria-hidden="true"/></button>
+  {open&&<div id={menuId} className="op-select-menu" style={menuStyle} role="listbox" aria-label={label}>{options.map((option,index)=><button ref={node=>optionRefs.current[index]=node} type="button" className="op-select-option" role="option" aria-selected={option.value===value} key={option.value} onClick={()=>choose(option.value)}><span className="op-select-check" aria-hidden="true">{option.value===value&&<Check size={16}/>}</span><span className="op-select-label">{option.label}</span></button>)}</div>}
+ </div>;
+}
 export const SearchBar=forwardRef(function SearchBar({label,className="", ...props},ref){return <div className={`op-search ${className}`}><Search size={16} aria-hidden="true"/><input ref={ref} className="op-search-input" type="search" aria-label={label} {...props}/></div>});
 export function PageTitle({icon:Icon,children}){return <h1 className="op-page-title">{Icon&&<Icon size={24} aria-hidden="true"/>}{children}</h1>}
 

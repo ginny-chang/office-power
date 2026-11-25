@@ -632,10 +632,9 @@ html body .bot-name-actions:hover .bot-settings-button,html body .bot-name-actio
 /* Agent pictures are the character portraits */
 .reference-board .agent-card-icon{overflow:hidden;padding:0;border:0}
 /* Row view: a small card under each agent with its name, role and current task */
-.agent-fact-card{width:216px;display:grid;gap:4px;padding:12px var(--sp-4);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-float);text-align:left;color:var(--ink)}
-.agent-fact-name{display:flex;align-items:baseline;gap:var(--sp-2);min-width:0;margin-bottom:4px}
-.agent-fact-name b{overflow:hidden;font:600 17px/24px var(--font);color:var(--ink);text-overflow:ellipsis;white-space:nowrap}
-.agent-fact-name small{flex:none;font:var(--t-meta);color:var(--ink-2)}
-.agent-fact-card strong{margin-bottom:4px;overflow:hidden;font:var(--t-body-strong);color:var(--ink);text-overflow:ellipsis;white-space:nowrap}
-.agent-fact-card p{display:-webkit-box;margin:0;overflow:hidden;font:var(--t-meta);color:var(--ink-2);-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.agent-fact-card{width:max-content;max-width:280px;display:grid;gap:4px;padding:12px var(--sp-4);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-float);text-align:left;color:var(--ink)}
+.agent-fact-name{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;margin-bottom:4px}
+.agent-fact-name b{font:600 15px/20px var(--font);color:var(--ink);white-space:normal}
+.agent-fact-name small{font:var(--t-meta);color:var(--ink-2)}
+.agent-fact-progress{display:-webkit-box;margin:0;overflow:hidden;font:var(--t-meta);color:var(--ink-2);white-space:normal;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 @media(max-width:720px){.agent-fact-card{display:none}}

@@ -1,6 +1,6 @@
 import React,{useEffect,useRef,useState} from 'react';
 import {Check,CheckCircle2} from 'lucide-react';
-import {Button,Card,Input,PageTitle} from '../src-shared/ui/index.jsx';
+import {Button,Card,Input,PageTitle,SelectMenu} from '../src-shared/ui/index.jsx';
 import {agentModels} from '../src-shared/ModelPicker.jsx';
 import {useUserRole} from '../src-shared/UserRole.jsx';
 import {showAdmin} from '../src-shared/features.js';
@@ -39,7 +39,7 @@ export default function Settings(){
   <div className="settings-stack">
    <Card as="section" className="settings-card"><CardHeading title="帳號"/><dl className="settings-account"><div><dt>名稱</dt><dd>{settings.name}</dd></div><div><dt>電子郵件</dt><dd>ginny@example.com</dd></div><div><dt>身分</dt><dd><span className="usage-tag">{admin?'管理員':'一般使用者'}</span></dd></div></dl></Card>
    <Card as="section" className="settings-card"><CardHeading title="外觀與語言" copy="只影響你自己的帳號，選擇後立即套用。"/>
-    <label className="manage-field settings-language">介面語言<Input as="select" value={settings.language} onChange={event=>changeLanguage(event.target.value)}>{languages.map(([value,label])=><option key={value} value={value}>{label}</option>)}</Input></label>
+    <div className="manage-field settings-language"><span>介面語言</span><SelectMenu label="介面語言" value={settings.language} onChange={changeLanguage} options={languages.map(([value,label])=>({value,label}))}/></div>
     <fieldset className="settings-themes"><legend>外觀主題</legend>{themes.map(theme=>{const selected=theme.id===activeTheme;return <label key={theme.id} className={selected?'selected':''}><span className="settings-theme-head"><input type="radio" name="theme" checked={selected} disabled={!theme.ready} onChange={()=>changeTheme(theme)}/><strong>{theme.name}</strong>{!theme.ready&&<span className="usage-tag">即將推出</span>}</span><small>{theme.copy}</small><span className="settings-swatches" aria-hidden="true">{theme.colors.map(color=><i key={color} style={{background:color}}/>)}</span></label>})}</fieldset>
    </Card>
    {admin&&<Card as="section" className="settings-card"><CardHeading title="模型" copy="未指定模型的 Agent 與任務共用。儲存前會先驗證，成功後從下一回合生效，不中斷執行中的工作。"/>
