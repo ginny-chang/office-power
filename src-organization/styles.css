@@ -26,15 +26,18 @@
 .directory-search input{font:var(--t-label)}
 .directory-department{height:var(--control);display:flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);color:var(--ink-2)}
 .directory-department select{font:var(--t-label);font-weight:500;color:var(--ink);cursor:pointer}
-.directory-status.op-segmented{padding:0;border-radius:var(--r);background:var(--surface)}
-.directory-status button{height:var(--control);padding:0 var(--sp-4);border-radius:var(--r);background:var(--surface-2);font:var(--t-label);font-weight:500;color:var(--ink);box-shadow:none}
+.directory-status.op-segments{padding:4px;border:0;border-radius:var(--r);background:var(--surface-2)}
+.directory-status.op-segments button{height:36px;min-height:36px;padding:0 var(--sp-4);border-radius:calc(var(--r) - 3px);background:transparent;font:var(--t-label);font-weight:500;color:var(--ink);box-shadow:none}
 .directory-status button:hover{background:var(--surface-3)}
 .directory-status button[aria-pressed=true]{background:var(--action);color:var(--on-ink);box-shadow:none}
 .directory-filters>span{padding-left:var(--sp-2);font:var(--t-meta);color:var(--ink-3)}
 .employee-table{font:var(--t-label)}
 .employee-table th{padding:var(--sp-4) var(--sp-6);background:none;font:var(--t-meta);color:var(--ink-2)}
 .employee-table td{padding:var(--sp-4) var(--sp-6);border-top:1px solid var(--line);color:var(--ink-2)}
-.employee-table select{height:32px;max-width:180px;padding:0 28px 0 10px;border:0;border-radius:var(--r);background:var(--surface-2);font:var(--t-label);color:var(--ink);cursor:pointer}
+.employee-table .employee-cell-select{width:max-content;max-width:180px}
+.employee-table .employee-cell-select .op-select-trigger{width:max-content;min-width:120px;max-width:180px;height:32px;min-height:32px;padding:0 10px;font:var(--t-label)}
+.employee-table .employee-manager-select .op-select-trigger{min-width:174px}
+.employee-table .employee-role-select .op-select-trigger{min-width:110px}
 .employee-table tbody tr:hover td{background:var(--frame)}
 .employee-name{gap:var(--sp-4)}
 .employee-name i{width:40px;height:40px;border:0;border-radius:var(--r);background:var(--mint);color:var(--mint-ink);font:500 14px/1 var(--font)}

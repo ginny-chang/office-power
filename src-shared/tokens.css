@@ -281,7 +281,7 @@ html body :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[
 html .op-select-trigger{height:var(--control);padding:0 12px 0 var(--sp-4);border:0;border-radius:var(--r);background:var(--surface-2);color:var(--ink);font:var(--t-body)}
 html .op-select-trigger:hover{background:var(--surface-3)}
 html .op-select-trigger:focus-visible,html .op-select-trigger[aria-expanded=true]{outline:0;background:var(--surface-2);box-shadow:var(--focus-ring)}
-html .op-select-menu{top:calc(100% + 4px);padding:var(--sp-2);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet),0 0 0 1px var(--line)}
+html .op-select-menu{padding:var(--sp-2);border:0;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-sheet),0 0 0 1px var(--line)}
 html .op-select-option{min-height:var(--control-md);padding:0 var(--sp-2);border-radius:var(--r);color:var(--ink);font:var(--t-label)}
 html .op-select-option:hover,html .op-select-option:focus-visible{outline:0;background:var(--surface-2)}
 html .op-select-option[aria-selected=true]{background:var(--surface-2);color:var(--ink);font-weight:500}

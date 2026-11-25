@@ -12,20 +12,28 @@ export function ResourceRow({icon:Icon,title,description,meta,actions}){return <
 
 export const Input=forwardRef(function Input({as:Tag='input',className='',...props},ref){return <Tag ref={ref} className={`op-input ${className}`} {...props}/>});
 export function SelectMenu({label,value,onChange,options,className=''}){
- const [open,setOpen]=useState(false),root=useRef(null),trigger=useRef(null),optionRefs=useRef([]),menuId=useId();
+ const [open,setOpen]=useState(false),[menuStyle,setMenuStyle]=useState({}),root=useRef(null),trigger=useRef(null),optionRefs=useRef([]),menuId=useId();
  const selectedIndex=Math.max(0,options.findIndex(option=>option.value===value)),selected=options[selectedIndex]||options[0];
  useEffect(()=>{function close(event){if(!root.current?.contains(event.target))setOpen(false)}document.addEventListener('pointerdown',close);return()=>document.removeEventListener('pointerdown',close)},[]);
  useEffect(()=>{if(open)requestAnimationFrame(()=>optionRefs.current[selectedIndex]?.focus())},[open,selectedIndex]);
+ useEffect(()=>{if(!open)return;const reposition=()=>placeMenu();window.addEventListener('resize',reposition);window.addEventListener('scroll',reposition,true);return()=>{window.removeEventListener('resize',reposition);window.removeEventListener('scroll',reposition,true)}},[open,options.length]);
+ function placeMenu(){
+  const rect=trigger.current?.getBoundingClientRect();if(!rect)return;
+  const estimatedHeight=Math.min(options.length*40+16,320),roomBelow=window.innerHeight-rect.bottom-8,openAbove=roomBelow<Math.min(estimatedHeight,180)&&rect.top>roomBelow;
+  const maxHeight=Math.max(120,Math.min(320,openAbove?rect.top-12:roomBelow)),width=Math.max(rect.width,Math.min(220,window.innerWidth-16));
+  setMenuStyle({top:openAbove?Math.max(8,rect.top-Math.min(estimatedHeight,maxHeight)-4):rect.bottom+4,left:Math.max(8,Math.min(rect.left,window.innerWidth-width-8)),width,maxHeight});
+ }
+ function openMenu(){placeMenu();setOpen(true)}
  function choose(nextValue){onChange(nextValue);setOpen(false);requestAnimationFrame(()=>trigger.current?.focus())}
  function moveFocus(direction){const current=optionRefs.current.indexOf(document.activeElement),next=(current+direction+options.length)%options.length;optionRefs.current[next]?.focus()}
  return <div ref={root} className={`op-select ${className}`} onKeyDown={event=>{
   if(event.key==='Escape'&&open){event.preventDefault();setOpen(false);trigger.current?.focus()}
   if(open&&event.key==='ArrowDown'){event.preventDefault();moveFocus(1)}
   if(open&&event.key==='ArrowUp'){event.preventDefault();moveFocus(-1)}
-  if(!open&&['ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();setOpen(true)}
+  if(!open&&['ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();openMenu()}
  }}>
-  <button ref={trigger} type="button" className="op-select-trigger" aria-label={label} aria-haspopup="listbox" aria-expanded={open} aria-controls={menuId} onClick={()=>setOpen(current=>!current)}><span>{selected?.label}</span><ChevronDown size={16} aria-hidden="true"/></button>
-  {open&&<div id={menuId} className="op-select-menu" role="listbox" aria-label={label}>{options.map((option,index)=><button ref={node=>optionRefs.current[index]=node} type="button" className="op-select-option" role="option" aria-selected={option.value===value} key={option.value} onClick={()=>choose(option.value)}><span className="op-select-check" aria-hidden="true">{option.value===value&&<Check size={16}/>}</span><span className="op-select-label">{option.label}</span></button>)}</div>}
+  <button ref={trigger} type="button" className="op-select-trigger" aria-label={label} aria-haspopup="listbox" aria-expanded={open} aria-controls={menuId} onClick={()=>open?setOpen(false):openMenu()}><span>{selected?.label}</span><ChevronDown size={16} aria-hidden="true"/></button>
+  {open&&<div id={menuId} className="op-select-menu" style={menuStyle} role="listbox" aria-label={label}>{options.map((option,index)=><button ref={node=>optionRefs.current[index]=node} type="button" className="op-select-option" role="option" aria-selected={option.value===value} key={option.value} onClick={()=>choose(option.value)}><span className="op-select-check" aria-hidden="true">{option.value===value&&<Check size={16}/>}</span><span className="op-select-label">{option.label}</span></button>)}</div>}
  </div>;
 }
 export const SearchBar=forwardRef(function SearchBar({label,className="", ...props},ref){return <div className={`op-search ${className}`}><Search size={16} aria-hidden="true"/><input ref={ref} className="op-search-input" type="search" aria-label={label} {...props}/></div>});

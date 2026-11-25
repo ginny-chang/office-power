@@ -23,7 +23,7 @@
 .op-select-trigger svg{flex:none;color:var(--op-color-muted);transition:transform var(--op-motion-duration) var(--op-motion-ease)}
 .op-select-trigger[aria-expanded=true] svg{transform:rotate(180deg)}
 .op-select-trigger:focus-visible,.op-select-option:focus-visible{outline:2px solid var(--op-color-focus);outline-offset:2px}
-.op-select-menu{position:absolute;z-index:var(--op-layer-dropdown);top:calc(100% + var(--op-space-sm));left:0;width:100%;padding:var(--op-space-sm);border:1px solid var(--op-color-border);border-radius:var(--op-radius-surface);background:var(--op-color-surface);box-shadow:var(--op-shadow-popover)}
+.op-select-menu{position:fixed;z-index:var(--op-layer-dropdown);overflow-y:auto;padding:var(--op-space-sm);border:1px solid var(--op-color-border);border-radius:var(--op-radius-surface);background:var(--op-color-surface);box-shadow:var(--op-shadow-popover)}
 .op-select-option{display:flex;align-items:center;gap:var(--op-space-sm);width:100%;min-height:40px;padding:8px 12px;border:0;border-radius:var(--op-radius-control);background:transparent;color:var(--op-color-text);font:400 var(--op-text-label)/1.5 var(--op-font-body);text-align:left;cursor:pointer}
 .op-select-option:hover,.op-select-option:focus-visible{background:var(--op-color-subtle)}
 .op-select-option[aria-selected=true]{background:var(--op-color-subtle);color:var(--op-color-text);font-weight:500}
