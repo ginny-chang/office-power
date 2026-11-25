@@ -25,7 +25,7 @@ export function SelectMenu({label,value,onChange,options,className=''}){
   if(!open&&['ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();setOpen(true)}
  }}>
   <button ref={trigger} type="button" className="op-select-trigger" aria-label={label} aria-haspopup="listbox" aria-expanded={open} aria-controls={menuId} onClick={()=>setOpen(current=>!current)}><span>{selected?.label}</span><ChevronDown size={16} aria-hidden="true"/></button>
-  {open&&<div id={menuId} className="op-select-menu" role="listbox" aria-label={label}>{options.map((option,index)=><button ref={node=>optionRefs.current[index]=node} type="button" className="op-select-option" role="option" aria-selected={option.value===value} key={option.value} onClick={()=>choose(option.value)}><span>{option.label}</span>{option.value===value&&<Check size={16} aria-hidden="true"/>}</button>)}</div>}
+  {open&&<div id={menuId} className="op-select-menu" role="listbox" aria-label={label}>{options.map((option,index)=><button ref={node=>optionRefs.current[index]=node} type="button" className="op-select-option" role="option" aria-selected={option.value===value} key={option.value} onClick={()=>choose(option.value)}><span className="op-select-check" aria-hidden="true">{option.value===value&&<Check size={16}/>}</span><span className="op-select-label">{option.label}</span></button>)}</div>}
  </div>;
 }
 export const SearchBar=forwardRef(function SearchBar({label,className="", ...props},ref){return <div className={`op-search ${className}`}><Search size={16} aria-hidden="true"/><input ref={ref} className="op-search-input" type="search" aria-label={label} {...props}/></div>});

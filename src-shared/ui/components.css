@@ -24,10 +24,10 @@
 .op-select-trigger[aria-expanded=true] svg{transform:rotate(180deg)}
 .op-select-trigger:focus-visible,.op-select-option:focus-visible{outline:2px solid var(--op-color-focus);outline-offset:2px}
 .op-select-menu{position:absolute;z-index:var(--op-layer-dropdown);top:calc(100% + var(--op-space-sm));left:0;width:100%;padding:var(--op-space-sm);border:1px solid var(--op-color-border);border-radius:var(--op-radius-surface);background:var(--op-color-surface);box-shadow:var(--op-shadow-popover)}
-.op-select-option{display:flex;align-items:center;justify-content:space-between;gap:var(--op-space-md);width:100%;min-height:40px;padding:8px 12px;border:0;border-radius:var(--op-radius-control);background:transparent;color:var(--op-color-text);font:400 var(--op-text-label)/1.5 var(--op-font-body);text-align:left;cursor:pointer}
+.op-select-option{display:flex;align-items:center;gap:var(--op-space-sm);width:100%;min-height:40px;padding:8px 12px;border:0;border-radius:var(--op-radius-control);background:transparent;color:var(--op-color-text);font:400 var(--op-text-label)/1.5 var(--op-font-body);text-align:left;cursor:pointer}
 .op-select-option:hover,.op-select-option:focus-visible{background:var(--op-color-subtle)}
-.op-select-option[aria-selected=true]{background:var(--op-color-primary-soft);color:var(--op-color-primary);font-weight:500}
-.op-select-option svg{flex:none}
+.op-select-option[aria-selected=true]{background:var(--op-color-subtle);color:var(--op-color-text);font-weight:500}
+.op-select-check{display:grid;place-items:center;flex:none;width:16px}.op-select-check svg{color:currentColor}.op-select-label{flex:1;min-width:0}
 .op-search{display:flex;align-items:center;gap:8px;background:var(--op-color-surface);border:1px solid var(--op-color-border);border-radius:var(--op-radius-control);padding:0 12px;color:var(--op-color-muted)}
 .op-search .op-input{border:0!important;background:transparent!important;padding-left:0!important;box-shadow:none}
 .op-search:focus-within{outline:2px solid var(--op-color-primary);outline-offset:2px}
